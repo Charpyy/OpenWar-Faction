@@ -3,6 +3,7 @@ package com.openwar.openwarfaction;
 import com.openwar.openwarfaction.commands.FactionCommand;
 import com.openwar.openwarfaction.factions.FactionManager;
 import com.openwar.openwarfaction.handler.ClaimChunk;
+import com.openwar.openwarfaction.handler.MenuHandler;
 import com.openwar.openwarfaction.handler.PlayerMove;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -40,6 +41,7 @@ public final class Main extends JavaPlugin {
         this.factionManager = new FactionManager();
         getServer().getPluginManager().registerEvents(new PlayerMove(this), this);
         getServer().getPluginManager().registerEvents(new ClaimChunk(factionManager), this);
+        getServer().getPluginManager().registerEvents(new MenuHandler(this),this);
         setupEconomy();
         factionManager.loadFactionsFromCSV(CSV_FILE_PATH);
         this.getCommand("f").setExecutor(new FactionCommand(factionManager, getWaitingPlayers(), this, economy));

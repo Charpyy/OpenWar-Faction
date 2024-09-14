@@ -6,18 +6,19 @@ import com.openwar.openwarfaction.factions.FactionManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
+import org.bukkit.*;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class FactionCommand implements CommandExecutor {
 
@@ -46,7 +47,7 @@ public class FactionCommand implements CommandExecutor {
         UUID playerUUID = player.getUniqueId();
 
         if (args.length == 0) {
-            player.sendMessage(logo + "Usage: /f <create|new|delete|claim|list|home|sethome|name|invite|promote>");
+            player.sendMessage(logo + "Usage: /f help");
             return true;
         }
 
@@ -260,7 +261,7 @@ public class FactionCommand implements CommandExecutor {
                 break;
             case "join":
                 if (factionManager.isFactionMember(playerUUID)) {
-                    player.sendMessage(logo + "§cYou are already on a faction.");
+                    player.sendMessage(logo + "§cYou are already in a faction.");
                     return true;
                 }
                 String invitedFaction = factionManager.getInvitedFaction(playerUUID);
@@ -283,7 +284,10 @@ public class FactionCommand implements CommandExecutor {
                     }
                 }
                 break;
+
             case "promote":
+                //TODO VERIFIER SI LE JOUEUR EST DANS LA FACTION OU NON
+                faction = factionManager.getFactionByPlayer(playerUUID);
                 if (args.length < 2) {
                     player.sendMessage(logo + "Please provide the name of the player to promote.");
                     return true;
@@ -299,7 +303,14 @@ public class FactionCommand implements CommandExecutor {
                 }
                 factionManager.promoteMember(promoteTarget.getUniqueId(), factionManager.getFactionByPlayer(playerUUID));
                 player.sendMessage(logo + "Player " + promoteTarget.getName() + " promoted!");
+                for (UUID memberUUID : faction.getMembers().keySet()) {
+                    Player member = Bukkit.getPlayer(memberUUID);
+                    if (member != null) {
+                        member.sendMessage(logo + "§a" + promoteTarget.getName() + " §7as been promoted to "+ faction.getRank(promoteTarget.getUniqueId()));
+                    }
+                }
                 break;
+
             case "help":
                 player.sendMessage(logo +"§fHelp Page:");
                 player.sendMessage("\u00A78– \u00A77/f create|new <name> : §fCreate a new faction");
@@ -314,22 +325,32 @@ public class FactionCommand implements CommandExecutor {
                 player.sendMessage("\u00A78– \u00A77/f sethome : §fSet the faction home");
                 player.sendMessage("\u00A78– \u00A77/f home : §fTeleport to the faction home");
                 player.sendMessage("\u00A78– \u00A77/f claim : §fClaim a chunk");
-
+                player.sendMessage("\u00A78– \u00A77/f menu : §fFaction Menu");
+                break;
             case "leave":
                 if (!factionManager.isFactionMember(playerUUID)) {
-                    player.sendMessage(logo + "§cYou are not on a faction.");
+                    player.sendMessage(logo + "§cYou are not in a faction.");
                     return true;
                 }
 
                faction = factionManager.getFactionByPlayer(playerUUID);
 
                 if (faction.getLeaderUUID().equals(playerUUID)) {
-                    player.sendMessage(logo + "§cYou are the leader of this faction. §fUse §b/f disband §fto disband your faction.");
+                    player.sendMessage(logo + "§cYou are the leader of this faction. §fUse §b/f disband §fto disband your faction.");}
+                else {
                     faction.removeMember(playerUUID);
                     factionManager.removePlayerFromFaction(playerUUID);
                     player.sendMessage(logo + "§fYou leaved the faction §b" + faction.getName() + ".");
                     return true;
                 }
+
+                break;
+            case "menu":
+                if (!factionManager.isFactionMember(playerUUID)) {
+                    player.sendMessage(logo + "You are not in a faction.");
+                    return true;
+                }
+                openFactionMenu(player);
                 break;
             case "f":
                 if (!factionManager.isFactionMember(playerUUID)) {
@@ -338,13 +359,16 @@ public class FactionCommand implements CommandExecutor {
                 }
                 playerFaction = factionManager.getFactionByPlayer(playerUUID);
                 player.sendMessage(logo+ "\u00A7fFaction Info:");
-                player.sendMessage("\u00A78– \u00A77Faction Name: \u00A7f" + playerFaction.getName());
-                player.sendMessage("\u00A78– \u00A77Members: \u00A7f" + playerFaction.getMembers().size());
+                player.sendMessage("\u00A78- \u00A77Faction Name: \u00A7f" + playerFaction.getName());
+                player.sendMessage("\u00A78- \u00A77Members: \u00A7f" + playerFaction.getMembers().size());
+                player.sendMessage("\u00A78- \u00A77Faction Level: \u00A7f" + playerFaction.getLevel());
+                player.sendMessage("\u00A78- \u00A77Faction Exp: \u00A7f" + playerFaction.getExp());
+                player.sendMessage("\u00A78- "+getProgressBar(playerFaction.getExp(), playerFaction.getExperienceNeededForNextLevel()));
                 if (playerFaction.getHomeLocation() != null) {
-                    player.sendMessage("\u00A78– \u00A77Home Location: \u00A78X: \u00A77" + (int) playerFaction.getHomeLocation().getX() + " \u00A78Y: \u00A77" + (int) playerFaction.getHomeLocation().getY() + " \u00A78Z: \u00A77" + (int) playerFaction.getHomeLocation().getZ());
+                    player.sendMessage("\u00A78- \u00A77Home Location: \u00A78X: \u00A77" + (int) playerFaction.getHomeLocation().getX() + " \u00A78Y: \u00A77" + (int) playerFaction.getHomeLocation().getY() + " \u00A78Z: \u00A77" + (int) playerFaction.getHomeLocation().getZ());
                 }
                 else {
-                    player.sendMessage("\u00A78– \u00A77Home: \u00A7fNot Set.");
+                    player.sendMessage("\u00A78- \u00A77Home: \u00A7fNot Set.");
                 }
                 break;
             default:
@@ -353,4 +377,114 @@ public class FactionCommand implements CommandExecutor {
         }
         return true;
     }
+
+    public String getProgressBar(int current, int max) {
+        StringBuilder progressBar = new StringBuilder("§7[§f");
+        int progressLength = Math.min(current, max);
+        for (int i = 0; i < progressLength; i++) {
+            progressBar.append("§c|§f");
+        }
+        for (int i = progressLength; i < 27; i++) {
+            progressBar.append("|§f");
+        }
+        progressBar.append("§7]");
+        return progressBar.toString();
+    }
+    public void openFactionMenu(Player player) {
+        UUID playerUUID = player.getUniqueId();
+        Faction faction = factionManager.getFactionByPlayer(playerUUID);
+
+        if (faction == null) {
+            player.sendMessage(logo + "§cYou are not on a faction.");
+            return;
+        }
+        Inventory menu = Bukkit.createInventory(null, 54, "§b§lFaction Menu§f - §3"+ faction.getName());
+        ItemStack GlassPane = new ItemStack(Material.STAINED_GLASS_PANE);
+        ItemMeta meta = GlassPane.getItemMeta();
+        ItemStack lightGrayGlassPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
+        ItemMeta metaa = lightGrayGlassPane.getItemMeta();
+        if (metaa != null) {
+            metaa.setDisplayName(" ");
+            GlassPane.setItemMeta(metaa);
+        }
+        for (int i = 0; i < 54; i++) {
+            menu.setItem(i, GlassPane);
+        }
+            {
+        }
+        if (meta != null) {
+            meta.setDisplayName(" ");
+            lightGrayGlassPane.setItemMeta(meta);
+        }
+        for (int i = 0; i < 54; i++) {
+            if (i < 9 || i >= 45) {
+                menu.setItem(i, lightGrayGlassPane);
+            }
+            if (i % 9 == 0 || i % 9 == 8) {
+                menu.setItem(i, lightGrayGlassPane);
+            }
+        }
+        ItemStack factionLevelItem = new ItemStack(Material.EXP_BOTTLE);
+        ItemMeta levelMeta = factionLevelItem.getItemMeta();
+        levelMeta.setDisplayName("§6§lFaction Level");
+        List<String> levelLore = new ArrayList<>();
+        int factionLevel = faction.getLevel();
+        int factionExp = faction.getExp();
+        int expRequired = faction.getExperienceNeededForNextLevel();
+        levelLore.add("§eLevel: §6" + factionLevel);
+        levelLore.add("§eExperience: §6" + factionExp + "§e / §6" + expRequired);
+        double percentage = (double) factionExp / expRequired * 100;
+        int progress = (int) ((percentage / 100) * 27);
+        levelLore.add("§eProgression: " + getProgressBar(progress, 27) + " §6" + String.format("%.2f", percentage) + "%");
+        levelMeta.setLore(levelLore);
+        factionLevelItem.setItemMeta(levelMeta);
+        ItemStack infoItem = new ItemStack(Material.BOOK);
+        ItemMeta infoMeta = infoItem.getItemMeta();
+        infoMeta.setDisplayName("§8§lInformations");
+        List<String> infoLore = new ArrayList<>();
+        infoLore.add("§7Name: §f" + faction.getName());
+        infoLore.add("§7Members: §f" + faction.getMembers().size());
+        if (faction.getHomeLocation() != null) {
+            infoLore.add("§7Home Location: \u00A78X: \u00A77" + (int) faction.getHomeLocation().getX() + " \u00A78Y: \u00A77" + (int) faction.getHomeLocation().getY() + " \u00A78Z: \u00A77" + (int) faction.getHomeLocation().getZ());
+        }
+        else {
+            infoLore.add("§7Home Location: \u00A7fNot Set.");
+        }
+        infoMeta.setLore(infoLore);
+        infoItem.setItemMeta(infoMeta);
+        ItemStack upgrade = new ItemStack(Material.WHITE_SHULKER_BOX);
+        setItemLore(upgrade, "§c§lFaction Upgrade", "", "");
+        menu.setItem(32, upgrade);
+        menu.setItem(24, factionLevelItem);
+        menu.setItem(30, infoItem);
+        String leader = Bukkit.getOfflinePlayer(faction.getLeaderUUID()).getName();
+        ItemStack head = getLeaderHead(leader);
+        menu.setItem(20, head);
+        player.openInventory(menu);
+    }
+    public ItemStack getLeaderHead(String leaderName) {
+        ItemStack leaderHead = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+        SkullMeta meta = (SkullMeta) leaderHead.getItemMeta();
+
+        if (meta != null) {
+            OfflinePlayer leader = Bukkit.getOfflinePlayer(leaderName);
+            meta.setOwningPlayer(leader);
+            meta.setDisplayName("§4§lFaction Leader");
+            meta.setLore(Arrays.asList("§c"+leaderName));
+            leaderHead.setItemMeta(meta);
+        }
+
+        return leaderHead;
+    }
+    public ItemStack setItemLore(ItemStack item, String name, String firstLine, String secondLine) {
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(name);
+        if (meta != null) {
+            meta.setLore(Arrays.asList(firstLine, secondLine));
+            item.setItemMeta(meta);
+        }
+
+        return item;
+    }
 }
+

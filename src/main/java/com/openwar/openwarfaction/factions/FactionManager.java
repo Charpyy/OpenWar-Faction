@@ -31,10 +31,10 @@ public class FactionManager {
 
     public void saveFactionsToCSV(String filePath) {
         try (FileWriter writer = new FileWriter(filePath)) {
-            writer.append("factionName,leaderUUID,members,homeLocation\n");
+            writer.append("factionName,leaderUUID,members,homeLocation,level,exp\n");
             for (Faction faction : factions.values()) {
-                writer.append(faction.getName()).append(",");
-                writer.append(faction.getLeaderUUID().toString()).append(",");
+                writer.append(faction.getName()).append(",")
+                        .append(faction.getLeaderUUID().toString()).append(",");
                 StringBuilder members = new StringBuilder();
                 for (UUID memberUUID : faction.getMembers().keySet()) {
                     members.append(memberUUID.toString()).append(";");
@@ -42,13 +42,15 @@ public class FactionManager {
                 writer.append(members.toString()).append(",");
                 Location home = faction.getHomeLocation();
                 if (home != null) {
-                    writer.append(home.getWorld().getName()).append(",");
-                    writer.append(Double.toString(home.getX())).append(",");
-                    writer.append(Double.toString(home.getY())).append(",");
-                    writer.append(Double.toString(home.getZ())).append("\n");
+                    writer.append(home.getWorld().getName()).append(",")
+                            .append(Double.toString(home.getX())).append(",")
+                            .append(Double.toString(home.getY())).append(",")
+                            .append(Double.toString(home.getZ())).append(",");
                 } else {
-                    writer.append("null\n");
+                    writer.append("null,null,null,null,");
                 }
+                writer.append(String.valueOf(faction.getLevel())).append(",")
+                        .append(String.valueOf(faction.getExp())).append("\n");
             }
             writer.flush();
         } catch (IOException e) {
@@ -58,7 +60,7 @@ public class FactionManager {
 
     public void loadFactionsFromCSV(String filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line = reader.readLine();
+            String line = reader.readLine(); // Ignore l'en-tête
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
                 String factionName = data[0];
@@ -78,8 +80,12 @@ public class FactionManager {
                     double z = Double.parseDouble(data[6]);
                     homeLocation = new Location(world, x, y, z);
                 }
+                int level = Integer.parseInt(data[7]);
+                int exp = Integer.parseInt(data[8]);
                 Faction faction = new Faction(factionName, leaderUUID);
                 faction.setHomeLocation(homeLocation);
+                faction.setLevel(level);
+                faction.setExp(exp);
                 factions.put(factionName, faction);
                 playerFactions.put(leaderUUID, factionName);
                 for (UUID memberUUID : members.keySet()) {

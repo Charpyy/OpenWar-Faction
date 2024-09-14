@@ -46,12 +46,13 @@ public class ClaimChunk implements Listener {
     @EventHandler
     public void onPlayerBuild(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        Chunk playerChunk = player.getLocation().getChunk();
-        Faction faction = factionManager.getFactionByChunk(playerChunk);
-        if (faction != null) {
-            if (!faction.getLeaderUUID().equals(player.getUniqueId()) && !factionManager.isFactionMember(player.getUniqueId())) {
+        if (event.getClickedBlock() != null) {
+            Chunk blockChunk = event.getClickedBlock().getChunk();
+            Faction chunkOwner = factionManager.getFactionByChunk(blockChunk);
+            Faction playerFaction = factionManager.getFactionByPlayer(player.getUniqueId());
+            if (chunkOwner != null && !chunkOwner.equals(playerFaction)) {
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§cYou cannot interact with anything here."));
                 event.setCancelled(true);
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou can't build here. §8«"));
             }
         }
     }

@@ -11,14 +11,53 @@ public class Faction {
     private UUID leaderUUID;
     private Map<UUID, Rank> members;
     private Location homeLocation;
+    private int level;
+    private int exp;
+
+    private static final int[] levelRequirements = {
+            564, 1470, 3625, 7030, 11684, 17587,
+            24739, 33141, 42791, 53692, 65841,
+            79239, 93887, 109784, 126931, 145326,
+            164971, 185865, 208009, 231401
+    };
 
     public Faction(String name, UUID leaderUUID) {
         this.name = name;
+        this.level = 0;
+        this.exp = 0;
         this.leaderUUID = leaderUUID;
         this.members = new HashMap<>();
         this.members.put(leaderUUID, Rank.LEADER);
     }
+    public int getExperienceNeededForNextLevel() {
+        if (level < levelRequirements.length) {
+            return levelRequirements[level];
+        }
+        return 0;
+    }
+    public void addExp(int amount) {
+        exp += amount;
+        while (level < levelRequirements.length && exp >= levelRequirements[level]) {
+            levelUp();
+        }
+    }
+    public void setExp(int exp) {
+        exp = exp;
+    }
+    public void setLevel(int lvl) {
+        level = lvl;
+    }
 
+    private void levelUp() {
+        level++;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+    public int getExp() {
+        return exp;
+    }
     public String getName() {
         return name;
     }
