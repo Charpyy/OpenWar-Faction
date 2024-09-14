@@ -1,0 +1,8 @@
+name: OpenWar-Faction
+version: '${project.version}'
+main: com.openwar.openwarfaction.Main
+commands:
+  f:
+    description: Faction commands.
+    usage: /f <create|new|delete|claim|list|home|sethome|name|invite|promote>
+    aliases: [faction, factions]
