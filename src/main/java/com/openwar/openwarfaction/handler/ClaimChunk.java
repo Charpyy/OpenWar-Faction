@@ -1,7 +1,7 @@
 package com.openwar.openwarfaction.handler;
 
 import com.openwar.openwarfaction.factions.Faction;
-import com.openwar.openwarfaction.factions.FactionManager; // Adjust the import based on your package structure
+import com.openwar.openwarfaction.factions.FactionManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Chunk;
@@ -38,6 +38,7 @@ public class ClaimChunk implements Listener {
                 }
             } else {
                 if (playerLastChunk.containsKey(player)) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §fYou leaved faction claim of §c" + faction.getName()+" §8«"));
                     playerLastChunk.remove(player);
                 }
             }

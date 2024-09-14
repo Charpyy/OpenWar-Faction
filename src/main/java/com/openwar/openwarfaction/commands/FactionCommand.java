@@ -271,7 +271,7 @@ public class FactionCommand implements CommandExecutor {
                 }
                 faction = factionManager.getFactionByName(invitedFaction);
                 if (faction == null) {
-                    player.sendMessage(logo + "§cThis faction doesnt exist.");
+                        player.sendMessage(logo + "§cThis faction doesnt exist. §7Debug: "+invitedFaction);
                     return true;
                 }
                 factionManager.addMemberToFaction(playerUUID, faction);
@@ -289,16 +289,19 @@ public class FactionCommand implements CommandExecutor {
                 //TODO VERIFIER SI LE JOUEUR EST DANS LA FACTION OU NON
                 faction = factionManager.getFactionByPlayer(playerUUID);
                 if (args.length < 2) {
-                    player.sendMessage(logo + "Please provide the name of the player to promote.");
+                    player.sendMessage(logo + "§cPlease provide the name of the player to promote.");
                     return true;
                 }
+                if (faction == null) {
+                    player.sendMessage(logo + "§cYou are not in any faction.");
+                }
                 if (!factionManager.isFactionLeader(playerUUID)) {
-                    player.sendMessage(logo + "Only the leader can promote players.");
+                    player.sendMessage(logo + "§cOnly the leader can promote players.");
                     return true;
                 }
                 Player promoteTarget = Bukkit.getPlayer(args[1]);
                 if (promoteTarget == null) {
-                    player.sendMessage(logo + "That player is not online.");
+                    player.sendMessage(logo + "§cThat player is not online.");
                     return true;
                 }
                 factionManager.promoteMember(promoteTarget.getUniqueId(), factionManager.getFactionByPlayer(playerUUID));

@@ -60,7 +60,7 @@ public class FactionManager {
 
     public void loadFactionsFromCSV(String filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line = reader.readLine(); // Ignore l'en-tête
+            String line = reader.readLine();
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
                 String factionName = data[0];
