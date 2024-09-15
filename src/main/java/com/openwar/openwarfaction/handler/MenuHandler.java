@@ -8,6 +8,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 
+import static com.openwar.openwarfaction.commands.FactionCommand.openUpgradeInventory;
+
 public class MenuHandler implements Listener {
 
     private final Main plugin;
@@ -23,6 +25,15 @@ public class MenuHandler implements Listener {
         if (view.getTitle().contains("§b§lFaction Menu§f - §3")) {
             event.setCancelled(true);
             Player player = (Player) event.getWhoClicked();
+            int clickedSlot = event.getSlot();
+            if (clickedSlot == 32) {
+                openUpgradeInventory(player);
+            }
+            Bukkit.getServer().getScheduler().runTaskLater(plugin, player::updateInventory, 1L);
+        }
+        if (view.getTitle().contains("§a§lUpgrade Menu")) {
+            Player player = (Player) event.getWhoClicked();
+            event.setCancelled(true);
             Bukkit.getServer().getScheduler().runTaskLater(plugin, player::updateInventory, 1L);
         }
     }

@@ -209,4 +209,14 @@ public class FactionManager {
     public void unclaimLand(Chunk chunk) {
         claimedLand.remove(chunk);
     }
+    public List<Chunk> getClaimedChunks(Faction faction) {
+        List<Chunk> claimedChunks = new ArrayList<>();
+        for (Map.Entry<Chunk, Faction> entry : claimedLand.entrySet()) {
+            if (entry.getValue().equals(faction)) {
+                claimedChunks.add(entry.getKey());
+            }
+        }
+
+        return claimedChunks;
+    }
 }

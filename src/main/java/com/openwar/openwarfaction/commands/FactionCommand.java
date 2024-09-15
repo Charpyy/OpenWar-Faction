@@ -132,16 +132,33 @@ public class FactionCommand implements CommandExecutor {
                     return true;
                 }
                 Faction playerFaction = factionManager.getFactionByPlayer(playerUUID);
+                List<Chunk> claimedChunks = factionManager.getClaimedChunks(playerFaction);
+                if (!claimedChunks.isEmpty()) {
+                    boolean isAdjacent = false;
+                    for (Chunk claimedChunk : claimedChunks) {
+                        if (isAdjacentChunk(claimedChunk, chunkToClaim)) {
+                            isAdjacent = true;
+                            break;
+                        }
+                    }
+
+                    if (!isAdjacent) {
+                        player.sendMessage(logo + "\u00A7cYou can only claim land adjacent to your existing claims.");
+                        return true;
+                    }
+                }
                 factionManager.claimLand(chunkToClaim, playerFaction);
                 player.sendMessage(logo + "\u00A77Land claimed for your faction!");
                 break;
+
 
             case "list":
                 if (factionManager.getAllFactions() == null){
                     player.sendMessage(logo + "No faction found.");
                 } else {
+                    player.sendMessage(logo + "Factions list: ");
                     factionManager.getAllFactions().forEach(faction ->
-                            player.sendMessage(logo + "Faction: " + faction.getName() + " - Members: " + faction.getMembers().size()));
+                            player.sendMessage("§fFaction: §b" + faction.getName() + "§f - Members: §b" + faction.getMembers().size()));
                 }
                 break;
 
@@ -456,7 +473,7 @@ public class FactionCommand implements CommandExecutor {
         infoMeta.setLore(infoLore);
         infoItem.setItemMeta(infoMeta);
         ItemStack upgrade = new ItemStack(Material.WHITE_SHULKER_BOX);
-        setItemLore(upgrade, "§c§lFaction Upgrade", "", "");
+        setItemLore(upgrade, "§c§lFaction Upgrade", "§7Click here to open", "");
         menu.setItem(32, upgrade);
         menu.setItem(24, factionLevelItem);
         menu.setItem(30, infoItem);
@@ -482,12 +499,75 @@ public class FactionCommand implements CommandExecutor {
     public ItemStack setItemLore(ItemStack item, String name, String firstLine, String secondLine) {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name);
-        if (meta != null) {
-            meta.setLore(Arrays.asList(firstLine, secondLine));
-            item.setItemMeta(meta);
+        if (secondLine != null) {
+            if (meta != null) {
+                meta.setLore(Arrays.asList(firstLine, secondLine));
+                item.setItemMeta(meta);
+            }
+        }
+        else {
+            if (meta != null) {
+                meta.setLore(Arrays.asList(firstLine));
+                item.setItemMeta(meta);
+            }
+        }
+        return item;
+    }
+    private boolean isAdjacentChunk(Chunk chunk1, Chunk chunk2) {
+        int xDiff = Math.abs(chunk1.getX() - chunk2.getX());
+        int zDiff = Math.abs(chunk1.getZ() - chunk2.getZ());
+        return (xDiff == 1 && zDiff == 0) || (xDiff == 0 && zDiff == 1);
+    }
+    public static void openUpgradeInventory(Player player) {
+
+        Inventory factionLevelMenu = Bukkit.createInventory(null, 54, "§c§lFaction §f- §c§lUpgrade");
+
+        ItemStack blackStainedGlassPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
+        ItemMeta blackMeta = blackStainedGlassPane.getItemMeta();
+        blackMeta.setDisplayName(" ");
+        blackStainedGlassPane.setItemMeta(blackMeta);
+
+        ItemStack whiteStainedGlassPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 0);
+        ItemMeta whiteMeta = whiteStainedGlassPane.getItemMeta();
+        whiteMeta.setDisplayName(" ");
+        whiteStainedGlassPane.setItemMeta(whiteMeta);
+
+        for (int i = 0; i < 54; i++) {
+            if (isBorderSlot(i)) {
+                factionLevelMenu.setItem(i, blackStainedGlassPane);
+            } else {
+                factionLevelMenu.setItem(i, whiteStainedGlassPane);
+            }
         }
 
+        ItemStack factionChest = createCustomItem(Material.matchMaterial("ironchest:iron_chest"), "§f§lFaction Chest", "§cFaction Level §41 §cRequired");
+        ItemStack factionShop = createCustomItem(Material.GRAY_SHULKER_BOX, "§8§lShop Faction", "§cFaction Level §42 §cRequired");
+        ItemStack xpBoost = createCustomItem(Material.DRAGONS_BREATH, "§5§lXP Boost", "§cFaction Level §44 §cRequired");
+        ItemStack factionClaims = createCustomItem(Material.GRASS, "§2§lClaims", "§cFaction Level §43 §cRequired §7- §f4 Claims By Default.");
+        ItemStack notificationPaper = createCustomItem(Material.WHEAT, "§e§lFaction Farm", "§c Working On...");
+
+        factionLevelMenu.setItem(20, factionChest);
+        factionLevelMenu.setItem(22, factionShop);
+        factionLevelMenu.setItem(24, xpBoost);
+        factionLevelMenu.setItem(30, factionClaims);
+        factionLevelMenu.setItem(32, notificationPaper);
+
+        player.openInventory(factionLevelMenu);
+    }
+    private static ItemStack createCustomItem(Material material, String name, String loreLine) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(name);
+            List<String> lore = new ArrayList<>();
+            lore.add(loreLine);
+            meta.setLore(lore);
+            item.setItemMeta(meta);
+        }
         return item;
+    }
+    private static boolean isBorderSlot(int slot) {
+        return (slot < 9 || slot > 44 || slot % 9 == 0 || slot % 9 == 8);
     }
 }
 
