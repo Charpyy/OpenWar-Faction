@@ -37,7 +37,6 @@ public final class Main extends JavaPlugin {
         System.out.println("########################");
         System.out.println(" ");
         System.out.println(" OpenWar - Faction loading...");
-
         this.factionManager = new FactionManager();
         getServer().getPluginManager().registerEvents(new PlayerMove(this), this);
         getServer().getPluginManager().registerEvents(new ClaimChunk(factionManager), this);
@@ -46,7 +45,6 @@ public final class Main extends JavaPlugin {
         factionManager.loadFactionsFromCSV(CSV_FILE_PATH);
         this.getCommand("f").setExecutor(new FactionCommand(factionManager, getWaitingPlayers(), this, economy));
         factionManager.loadClaimsFromCSV(claimsFilePath);
-
         System.out.println(" ");
         System.out.println(" OpenWar - Faction loaded !");
         System.out.println(" ");

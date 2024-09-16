@@ -259,39 +259,46 @@ public class FactionCommand implements CommandExecutor {
 
             case "invite":
                 if (args.length < 2) {
-                    player.sendMessage(logo + "\u00A77Please provide the name of the player to invite.");
+                    player.sendMessage(logo + "§7Please provide the name of the player to invite.");
                     return true;
                 }
                 if (!factionManager.isFactionLeader(playerUUID)) {
-                    player.sendMessage(logo + "\u00A7cOnly the leader can invite players.");
+                    player.sendMessage(logo + "§cOnly the leader can invite players.");
                     return true;
                 }
                 Player target = Bukkit.getPlayer(args[1]);
                 if (target == null) {
-                    player.sendMessage(logo + "\u00A77That player is not online.");
+                    player.sendMessage(logo + "§7That player is not online.");
                     return true;
                 }
                 faction = factionManager.getFactionByPlayer(playerUUID);
-                factionManager.invitePlayerToFaction(target.getUniqueId(), factionManager.getFactionByPlayer(playerUUID));
-                player.sendMessage(logo + "\u00A77Player \u00A7f" + target.getName() + " \u00A77invited to the faction.");
-                target.sendMessage(logo+ "§7The faction §f"+faction.getName()+" §7has invited you, §f/f join");
+                if (faction == null) {
+                    player.sendMessage(logo + "§cCould not find your faction.");
+                    return true;
+                }
+                UUID factionUUID = faction.getFactionUUID();
+                factionManager.invitePlayerToFaction(target.getUniqueId(), factionUUID);
+                player.sendMessage(logo + "§7Player §f" + target.getName() + " §7invited to the faction.");
+                target.sendMessage(logo + "§7The faction §f" + faction.getName() + " §7has invited you, §f/f join");
                 break;
+
+
             case "join":
                 if (factionManager.isFactionMember(playerUUID)) {
                     player.sendMessage(logo + "§cYou are already in a faction.");
                     return true;
                 }
-                String invitedFaction = factionManager.getInvitedFaction(playerUUID);
-                if (invitedFaction == null) {
-                    player.sendMessage(logo + "§cYou are not invited in any faction.");
+                UUID invitedFactionUUID = factionManager.getInvitedFaction(playerUUID);
+                if (invitedFactionUUID == null) {
+                    player.sendMessage(logo + "§cYou are not invited to any faction.");
                     return true;
                 }
-                faction = factionManager.getFactionByName(invitedFaction);
+                faction = factionManager.getFactionByUUID(invitedFactionUUID);
                 if (faction == null) {
-                        player.sendMessage(logo + "§cThis faction doesnt exist. §7Debug: "+invitedFaction);
+                    player.sendMessage(logo + "§cThis faction doesn't exist. §7Debug: " + invitedFactionUUID);
                     return true;
                 }
-                factionManager.addMemberToFaction(playerUUID, faction);
+                factionManager.addMemberToFaction(playerUUID, invitedFactionUUID);
                 player.sendMessage(logo + "§7You joined: §c" + faction.getName());
 
                 for (UUID memberUUID : faction.getMembers().keySet()) {
@@ -317,6 +324,11 @@ public class FactionCommand implements CommandExecutor {
                     return true;
                 }
                 Player promoteTarget = Bukkit.getPlayer(args[1]);
+                Faction factionTarget = factionManager.getFactionByPlayer(promoteTarget.getUniqueId());
+                if (factionTarget != faction) {
+                    player.sendMessage(logo + "§cThat player is not on your faction.");
+                    return true;
+                }
                 if (promoteTarget == null) {
                     player.sendMessage(logo + "§cThat player is not online.");
                     return true;
@@ -361,6 +373,12 @@ public class FactionCommand implements CommandExecutor {
                     faction.removeMember(playerUUID);
                     factionManager.removePlayerFromFaction(playerUUID);
                     player.sendMessage(logo + "§fYou leaved the faction §b" + faction.getName() + ".");
+                    for (UUID memberUUID : faction.getMembers().keySet()) {
+                        Player member = Bukkit.getPlayer(memberUUID);
+                        if (member != null) {
+                            member.sendMessage(logo + "§c" + player.getName() + " §7left your faction.");
+                        }
+                    }
                     return true;
                 }
 

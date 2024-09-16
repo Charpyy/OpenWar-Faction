@@ -21,7 +21,7 @@ public class FactionManager {
     private Map<String, UUID> factionUUIDs;
     private Map<UUID, UUID> playerFactions;
     private Map<Chunk, Faction> claimedLand;
-    private Map<UUID, String> invitations;
+    private Map<UUID, UUID> invitations;
 
     public FactionManager() {
         this.factions = new HashMap<>();
@@ -47,9 +47,9 @@ public class FactionManager {
                 Location home = faction.getHomeLocation();
                 if (home != null) {
                     writer.append(home.getWorld().getName()).append(",")
-                            .append(Double.toString(home.getX())).append(",")
-                            .append(Double.toString(home.getY())).append(",")
-                            .append(Double.toString(home.getZ())).append(",");
+                            .append(String.valueOf(home.getX())).append(",")
+                            .append(String.valueOf(home.getY())).append(",")
+                            .append(String.valueOf(home.getZ())).append(",");
                 } else {
                     writer.append("null,null,null,null,");
                 }
@@ -61,6 +61,7 @@ public class FactionManager {
             e.printStackTrace();
         }
     }
+
 
     public void loadFactionsFromCSV(String filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -187,9 +188,6 @@ public class FactionManager {
         return new ArrayList<>(factions.values());
     }
 
-    public void invitePlayerToFaction(UUID playerUUID, Faction faction) {
-        invitations.put(playerUUID, faction.getName());
-    }
 
     public void promoteMember(UUID playerUUID, Faction faction) {
         faction.promoteMember(playerUUID);
@@ -201,10 +199,16 @@ public class FactionManager {
         }
     }
 
-    public String getInvitedFaction(UUID playerUUID) {
+    public String getFactionNameByUUID(UUID factionUUID) {
+        Faction faction = factions.get(factionUUID);
+        return faction != null ? faction.getName() : null;
+    }
+    public void invitePlayerToFaction(UUID playerUUID, UUID factionUUID) {
+        invitations.put(playerUUID, factionUUID);
+    }
+    public UUID getInvitedFaction(UUID playerUUID) {
         return invitations.get(playerUUID);
     }
-
     public void removePlayerFromFaction(UUID playerUUID) {
         UUID factionUUID = playerFactions.remove(playerUUID);
         if (factionUUID != null) {
@@ -215,12 +219,17 @@ public class FactionManager {
         }
     }
 
-    public void addMemberToFaction(UUID playerUUID, Faction faction) {
-        faction.addMember(playerUUID);
-        playerFactions.put(playerUUID, faction.getFactionUUID());
-        invitations.remove(playerUUID);
+    public void addMemberToFaction(UUID playerUUID, UUID factionUUID) {
+        Faction faction = factions.get(factionUUID);
+        if (faction != null) {
+            faction.addMember(playerUUID);
+            playerFactions.put(playerUUID, factionUUID);
+            invitations.remove(playerUUID);
+        }
     }
-
+    public Faction getFactionByUUID(UUID factionUUID) {
+        return factions.get(factionUUID);
+    }
     public boolean isLandClaimed(Chunk chunk) {
         return claimedLand.containsKey(chunk);
     }
