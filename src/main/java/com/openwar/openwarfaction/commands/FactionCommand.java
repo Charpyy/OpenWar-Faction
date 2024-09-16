@@ -303,7 +303,6 @@ public class FactionCommand implements CommandExecutor {
                 break;
 
             case "promote":
-                //TODO VERIFIER SI LE JOUEUR EST DANS LA FACTION OU NON
                 faction = factionManager.getFactionByPlayer(playerUUID);
                 if (args.length < 2) {
                     player.sendMessage(logo + "§cPlease provide the name of the player to promote.");
@@ -311,6 +310,7 @@ public class FactionCommand implements CommandExecutor {
                 }
                 if (faction == null) {
                     player.sendMessage(logo + "§cYou are not in any faction.");
+                    return true;
                 }
                 if (!factionManager.isFactionLeader(playerUUID)) {
                     player.sendMessage(logo + "§cOnly the leader can promote players.");

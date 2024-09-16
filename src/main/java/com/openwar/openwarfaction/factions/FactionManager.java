@@ -17,18 +17,18 @@ import java.util.UUID;
 import java.util.ArrayList;
 
 public class FactionManager {
-
     private Map<UUID, Faction> factions;
     private Map<String, UUID> factionUUIDs;
-    private Map<UUID, String> playerFactions;
+    private Map<UUID, UUID> playerFactions;
     private Map<Chunk, Faction> claimedLand;
-    private Map<UUID, String> invitations = new HashMap<>();
+    private Map<UUID, String> invitations;
 
     public FactionManager() {
-        this.factionUUIDs = new HashMap<>();
         this.factions = new HashMap<>();
+        this.factionUUIDs = new HashMap<>();
         this.playerFactions = new HashMap<>();
         this.claimedLand = new HashMap<>();
+        this.invitations = new HashMap<>();
     }
 
     public void saveFactionsToCSV(String filePath) {
@@ -62,13 +62,12 @@ public class FactionManager {
         }
     }
 
-
     public void loadFactionsFromCSV(String filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line = reader.readLine();
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                UUID factionUUID = UUID.fromString(data[0]); // Charger l'UUID de la faction
+                UUID factionUUID = UUID.fromString(data[0]);
                 String factionName = data[1];
                 UUID leaderUUID = UUID.fromString(data[2]);
                 Map<UUID, Rank> members = new HashMap<>();
@@ -94,7 +93,7 @@ public class FactionManager {
                 faction.setLevel(level);
                 faction.setExp(exp);
                 factions.put(factionUUID, faction);
-                playerFactions.put(leaderUUID, factionName);
+                playerFactions.put(faction.getLeaderUUID(), faction.getFactionUUID());
                 for (UUID memberUUID : members.keySet()) {
                     faction.addMember(memberUUID);
                 }
@@ -142,8 +141,9 @@ public class FactionManager {
         UUID factionId = faction.getFactionUUID();
         factions.put(factionId, faction);
         factionUUIDs.put(faction.getName(), factionId);
-        playerFactions.put(faction.getLeaderUUID(), faction.getName());
+        playerFactions.put(faction.getLeaderUUID(), factionId);
     }
+
     public void deleteFaction(Faction faction) {
         UUID factionId = faction.getFactionUUID();
         factions.remove(factionId);
@@ -153,8 +153,9 @@ public class FactionManager {
         }
         claimedLand.entrySet().removeIf(entry -> entry.getValue().equals(faction));
     }
+
     public boolean factionExists(String name) {
-        return factions.containsKey(name);
+        return factionUUIDs.containsKey(name);
     }
 
     public Faction getFactionByName(String name) {
@@ -166,12 +167,13 @@ public class FactionManager {
     }
 
     public Faction getFactionByPlayer(UUID playerUUID) {
-        String factionName = playerFactions.get(playerUUID);
-        if (factionName != null) {
-            return getFactionByName(factionName);
+        UUID factionUUID = playerFactions.get(playerUUID);
+        if (factionUUID != null) {
+            return factions.get(factionUUID);
         }
         return null;
     }
+
     public boolean isFactionMember(UUID playerUUID) {
         return playerFactions.containsKey(playerUUID);
     }
@@ -198,22 +200,31 @@ public class FactionManager {
             claimedLand.put(chunk, faction);
         }
     }
+
     public String getInvitedFaction(UUID playerUUID) {
         return invitations.get(playerUUID);
     }
 
     public void removePlayerFromFaction(UUID playerUUID) {
-        playerFactions.remove(playerUUID);
+        UUID factionUUID = playerFactions.remove(playerUUID);
+        if (factionUUID != null) {
+            Faction faction = factions.get(factionUUID);
+            if (faction != null) {
+                faction.removeMember(playerUUID);
+            }
+        }
     }
 
     public void addMemberToFaction(UUID playerUUID, Faction faction) {
         faction.addMember(playerUUID);
-        playerFactions.put(playerUUID, faction.getName());
+        playerFactions.put(playerUUID, faction.getFactionUUID());
         invitations.remove(playerUUID);
     }
+
     public boolean isLandClaimed(Chunk chunk) {
         return claimedLand.containsKey(chunk);
     }
+
     public Faction getFactionByChunk(Chunk chunk) {
         return claimedLand.get(chunk);
     }
@@ -221,6 +232,7 @@ public class FactionManager {
     public void unclaimLand(Chunk chunk) {
         claimedLand.remove(chunk);
     }
+
     public List<Chunk> getClaimedChunks(Faction faction) {
         List<Chunk> claimedChunks = new ArrayList<>();
         for (Map.Entry<Chunk, Faction> entry : claimedLand.entrySet()) {
@@ -228,7 +240,6 @@ public class FactionManager {
                 claimedChunks.add(entry.getKey());
             }
         }
-
         return claimedChunks;
     }
 }
