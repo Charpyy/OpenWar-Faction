@@ -89,20 +89,34 @@ public class FactionManager {
                 int level = Integer.parseInt(data[8]);
                 int exp = Integer.parseInt(data[9]);
 
-                Faction faction = new Faction(factionName, leaderUUID);
+                Faction faction = new Faction(factionName, leaderUUID, factionUUID);
                 faction.setHomeLocation(homeLocation);
                 faction.setLevel(level);
                 faction.setExp(exp);
                 factions.put(factionUUID, faction);
-                playerFactions.put(faction.getLeaderUUID(), faction.getFactionUUID());
+
+                playerFactions.put(faction.getLeaderUUID(), factionUUID);
                 for (UUID memberUUID : members.keySet()) {
-                    faction.addMember(memberUUID);
+                    playerFactions.put(memberUUID, factionUUID);
                 }
+
+                System.out.println("Faction loaded: " + factionUUID);
+                System.out.println("  Name: " + factionName);
+                System.out.println("  Leader: " + leaderUUID);
+                System.out.println("  Members: " + members.keySet());
+                if (homeLocation != null) {
+                    System.out.println("  Home Location: " + homeLocation.getWorld().getName() + " (" + homeLocation.getX() + ", " + homeLocation.getY() + ", " + homeLocation.getZ() + ")");
+                } else {
+                    System.out.println("  Home Location: none");
+                }
+                System.out.println("  Level: " + level);
+                System.out.println("  Experience: " + exp);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
     public void saveClaimsToCSV(String filePath) {
         try (FileWriter writer = new FileWriter(filePath)) {

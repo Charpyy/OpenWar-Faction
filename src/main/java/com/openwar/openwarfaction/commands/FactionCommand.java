@@ -3,6 +3,7 @@ package com.openwar.openwarfaction.commands;
 import com.openwar.openwarfaction.Main;
 import com.openwar.openwarfaction.factions.Faction;
 import com.openwar.openwarfaction.factions.FactionManager;
+import com.openwar.openwarfaction.factions.Rank;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.milkbowl.vault.economy.Economy;
@@ -94,7 +95,8 @@ public class FactionCommand implements CommandExecutor {
 
                 try {
                     economy.withdrawPlayer(player, cost);
-                    Faction newFaction = new Faction(factionName, playerUUID);
+                    UUID factionUUID = UUID.randomUUID();
+                    Faction newFaction = new Faction(factionName, playerUUID, factionUUID);
                     factionManager.addFaction(newFaction);
                     Bukkit.broadcastMessage(logo + "\u00A7c" + player.getName() + " \u00A77created the faction \u00A7b" + factionName);
                     player.sendMessage("\u00A78» \u00A77You have been charged \u00A76" + cost + "\u00A77.");
@@ -262,13 +264,27 @@ public class FactionCommand implements CommandExecutor {
                     player.sendMessage(logo + "§7Please provide the name of the player to invite.");
                     return true;
                 }
-                if (!factionManager.isFactionLeader(playerUUID)) {
-                    player.sendMessage(logo + "§cOnly the leader can invite players.");
+                faction = factionManager.getFactionByPlayer(player.getUniqueId());
+                if (faction == null) {
+                    player.sendMessage(logo + "§cYou are not in any faction.");
                     return true;
                 }
                 Player target = Bukkit.getPlayer(args[1]);
+                Faction factionTarget1 = factionManager.getFactionByPlayer(target.getUniqueId());
                 if (target == null) {
                     player.sendMessage(logo + "§7That player is not online.");
+                    return true;
+                }
+                if (player == target) {
+                    player.sendMessage(logo+"§cYou can't invite yourself lmao");
+                    return true;
+                }
+                if (factionTarget1 == faction) {
+                    player.sendMessage(logo + "§cThis player is already on your faction");
+                    return true;
+                }
+                if (!factionManager.isFactionLeader(playerUUID)) {
+                    player.sendMessage(logo + "§cOnly the leader can invite players.");
                     return true;
                 }
                 faction = factionManager.getFactionByPlayer(playerUUID);
@@ -385,17 +401,22 @@ public class FactionCommand implements CommandExecutor {
                 break;
             case "menu":
                 if (!factionManager.isFactionMember(playerUUID)) {
-                    player.sendMessage(logo + "You are not in a faction.");
+                    player.sendMessage(logo + "§cYou are not in a faction.");
                     return true;
                 }
                 openFactionMenu(player);
                 break;
             case "f":
                 if (!factionManager.isFactionMember(playerUUID)) {
-                    player.sendMessage(logo + "You are not in a faction.");
+                    player.sendMessage(logo + "§cYou are not in a faction.");
                     return true;
                 }
                 playerFaction = factionManager.getFactionByPlayer(playerUUID);
+
+                if (playerFaction == null) {
+                    player.sendMessage("§cfaction null §7Ask admin about it, this is not good.");
+                    return true;
+                }
                 player.sendMessage(logo+ "\u00A7fFaction Info:");
                 player.sendMessage("\u00A78- \u00A77Faction Name: \u00A7f" + playerFaction.getName());
                 player.sendMessage("\u00A78- \u00A77Members: \u00A7f" + playerFaction.getMembers().size());
@@ -409,6 +430,56 @@ public class FactionCommand implements CommandExecutor {
                     player.sendMessage("\u00A78- \u00A77Home: \u00A7fNot Set.");
                 }
                 break;
+//            case "allfactions":
+//                if (factionManager.getAllFactions().isEmpty()) {
+//                    player.sendMessage(logo + "No factions available.");
+//                    return true;
+//                }
+//                player.sendMessage(logo + "\u00A7fAll Factions Info:");
+//                for (Faction factionn : factionManager.getAllFactions()) {
+//                    UUID factionUUIDD = factionn.getFactionUUID();
+//                    player.sendMessage("\u00A78- \u00A77Faction UUID: \u00A7f" + factionUUIDD.toString());
+//
+//                    String factionNamee = factionn.getName();
+//                    if (factionNamee != null) {
+//                        player.sendMessage("\u00A78- \u00A77Faction Name: \u00A7f" + factionNamee);
+//                    } else {
+//                        player.sendMessage("\u00A78- \u00A77Faction Name: \u00A7cNot Set.");
+//                    }
+//
+//                    UUID leaderUUID = factionn.getLeaderUUID();
+//                    if (leaderUUID != null) {
+//                        player.sendMessage("\u00A78- \u00A77Faction Leader: \u00A7f" + leaderUUID.toString());
+//                    } else {
+//                        player.sendMessage("\u00A78- \u00A77Faction Leader: \u00A7cNot Set.");
+//                    }
+//
+//                    Map<UUID, Rank> members = factionn.getMembers();
+//                    if (members != null) {
+//                        player.sendMessage("\u00A78- \u00A77Members Count: \u00A7f" + members.size());
+//                        for (UUID memberUUID : members.keySet()) {
+//                            player.sendMessage("\u00A78- \u00A77Member UUID: \u00A7f" + memberUUID.toString());
+//                        }
+//                    } else {
+//                        player.sendMessage("\u00A78- \u00A77Members: \u00A7cNot Set.");
+//                    }
+//
+//                    Location homeLocation = factionn.getHomeLocation();
+//                    if (homeLocation != null) {
+//                        player.sendMessage("\u00A78- \u00A77Home Location: \u00A78X: \u00A77" + (int) homeLocation.getX() + " \u00A78Y: \u00A77" + (int) homeLocation.getY() + " \u00A78Z: \u00A77" + (int) homeLocation.getZ());
+//                    } else {
+//                        player.sendMessage("\u00A78- \u00A77Home Location: \u00A7cNot Set.");
+//                    }
+//
+//                    int level = factionn.getLevel();
+//                    player.sendMessage("\u00A78- \u00A77Faction Level: \u00A7f" + level);
+//
+//                    int exp = factionn.getExp();
+//                    player.sendMessage("\u00A78- \u00A77Faction Exp: \u00A7f" + exp);
+//
+//                    player.sendMessage("");
+//                }
+//                break;
             default:
                 player.sendMessage(logo + "Unknown command. Usage: /f help");
                 break;

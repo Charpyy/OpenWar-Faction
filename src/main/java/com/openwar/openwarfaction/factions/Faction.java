@@ -23,8 +23,8 @@ public class Faction {
             164971, 185865, 208009, 231401
     };
 
-    public Faction(String name, UUID leaderUUID) {
-        this.factionUUID = UUID.randomUUID();
+    public Faction(String name, UUID leaderUUID, UUID factionUUID) {
+        this.factionUUID = factionUUID;
         this.name = name;
         this.level = 0;
         this.exp = 0;
