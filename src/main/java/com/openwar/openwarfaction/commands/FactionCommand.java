@@ -2,6 +2,7 @@ package com.openwar.openwarfaction.commands;
 
 import com.openwar.openwarfaction.Main;
 import com.openwar.openwarfaction.factions.Faction;
+import com.openwar.openwarfaction.factions.FactionGUI;
 import com.openwar.openwarfaction.factions.FactionManager;
 import com.openwar.openwarfaction.factions.Rank;
 import net.md_5.bungee.api.ChatMessageType;
@@ -404,7 +405,8 @@ public class FactionCommand implements CommandExecutor {
                     player.sendMessage(logo + "§cYou are not in a faction.");
                     return true;
                 }
-                openFactionMenu(player);
+                FactionGUI factionGUI = new FactionGUI(factionManager);
+                factionGUI.openFactionMenu(player);
                 break;
             case "f":
                 if (!factionManager.isFactionMember(playerUUID)) {
@@ -486,7 +488,11 @@ public class FactionCommand implements CommandExecutor {
         }
         return true;
     }
-
+    private boolean isAdjacentChunk(Chunk chunk1, Chunk chunk2) {
+        int xDiff = Math.abs(chunk1.getX() - chunk2.getX());
+        int zDiff = Math.abs(chunk1.getZ() - chunk2.getZ());
+        return (xDiff == 1 && zDiff == 0) || (xDiff == 0 && zDiff == 1);
+    }
     public String getProgressBar(int current, int max) {
         StringBuilder progressBar = new StringBuilder("§7[§f");
         int progressLength = Math.min(current, max);
@@ -498,165 +504,6 @@ public class FactionCommand implements CommandExecutor {
         }
         progressBar.append("§7]");
         return progressBar.toString();
-    }
-    public void openFactionMenu(Player player) {
-        UUID playerUUID = player.getUniqueId();
-        Faction faction = factionManager.getFactionByPlayer(playerUUID);
-
-        if (faction == null) {
-            player.sendMessage(logo + "§cYou are not on a faction.");
-            return;
-        }
-        Inventory menu = Bukkit.createInventory(null, 54, "§b§lFaction Menu§f - §3"+ faction.getName());
-        ItemStack GlassPane = new ItemStack(Material.STAINED_GLASS_PANE);
-        ItemMeta meta = GlassPane.getItemMeta();
-        ItemStack lightGrayGlassPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
-        ItemMeta metaa = lightGrayGlassPane.getItemMeta();
-        if (metaa != null) {
-            metaa.setDisplayName(" ");
-            GlassPane.setItemMeta(metaa);
-        }
-        for (int i = 0; i < 54; i++) {
-            menu.setItem(i, GlassPane);
-        }
-            {
-        }
-        if (meta != null) {
-            meta.setDisplayName(" ");
-            lightGrayGlassPane.setItemMeta(meta);
-        }
-        for (int i = 0; i < 54; i++) {
-            if (i < 9 || i >= 45) {
-                menu.setItem(i, lightGrayGlassPane);
-            }
-            if (i % 9 == 0 || i % 9 == 8) {
-                menu.setItem(i, lightGrayGlassPane);
-            }
-        }
-        ItemStack factionLevelItem = new ItemStack(Material.EXP_BOTTLE);
-        ItemMeta levelMeta = factionLevelItem.getItemMeta();
-        levelMeta.setDisplayName("§6§lFaction Level");
-        List<String> levelLore = new ArrayList<>();
-        int factionLevel = faction.getLevel();
-        int factionExp = faction.getExp();
-        int expRequired = faction.getExperienceNeededForNextLevel();
-        levelLore.add("§eLevel: §6" + factionLevel);
-        levelLore.add("§eExperience: §6" + factionExp + "§e / §6" + expRequired);
-        double percentage = (double) factionExp / expRequired * 100;
-        int progress = (int) ((percentage / 100) * 27);
-        levelLore.add("§eProgression: " + getProgressBar(progress, 27) + " §6" + String.format("%.2f", percentage) + "%");
-        levelMeta.setLore(levelLore);
-        factionLevelItem.setItemMeta(levelMeta);
-        ItemStack infoItem = new ItemStack(Material.BOOK);
-        ItemMeta infoMeta = infoItem.getItemMeta();
-        infoMeta.setDisplayName("§8§lInformations");
-        List<String> infoLore = new ArrayList<>();
-        infoLore.add("§7Name: §f" + faction.getName());
-        infoLore.add("§7Members: §f" + faction.getMembers().size());
-        if (faction.getHomeLocation() != null) {
-            infoLore.add("§7Home Location: \u00A78X: \u00A77" + (int) faction.getHomeLocation().getX() + " \u00A78Y: \u00A77" + (int) faction.getHomeLocation().getY() + " \u00A78Z: \u00A77" + (int) faction.getHomeLocation().getZ());
-        }
-        else {
-            infoLore.add("§7Home Location: \u00A7fNot Set.");
-        }
-        infoMeta.setLore(infoLore);
-        infoItem.setItemMeta(infoMeta);
-        ItemStack upgrade = new ItemStack(Material.WHITE_SHULKER_BOX);
-        setItemLore(upgrade, "§c§lFaction Upgrade", "§7Click here to open", "");
-        menu.setItem(32, upgrade);
-        menu.setItem(24, factionLevelItem);
-        menu.setItem(30, infoItem);
-        String leader = Bukkit.getOfflinePlayer(faction.getLeaderUUID()).getName();
-        ItemStack head = getLeaderHead(leader);
-        menu.setItem(20, head);
-        player.openInventory(menu);
-    }
-    public ItemStack getLeaderHead(String leaderName) {
-        ItemStack leaderHead = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-        SkullMeta meta = (SkullMeta) leaderHead.getItemMeta();
-
-        if (meta != null) {
-            OfflinePlayer leader = Bukkit.getOfflinePlayer(leaderName);
-            meta.setOwningPlayer(leader);
-            meta.setDisplayName("§4§lFaction Leader");
-            meta.setLore(Arrays.asList("§c"+leaderName));
-            leaderHead.setItemMeta(meta);
-        }
-
-        return leaderHead;
-    }
-    public ItemStack setItemLore(ItemStack item, String name, String firstLine, String secondLine) {
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(name);
-        if (secondLine != null) {
-            if (meta != null) {
-                meta.setLore(Arrays.asList(firstLine, secondLine));
-                item.setItemMeta(meta);
-            }
-        }
-        else {
-            if (meta != null) {
-                meta.setLore(Arrays.asList(firstLine));
-                item.setItemMeta(meta);
-            }
-        }
-        return item;
-    }
-    private boolean isAdjacentChunk(Chunk chunk1, Chunk chunk2) {
-        int xDiff = Math.abs(chunk1.getX() - chunk2.getX());
-        int zDiff = Math.abs(chunk1.getZ() - chunk2.getZ());
-        return (xDiff == 1 && zDiff == 0) || (xDiff == 0 && zDiff == 1);
-    }
-    public static void openUpgradeInventory(Player player) {
-
-        Inventory factionLevelMenu = Bukkit.createInventory(null, 54, "§c§lFaction §f- §c§lUpgrade");
-
-        ItemStack blackStainedGlassPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
-        ItemMeta blackMeta = blackStainedGlassPane.getItemMeta();
-        blackMeta.setDisplayName(" ");
-        blackStainedGlassPane.setItemMeta(blackMeta);
-
-        ItemStack whiteStainedGlassPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 0);
-        ItemMeta whiteMeta = whiteStainedGlassPane.getItemMeta();
-        whiteMeta.setDisplayName(" ");
-        whiteStainedGlassPane.setItemMeta(whiteMeta);
-
-        for (int i = 0; i < 54; i++) {
-            if (isBorderSlot(i)) {
-                factionLevelMenu.setItem(i, blackStainedGlassPane);
-            } else {
-                factionLevelMenu.setItem(i, whiteStainedGlassPane);
-            }
-        }
-
-        ItemStack factionChest = createCustomItem(Material.matchMaterial("ironchest:iron_chest"), "§f§lFaction Chest", "§cFaction Level §41 §cRequired");
-        ItemStack factionShop = createCustomItem(Material.GRAY_SHULKER_BOX, "§8§lShop Faction", "§cFaction Level §42 §cRequired");
-        ItemStack xpBoost = createCustomItem(Material.DRAGONS_BREATH, "§5§lXP Boost", "§cFaction Level §44 §cRequired");
-        ItemStack factionClaims = createCustomItem(Material.GRASS, "§2§lClaims", "§cFaction Level §43 §cRequired §7- §f4 Claims By Default.");
-        ItemStack notificationPaper = createCustomItem(Material.WHEAT, "§e§lFaction Farm", "§c Working On...");
-
-        factionLevelMenu.setItem(20, factionChest);
-        factionLevelMenu.setItem(22, factionShop);
-        factionLevelMenu.setItem(24, xpBoost);
-        factionLevelMenu.setItem(30, factionClaims);
-        factionLevelMenu.setItem(32, notificationPaper);
-
-        player.openInventory(factionLevelMenu);
-    }
-    private static ItemStack createCustomItem(Material material, String name, String loreLine) {
-        ItemStack item = new ItemStack(material);
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            meta.setDisplayName(name);
-            List<String> lore = new ArrayList<>();
-            lore.add(loreLine);
-            meta.setLore(lore);
-            item.setItemMeta(meta);
-        }
-        return item;
-    }
-    private static boolean isBorderSlot(int slot) {
-        return (slot < 9 || slot > 44 || slot % 9 == 0 || slot % 9 == 8);
     }
 }
 
