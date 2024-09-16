@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public class Faction {
 
+
+    private UUID factionUUID;
     private String name;
     private UUID leaderUUID;
     private Map<UUID, Rank> members;
@@ -22,6 +24,7 @@ public class Faction {
     };
 
     public Faction(String name, UUID leaderUUID) {
+        this.factionUUID = UUID.randomUUID();
         this.name = name;
         this.level = 0;
         this.exp = 0;
@@ -29,6 +32,10 @@ public class Faction {
         this.members = new HashMap<>();
         this.members.put(leaderUUID, Rank.LEADER);
     }
+    public UUID getFactionUUID() {
+        return factionUUID;
+    }
+
     public int getExperienceNeededForNextLevel() {
         if (level < levelRequirements.length) {
             return levelRequirements[level];

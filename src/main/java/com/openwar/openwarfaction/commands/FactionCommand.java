@@ -39,7 +39,7 @@ public class FactionCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(logo + "This command can only be used by players.");
+            sender.sendMessage(logo + "§cThis command can only be used by players.");
             return true;
         }
 
