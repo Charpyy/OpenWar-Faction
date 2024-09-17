@@ -284,6 +284,10 @@ public class FactionCommand implements CommandExecutor {
                     player.sendMessage(logo + "§cThis player is already on your faction");
                     return true;
                 }
+                if (factionTarget1 != null) {
+                    player.sendMessage(logo+"§cThis player is already on a faction");
+                    return true;
+                }
                 if (!factionManager.isFactionLeader(playerUUID)) {
                     player.sendMessage(logo + "§cOnly the leader can invite players.");
                     return true;
