@@ -22,24 +22,7 @@ public class FactionGUI {
         this.factionManager = factionManager;
     }
 
-    public void openFactionMenu(Player player) {
-        UUID playerUUID = player.getUniqueId();
-        Faction faction = factionManager.getFactionByPlayer(playerUUID);
-        Inventory menu = Bukkit.createInventory(null, 54, "§b§lFaction Menu§f - §3" + faction.getName());
-        setMenuBackground(menu);
 
-        ItemStack factionLevelItem = createFactionLevelItem(faction);
-        ItemStack infoItem = createFactionInfoItem(faction);
-        ItemStack upgradeItem = createUpgradeItem();
-        ItemStack leaderHead = getLeaderHead(Bukkit.getOfflinePlayer(faction.getLeaderUUID()).getName());
-
-        menu.setItem(24, factionLevelItem);
-        menu.setItem(30, infoItem);
-        menu.setItem(32, upgradeItem);
-        menu.setItem(20, leaderHead);
-
-        player.openInventory(menu);
-    }
 
     private void setMenuBackground(Inventory menu) {
         ItemStack glassPane = createColoredGlassPane(Material.STAINED_GLASS_PANE, (short) 15, " ");
@@ -136,50 +119,7 @@ public class FactionGUI {
         item.setItemMeta(meta);
     }
 
-    public void openUpgradeInventory(Player player) {
-        Inventory factionLevelMenu = Bukkit.createInventory(null, 54, "§c§lFaction §f- §c§lUpgrade");
-        ItemStack blackStainedGlassPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
-        ItemMeta blackMeta = blackStainedGlassPane.getItemMeta();
-        blackMeta.setDisplayName(" ");
-        blackStainedGlassPane.setItemMeta(blackMeta);
-        ItemStack whiteStainedGlassPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 0);
-        ItemMeta whiteMeta = whiteStainedGlassPane.getItemMeta();
-        whiteMeta.setDisplayName(" ");
-        whiteStainedGlassPane.setItemMeta(whiteMeta);
 
-        for (int i = 0; i < 54; i++) {
-            if (isBorderSlot(i)) {
-                factionLevelMenu.setItem(i, blackStainedGlassPane);
-            } else {
-                factionLevelMenu.setItem(i, whiteStainedGlassPane);
-            }
-        }
-
-        Faction faction = factionManager.getFactionByPlayer(player.getUniqueId());
-        int factionLevel = faction.getLevel();
-
-        //TODO refaire ce putain de gui de merde.
-       //ItemStack factionChest = createCustomItem(Material.CHEST, "§f§lFaction Chest", getLoreForItem(factionLevel, "Faction Chest", 1));
-       //ItemStack factionShop = createCustomItem(Material.GRAY_SHULKER_BOX, "§8§lShop Faction", getLoreForItem(factionLevel, "Shop Faction", 2));
-       //ItemStack xpBoost = createCustomItem(Material.DRAGONS_BREATH, "§5§lXP Boost", getLoreForItem(factionLevel, "XP Boost", 3));
-       //ItemStack factionClaims = createCustomItem(Material.GRASS, "§2§lClaims", getLoreForItem(factionLevel, "Claims", 4));
-       //ItemStack notificationPaper = createCustomItem(Material.WHEAT, "§e§lFaction Farm", getLoreForItem(factionLevel, "Faction Farm", 5));
-
-        //factionLevelMenu.setItem(20, factionChest);
-        //factionLevelMenu.setItem(22, factionShop);
-        //factionLevelMenu.setItem(24, xpBoost);
-        //factionLevelMenu.setItem(30, factionClaims);
-        //factionLevelMenu.setItem(32, notificationPaper);
-
-        player.openInventory(factionLevelMenu);
-    }
-
-    private String getLoreForItem(int factionLevel, String itemName, int requiredLevel) {
-        if (factionLevel < requiredLevel) {
-            return "§cNiveau de faction insuffisant ! Nécessite le niveau §e" + requiredLevel;
-        }
-        return "§aAvaible !";
-    }
 
     private static boolean isBorderSlot(int slot) {
         return slot < 9 || slot >= 45 || slot % 9 == 0 || slot % 9 == 8;
@@ -204,5 +144,148 @@ public class FactionGUI {
             }
         }
         return bar.toString();
+    }
+    //========================================================= MAIN MENU =====================================
+    public void openFactionMenu(Player player) {
+        UUID playerUUID = player.getUniqueId();
+        Faction faction = factionManager.getFactionByPlayer(playerUUID);
+        Inventory menu = Bukkit.createInventory(null, 54, "§b§lFaction Menu§f - §3" + faction.getName());
+        setMenuBackground(menu);
+
+        ItemStack factionLevelItem = createFactionLevelItem(faction);
+        ItemStack infoItem = createFactionInfoItem(faction);
+        ItemStack upgradeItem = createUpgradeItem();
+        ItemStack leaderHead = getLeaderHead(Bukkit.getOfflinePlayer(faction.getLeaderUUID()).getName());
+
+        menu.setItem(24, factionLevelItem);
+        menu.setItem(30, infoItem);
+        menu.setItem(32, upgradeItem);
+        menu.setItem(20, leaderHead);
+
+        player.openInventory(menu);
+    }
+    //============================================================ UPGRADE MENU =========================
+    public void openUpgradeInventory(Player player) {
+        Inventory factionLevelMenu = Bukkit.createInventory(null, 54, "§c§lFaction §f- §c§lUpgrade");
+        ItemStack blackStainedGlassPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
+        ItemMeta blackMeta = blackStainedGlassPane.getItemMeta();
+        blackMeta.setDisplayName(" ");
+        blackStainedGlassPane.setItemMeta(blackMeta);
+        ItemStack whiteStainedGlassPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 0);
+        ItemMeta whiteMeta = whiteStainedGlassPane.getItemMeta();
+        whiteMeta.setDisplayName(" ");
+        whiteStainedGlassPane.setItemMeta(whiteMeta);
+
+        for (int i = 0; i < 54; i++) {
+            if (isBorderSlot(i)) {
+                factionLevelMenu.setItem(i, whiteStainedGlassPane);
+            } else {
+                factionLevelMenu.setItem(i, blackStainedGlassPane);
+            }
+        }
+
+        Faction faction = factionManager.getFactionByPlayer(player.getUniqueId());
+        int factionLevel = faction.getLevel();
+
+        //TODO refaire ce putain de gui de merde.
+        ItemStack factionChest = createCustomItem(Material.CHEST, "§f§lFaction Chest", getLoreForItem(factionLevel, "chest"));
+        ItemStack factionShop = createCustomItem(Material.GRAY_SHULKER_BOX, "§8§lShop Faction", getLoreForItem(factionLevel, "shop"));
+        ItemStack xpBoost = createCustomItem(Material.DRAGONS_BREATH, "§5§lXP Boost", getLoreForItem(factionLevel, "xp"));
+        ItemStack factionClaims = createCustomItem(Material.GRASS, "§2§lClaims", getLoreForItem(factionLevel, "claims"));
+        ItemStack farmpaper = createCustomItem(Material.WHEAT, "§e§lFaction Farm", getLoreForItem(factionLevel, "farm"));
+
+        factionLevelMenu.setItem(20, factionChest);
+        factionLevelMenu.setItem(22, factionShop);
+        factionLevelMenu.setItem(24, xpBoost);
+        factionLevelMenu.setItem(30, factionClaims);
+        factionLevelMenu.setItem(32, farmpaper);
+
+        player.openInventory(factionLevelMenu);
+    }
+    private String getLoreForItem(int factionLevel, String itemName) {
+        switch (itemName) {
+            case "factionChest":
+                if (factionLevel < 4) {
+                    return "§aUnlocked §3Next Upgrade level: §f4";
+                }
+                if (factionLevel < 8) {
+                    return "§aUnlocked §3Next Upgrade level: §f8";
+                }
+                if (factionLevel < 12) {
+                    return "§aUnlocked §3Next Upgrade level: §f12";
+                }
+                if (factionLevel < 16) {
+                    return "§aUnlocked §3Next Upgrade level: §f16";
+                }
+                if (factionLevel < 20) {
+                    return "§aUnlocked §3Next Upgrade level: §f20";
+                }
+                break;
+            case "shop":
+                if (factionLevel < 2) {
+                    return "§4Locked §cUnlock at level: §f2";
+                }
+                if (factionLevel < 6) {
+                    return "§aUnlocked §3Next Upgrade level: §f6";
+                }
+                if (factionLevel < 10) {
+                    return "§aUnlocked §3Next Upgrade level: §f10";
+                }
+                if (factionLevel < 14) {
+                    return "§aUnlocked §3Next Upgrade level: §f14";
+                }
+                if (factionLevel < 18) {
+                    return "§aUnlocked §3Next Upgrade level: §f18";
+                }
+                break;
+            case "xp":
+                if (factionLevel < 3) {
+                    return "§4Locked §cUnlock at level: §f3";
+                }
+                if (factionLevel < 6) {
+                    return "§aUnlocked §f+15% XP §3Next Upgrade level: §f6";
+                }
+                if (factionLevel < 10) {
+                    return "§aUnlocked §f+35% XP §3Next Upgrade level: §f10";
+                }
+                if (factionLevel < 14) {
+                    return "§aUnlocked §f+55% XP §3Next Upgrade level: §f14";
+                }
+                if (factionLevel < 18) {
+                    return "§aUnlocked §f+75% XP §3Next Upgrade level: §f18";
+                }
+                break;
+            case "claims":
+                if (factionLevel < 1) {
+                    return "§aUnlocked §f4 CHUNKS §3Next Upgrade level: §f3";
+                }
+                //TODO faire une boucle for pour revoir cette merde
+                if (factionLevel < 3) {
+                    return "§aUnlocked §f6 CHUNKS §3Next Upgrade level: §f3";
+                }
+                if (factionLevel < 6) {
+                    return "§aUnlocked §f8 CHUNKS §3Next Upgrade level: §f6";
+                }
+                if (factionLevel < 10) {
+                    return "§aUnlocked §f10 CHUNKS §3Next Upgrade level: §f8";
+                }
+                if (factionLevel < 12) {
+                    return "§aUnlocked §f12 CHUNKS §3Next Upgrade level: §f12";
+                }
+                if (factionLevel < 14) {
+                    return "§aUnlocked §f14 CHUNKS §3Next Upgrade level: §f14";
+                }
+                if (factionLevel < 16) {
+                    return "§aUnlocked §f16 CHUNKS §3Next Upgrade level: §f16";
+                }
+                if (factionLevel < 18) {
+                    return "§aUnlocked §f18 CHUNKS §3Next Upgrade level: §f20";
+                }
+                if (factionLevel == 20) {
+                    return "§4Max Level §c20 CHUNKS";
+                }
+                break;
+        }
+        return itemName;
     }
 }
