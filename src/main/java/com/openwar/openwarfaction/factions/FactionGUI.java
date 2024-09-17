@@ -25,12 +25,12 @@ public class FactionGUI {
 
 
     private void setMenuBackground(Inventory menu) {
-        ItemStack glassPane = createColoredGlassPane(Material.STAINED_GLASS_PANE, (short) 15, " ");
+        ItemStack glassPane = createColoredGlassPane(Material.STAINED_GLASS_PANE, (short) 0, " ");
         for (int i = 0; i < 54; i++) {
             menu.setItem(i, glassPane);
         }
 
-        ItemStack borderGlassPane = createColoredGlassPane(Material.STAINED_GLASS_PANE, (short) 0, " ");
+        ItemStack borderGlassPane = createColoredGlassPane(Material.STAINED_GLASS_PANE, (short) 15, " ");
         for (int i = 0; i < 54; i++) {
             if (isBorderSlot(i)) {
                 menu.setItem(i, borderGlassPane);
@@ -178,9 +178,9 @@ public class FactionGUI {
 
         for (int i = 0; i < 54; i++) {
             if (isBorderSlot(i)) {
-                factionLevelMenu.setItem(i, whiteStainedGlassPane);
-            } else {
                 factionLevelMenu.setItem(i, blackStainedGlassPane);
+            } else {
+                factionLevelMenu.setItem(i, whiteStainedGlassPane);
             }
         }
 
@@ -204,7 +204,7 @@ public class FactionGUI {
     }
     private String getLoreForItem(int factionLevel, String itemName) {
         switch (itemName) {
-            case "factionChest":
+            case "faction":
                 if (factionLevel < 4) {
                     return "§aUnlocked §fChest Lvl 1 §3Next Upgrade level: §f4";
                 }
