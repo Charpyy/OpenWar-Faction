@@ -206,36 +206,39 @@ public class FactionGUI {
         switch (itemName) {
             case "factionChest":
                 if (factionLevel < 4) {
-                    return "§aUnlocked §3Next Upgrade level: §f4";
+                    return "§aUnlocked §fChest Lvl 1 §3Next Upgrade level: §f4";
                 }
                 if (factionLevel < 8) {
-                    return "§aUnlocked §3Next Upgrade level: §f8";
+                    return "§aUnlocked §fChest Lvl 2 §3Next Upgrade level: §f8";
                 }
                 if (factionLevel < 12) {
-                    return "§aUnlocked §3Next Upgrade level: §f12";
+                    return "§aUnlocked §fChest Lvl 3 §3Next Upgrade level: §f12";
                 }
                 if (factionLevel < 16) {
-                    return "§aUnlocked §3Next Upgrade level: §f16";
+                    return "§aUnlocked §fChest Lvl 4 §3Next Upgrade level: §f16";
                 }
                 if (factionLevel < 20) {
-                    return "§aUnlocked §3Next Upgrade level: §f20";
+                    return "§aUnlocked §fChest Lvl 5 §3Next Upgrade level: §f20";
                 }
                 break;
             case "shop":
-                if (factionLevel < 2) {
-                    return "§4Locked §cUnlock at level: §f2";
+                if (factionLevel < 3) {
+                    return "§4Locked §cUnlock at level: §f3";
                 }
                 if (factionLevel < 6) {
-                    return "§aUnlocked §3Next Upgrade level: §f6";
+                    return "§aUnlocked §fShop Lvl 1 §3Next Upgrade level: §f6";
+                }
+                if (factionLevel < 8) {
+                    return "§aUnlocked §fShop Lvl 2 §3Next Upgrade level: §f8";
                 }
                 if (factionLevel < 10) {
-                    return "§aUnlocked §3Next Upgrade level: §f10";
+                    return "§aUnlocked §fShop Lvl 3 §3Next Upgrade level: §f10";
                 }
-                if (factionLevel < 14) {
-                    return "§aUnlocked §3Next Upgrade level: §f14";
+                if (factionLevel < 12) {
+                    return "§aUnlocked §fShop Lvl 4 §3Next Upgrade level: §f12";
                 }
-                if (factionLevel < 18) {
-                    return "§aUnlocked §3Next Upgrade level: §f18";
+                if (factionLevel > 12) {
+                    return "§4Max Level §cFaction Shop Lvl 5";
                 }
                 break;
             case "xp":
@@ -254,37 +257,28 @@ public class FactionGUI {
                 if (factionLevel < 18) {
                     return "§aUnlocked §f+75% XP §3Next Upgrade level: §f18";
                 }
+                if (factionLevel < 19) {
+                    return "§aUnlocked §f+90% XP §3Next Upgrade level: §f19";
+                }
+                if (factionLevel == 20) {
+                    return "§4Max Level §c+100% XP";
+                }
                 break;
             case "claims":
-                if (factionLevel < 1) {
-                    return "§aUnlocked §f4 CHUNKS §3Next Upgrade level: §f3";
-                }
-                //TODO faire une boucle for pour revoir cette merde
-                if (factionLevel < 3) {
-                    return "§aUnlocked §f6 CHUNKS §3Next Upgrade level: §f3";
-                }
-                if (factionLevel < 6) {
-                    return "§aUnlocked §f8 CHUNKS §3Next Upgrade level: §f6";
-                }
-                if (factionLevel < 10) {
-                    return "§aUnlocked §f10 CHUNKS §3Next Upgrade level: §f8";
-                }
-                if (factionLevel < 12) {
-                    return "§aUnlocked §f12 CHUNKS §3Next Upgrade level: §f12";
-                }
-                if (factionLevel < 14) {
-                    return "§aUnlocked §f14 CHUNKS §3Next Upgrade level: §f14";
-                }
-                if (factionLevel < 16) {
-                    return "§aUnlocked §f16 CHUNKS §3Next Upgrade level: §f16";
-                }
-                if (factionLevel < 18) {
-                    return "§aUnlocked §f18 CHUNKS §3Next Upgrade level: §f20";
+                for (int i = 1; i <= 20; i += 2) {
+                    if (factionLevel < i) {
+                        return "§aUnlocked §f" + (i + 2) + " CHUNKS §3Next Upgrade level: §f" + i;
+                    }
                 }
                 if (factionLevel == 20) {
                     return "§4Max Level §c20 CHUNKS";
                 }
                 break;
+            case "farm":
+                if (factionLevel >= 10) {
+                    return "§4Locked §cUnlock at level: §f10";
+                }
+                return "§aUnlocked";
         }
         return itemName;
     }
