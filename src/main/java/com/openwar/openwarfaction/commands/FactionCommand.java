@@ -154,6 +154,19 @@ public class FactionCommand implements CommandExecutor {
                         return true;
                     }
                 }
+                int claims = claimedChunks.size();
+                int level = playerFaction.getLevel();
+                for (int i = 1; i <= 20; i += 2) {
+                    if (level < i && claims >= (i + 2)) {
+                        player.sendMessage( "§cYou can't claim more than §4" + (i + 2) + " §cchunks. §8(more faction level required)");
+                        return true;
+                    }
+                }
+
+                if (level == 20 && claims >= 20) {
+                    player.sendMessage("§cYou can't claim more than 20 chunks.");
+                    return true;
+                }
                 factionManager.claimLand(chunkToClaim, playerFaction);
                 player.sendMessage(logo + "\u00A77Land claimed for your faction!");
                 break;

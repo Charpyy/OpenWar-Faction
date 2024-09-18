@@ -49,6 +49,7 @@ public final class Main extends JavaPlugin {
         factionManager.loadFactionsFromCSV(CSV_FILE_PATH);
         this.getCommand("f").setExecutor(new FactionCommand(factionChat, factionManager, getWaitingPlayers(), this, economy));
         factionManager.loadClaimsFromCSV(claimsFilePath);
+        factionManager.loadFactionChests();
         System.out.println(" ");
         System.out.println(" OpenWar - Faction loaded !");
         System.out.println(" ");
@@ -60,6 +61,7 @@ public final class Main extends JavaPlugin {
     public void onDisable() {
         factionManager.saveFactionsToCSV(CSV_FILE_PATH);
         factionManager.saveClaimsToCSV(claimsFilePath);
+        factionManager.saveFactionChests();
         System.out.println("########################");
         System.out.println(" ");
         System.out.println(" OpenWar - Faction Saved !");
@@ -73,6 +75,7 @@ public final class Main extends JavaPlugin {
             public void run() {
                 factionManager.saveFactionsToCSV(CSV_FILE_PATH);
                 factionManager.saveClaimsToCSV(claimsFilePath);
+                factionManager.saveFactionChests();
             }
         }, 0L, 6000L);
     }

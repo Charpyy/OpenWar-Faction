@@ -1,5 +1,6 @@
 package com.openwar.openwarfaction.handler;
 import com.openwar.openwarfaction.Main;
+import com.openwar.openwarfaction.factions.Faction;
 import com.openwar.openwarfaction.factions.FactionGUI;
 import com.openwar.openwarfaction.factions.FactionManager;
 import org.bukkit.Bukkit;
@@ -9,6 +10,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
+
+import java.util.UUID;
 
 
 public class MenuHandler implements Listener {
@@ -39,6 +42,13 @@ public class MenuHandler implements Listener {
         if (view.getTitle().contains("§a§lUpgrade Menu")) {
             Player player = (Player) event.getWhoClicked();
             event.setCancelled(true);
+            int clickedSlot = event.getSlot();
+            if (clickedSlot == 20) {
+                UUID playerUUID = player.getUniqueId();
+                Faction faction = factionManager.getFactionByPlayer(playerUUID);
+                Inventory factionChest = factionManager.getFactionChest(faction);
+                player.openInventory(factionChest);
+            }
             Bukkit.getServer().getScheduler().runTaskLater(plugin, player::updateInventory, 1L);
         }
     }

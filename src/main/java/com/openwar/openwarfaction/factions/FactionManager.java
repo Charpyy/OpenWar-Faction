@@ -5,13 +5,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.ArrayList;
+import java.util.*;
 
 public class FactionManager {
     private Map<UUID, Faction> factions;
@@ -19,6 +19,7 @@ public class FactionManager {
     private Map<UUID, UUID> playerFactions;
     private Map<Chunk, Faction> claimedLand;
     private Map<UUID, UUID> invitations;
+    private final Map<UUID, Inventory> factionChests = new HashMap<>();
 
     public FactionManager() {
         this.factions = new HashMap<>();
@@ -165,6 +166,47 @@ public class FactionManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public Inventory getFactionChest(Faction faction) {
+        return factionChests.computeIfAbsent(faction.getFactionUUID(), key -> Bukkit.createInventory(null, 27, "Faction Chest"));
+    }
+
+    public void saveFactionChests() {
+        for (UUID factionUUID : factionChests.keySet()) {
+            Inventory chest = factionChests.get(factionUUID);
+            saveInventoryToConfig(factionUUID, chest);
+        }
+    }
+
+    public void loadFactionChests() {
+        for (Faction faction : getAllFactions()) {
+            Inventory chest = loadInventoryFromConfig(faction.getFactionUUID());
+            factionChests.put(faction.getFactionUUID(), chest);
+        }
+    }
+
+    public void saveInventoryToConfig(UUID factionUUID, Inventory inventory) {
+        File file = new File("plugins/OpenWar-Faction/faction_chests.yml");
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        List<ItemStack> items = Arrays.asList(inventory.getContents());
+        config.set("chests." + factionUUID.toString(), items);
+        try {
+            config.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public Inventory loadInventoryFromConfig(UUID factionUUID) {
+        File file = new File("plugins/OpenWar-Faction/faction_chests.yml");
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        Inventory inventory = Bukkit.createInventory(null, 27, "Faction Chest");
+        List<?> items = config.getList("chests." + factionUUID.toString());
+        if (items != null) {
+            for (int i = 0; i < items.size(); i++) {
+                inventory.setItem(i, (ItemStack) items.get(i));
+            }
+        }
+        return inventory;
     }
 
     public void addFaction(Faction faction) {
