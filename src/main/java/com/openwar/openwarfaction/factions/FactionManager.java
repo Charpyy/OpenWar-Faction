@@ -168,7 +168,8 @@ public class FactionManager {
         }
     }
     public Inventory getFactionChest(Faction faction) {
-        return factionChests.computeIfAbsent(faction.getFactionUUID(), key -> Bukkit.createInventory(null, 45, "§cFaction §f- §cChest"));
+        UUID factionUUID = faction.getFactionUUID();
+        return factionChests.computeIfAbsent(factionUUID, key -> Bukkit.createInventory(null, 45, "§cFaction §f- §cChest"));
     }
 
     public void saveFactionChests() {
@@ -199,7 +200,7 @@ public class FactionManager {
     public Inventory loadInventoryFromConfig(UUID factionUUID) {
         File file = new File("plugins/OpenWar-Faction/faction_chests.yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        Inventory inventory = Bukkit.createInventory(null, 27, "Faction Chest");
+        Inventory inventory = Bukkit.createInventory(null, 45, "§cFaction §f- §cChest");
         List<?> items = config.getList("chests." + factionUUID.toString());
         if (items != null) {
             for (int i = 0; i < items.size(); i++) {

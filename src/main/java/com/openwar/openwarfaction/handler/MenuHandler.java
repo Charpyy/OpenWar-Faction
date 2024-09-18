@@ -55,8 +55,6 @@ public class MenuHandler implements Listener {
                 UUID playerUUID = player.getUniqueId();
                 Faction faction = factionManager.getFactionByPlayer(playerUUID);
                 Inventory factionChest = factionManager.getFactionChest(faction);
-                int level = faction.getLevel();
-                factionChest = fillChestWithBarriers(factionChest, level);
                 player.openInventory(factionChest);
             }
 
@@ -74,10 +72,9 @@ public class MenuHandler implements Listener {
     }
 
     public static Inventory fillChestWithBarriers(Inventory inventory, int factionLevel) {
-        ItemStack barrierr = createBarrierBlock();
         for (int i = 0; i < inventory.getSize(); i++) {
             ItemStack currentItem = inventory.getItem(i);
-            if (currentItem != null && currentItem.isSimilar(barrierr)) {
+            if (currentItem != null && currentItem.getType() == Material.BARRIER) {
                 inventory.setItem(i, null);
             }
         }
@@ -111,8 +108,6 @@ public class MenuHandler implements Listener {
             if (slotsFilled < (totalSlots - emptySlots)) {
                 inventory.setItem(i, barrier);
                 slotsFilled++;
-            } else {
-                inventory.setItem(i, null);
             }
         }
 
