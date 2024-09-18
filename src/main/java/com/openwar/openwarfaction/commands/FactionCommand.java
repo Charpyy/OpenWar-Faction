@@ -5,6 +5,7 @@ import com.openwar.openwarfaction.factions.Faction;
 import com.openwar.openwarfaction.factions.FactionGUI;
 import com.openwar.openwarfaction.factions.FactionManager;
 import com.openwar.openwarfaction.factions.Rank;
+import com.openwar.openwarfaction.handler.FactionChat;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.milkbowl.vault.economy.Economy;
@@ -30,12 +31,15 @@ public class FactionCommand implements CommandExecutor {
     private String logo = "\u00A78» \u00A7bFaction \u00A78« \u00A77";
     private Main plugin;
     private Economy economy;
+    private Set<UUID> factionChatPlayers = new HashSet<>();
+    private final FactionChat factionChat;
 
-    public FactionCommand(FactionManager factionManager, HashMap<UUID, Boolean> waitingPlayers, Main plugin, Economy economy) {
+    public FactionCommand(FactionChat factionChat, FactionManager factionManager, HashMap<UUID, Boolean> waitingPlayers, Main plugin, Economy economy) {
         this.factionManager = factionManager;
         this.waitingPlayers = waitingPlayers;
         this.plugin = plugin;
         this.economy = economy;
+        this.factionChat = factionChat;
     }
 
     @Override
@@ -342,6 +346,7 @@ public class FactionCommand implements CommandExecutor {
                 }
                 if (!factionManager.isFactionLeader(playerUUID)) {
                     player.sendMessage(logo + "§cOnly the leader can promote players.");
+                    //TODO avec le /f perm pouvoir avoir la perm de promote ou demote suivant le rank
                     return true;
                 }
                 Player promoteTarget = Bukkit.getPlayer(args[1]);
@@ -364,6 +369,50 @@ public class FactionCommand implements CommandExecutor {
                 }
                 break;
 
+            case "demote":
+                faction = factionManager.getFactionByPlayer(playerUUID);
+                if (args.length < 2) {
+                    player.sendMessage(logo + "§cPlease provide the name of the player to promote.");
+                    return true;
+                }
+                if (faction == null) {
+                    player.sendMessage(logo + "§cYou are not in any faction.");
+                    return true;
+                }
+                if (!factionManager.isFactionLeader(playerUUID)) {
+                    player.sendMessage(logo + "§cOnly the leader can promote players.");
+                    //TODO avec le /f perm pouvoir avoir la perm de promote ou demote suivant le rank
+                    return true;
+                }
+                Player demoteTarget = Bukkit.getPlayer(args[1]);
+                Faction factionTargetdemote = factionManager.getFactionByPlayer(demoteTarget.getUniqueId());
+                if (factionTargetdemote != faction) {
+                    player.sendMessage(logo + "§cThat player is not on your faction.");
+                    return true;
+                }
+                if (demoteTarget == null) {
+                    player.sendMessage(logo + "§cThat player is not online.");
+                    return true;
+                }
+                factionManager.promoteMember(demoteTarget.getUniqueId(), factionManager.getFactionByPlayer(playerUUID));
+                player.sendMessage(logo + "Player " + demoteTarget.getName() + " demoted!");
+                for (UUID memberUUID : faction.getMembers().keySet()) {
+                    Player member = Bukkit.getPlayer(memberUUID);
+                    if (member != null) {
+                        member.sendMessage(logo + "§c" + demoteTarget.getName() + " §7as been demoted to "+ faction.getRank(demoteTarget.getUniqueId()));
+                    }
+                }
+                break;
+            case "chat":
+                Faction fac = factionManager.getFactionByPlayer(playerUUID);
+                if (fac != null) {
+                    factionChat.toggleFactionChat(player);
+                    return true;
+                }
+                else {
+                    player.sendMessage(logo + "§cYou are not in a faction.");
+                    return true;
+                }
             case "help":
                 player.sendMessage(logo +"§fHelp Page:");
                 player.sendMessage("\u00A78– \u00A77/f create|new <name> : §fCreate a new faction");
@@ -425,15 +474,21 @@ public class FactionCommand implements CommandExecutor {
                 }
                 player.sendMessage(logo+ "\u00A7fFaction Info:");
                 player.sendMessage("\u00A78- \u00A77Faction Name: \u00A7f" + playerFaction.getName());
-                player.sendMessage("\u00A78- \u00A77Members: \u00A7f" + playerFaction.getMembers().size());
+                player.sendMessage("\u00A78- \u00A77Members Online: \u00A7f" + playerFaction.getOnlineMembers().size() +"§7/§f"+ playerFaction.getMembers().size());
                 player.sendMessage("\u00A78- \u00A77Faction Level: \u00A7f" + playerFaction.getLevel());
                 player.sendMessage("\u00A78- \u00A77Faction Exp: \u00A7f" + playerFaction.getExp());
-                player.sendMessage("\u00A78- "+getProgressBar(playerFaction.getExp(), playerFaction.getExperienceNeededForNextLevel()));
                 if (playerFaction.getHomeLocation() != null) {
                     player.sendMessage("\u00A78- \u00A77Home Location: \u00A78X: \u00A77" + (int) playerFaction.getHomeLocation().getX() + " \u00A78Y: \u00A77" + (int) playerFaction.getHomeLocation().getY() + " \u00A78Z: \u00A77" + (int) playerFaction.getHomeLocation().getZ());
                 }
                 else {
                     player.sendMessage("\u00A78- \u00A77Home: \u00A7fNot Set.");
+                }
+                player.sendMessage("\u00A77- Progression: "+getProgressBar(playerFaction.getExp(), playerFaction.getExperienceNeededForNextLevel()));
+                player.sendMessage("\u00A77- Members list:");
+                for (Map.Entry<UUID, Rank> entry : playerFaction.getMembers().entrySet()) {
+                    UUID memberUUID = entry.getKey();
+                    Player member = Bukkit.getPlayer(memberUUID);
+                    player.sendMessage(" §7- §b"+member.getName());
                 }
                 break;
 //            case "allfactions":

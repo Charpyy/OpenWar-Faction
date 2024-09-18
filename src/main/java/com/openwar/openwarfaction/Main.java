@@ -3,6 +3,7 @@ package com.openwar.openwarfaction;
 import com.openwar.openwarfaction.commands.FactionCommand;
 import com.openwar.openwarfaction.factions.FactionManager;
 import com.openwar.openwarfaction.handler.ClaimChunk;
+import com.openwar.openwarfaction.handler.FactionChat;
 import com.openwar.openwarfaction.handler.MenuHandler;
 import com.openwar.openwarfaction.handler.PlayerMove;
 import net.milkbowl.vault.economy.Economy;
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 public final class Main extends JavaPlugin {
     private FactionManager factionManager;
+    private FactionChat factionChat;
     private HashMap<UUID, Boolean> waitingPlayers = new HashMap<>();
     private Economy economy = null;
     private static final String CSV_FILE_PATH = "plugins/OpenWar-Faction/factions.csv";
@@ -38,12 +40,14 @@ public final class Main extends JavaPlugin {
         System.out.println(" ");
         System.out.println(" OpenWar - Faction loading...");
         this.factionManager = new FactionManager();
+        this.factionChat = new FactionChat(factionManager);
         getServer().getPluginManager().registerEvents(new PlayerMove(this), this);
         getServer().getPluginManager().registerEvents(new ClaimChunk(factionManager), this);
+        getServer().getPluginManager().registerEvents(factionChat, this);
         getServer().getPluginManager().registerEvents(new MenuHandler(this, factionManager),this);
         setupEconomy();
         factionManager.loadFactionsFromCSV(CSV_FILE_PATH);
-        this.getCommand("f").setExecutor(new FactionCommand(factionManager, getWaitingPlayers(), this, economy));
+        this.getCommand("f").setExecutor(new FactionCommand(factionChat, factionManager, getWaitingPlayers(), this, economy));
         factionManager.loadClaimsFromCSV(claimsFilePath);
         System.out.println(" ");
         System.out.println(" OpenWar - Faction loaded !");

@@ -43,7 +43,11 @@ public class FactionManager {
                 for (UUID memberUUID : faction.getMembers().keySet()) {
                     members.append(memberUUID.toString()).append(";");
                 }
+                if (members.length() > 0) {
+                    members.setLength(members.length() - 1);
+                }
                 writer.append(members.toString()).append(",");
+
                 Location home = faction.getHomeLocation();
                 if (home != null) {
                     writer.append(home.getWorld().getName()).append(",")

@@ -1,9 +1,10 @@
 package com.openwar.openwarfaction.factions;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import org.bukkit.entity.Player;
+
+import java.util.*;
 
 public class Faction {
 
@@ -85,6 +86,16 @@ public class Faction {
         members.put(playerUUID, Rank.RECRUE);
     }
 
+    public List<Player> getOnlineMembers() {
+        List<Player> onlineMembers = new ArrayList<>();
+        for (UUID memberUUID : members.keySet()) {
+            Player player = Bukkit.getPlayer(memberUUID);
+            if (player != null && player.isOnline()) {
+                onlineMembers.add(player);
+            }
+        }
+        return onlineMembers;
+    }
     public void removeMember(UUID playerUUID) {
         members.remove(playerUUID);
     }
