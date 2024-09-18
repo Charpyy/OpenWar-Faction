@@ -4,7 +4,9 @@ import com.openwar.openwarfaction.Main;
 import com.openwar.openwarfaction.factions.Faction;
 import com.openwar.openwarfaction.factions.FactionManager;
 import com.openwar.openwarfaction.handler.FactionChat;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -52,6 +54,15 @@ public class AdminCommand implements CommandExecutor {
                     }
                 }
                 break;
+            case "delete":
+                if (args[1] != null) {
+                    String factionName = args[1];
+                    Faction faction = factionManager.getFactionByName(factionName);
+                    if (faction != null) {
+                        factionManager.deleteFaction(faction);
+                        Bukkit.broadcast(admin+"§cDecided to delete the faction "+faction.getName(), null);
+                    }
+                }
         }
         return true;
     }
