@@ -283,4 +283,9 @@ public class FactionManager {
         }
         return claimedChunks;
     }
+    public void setName(Faction faction, String newName){
+        factionUUIDs.remove(faction.getName());
+        faction.setName(newName);
+        factionUUIDs.put(newName, faction.getFactionUUID());
+    }
 }

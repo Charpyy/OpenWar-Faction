@@ -258,7 +258,7 @@ public class FactionCommand implements CommandExecutor {
 
                 faction = factionManager.getFactionByPlayer(playerUUID);
                 String oldName = faction.getName();
-                faction.setName(newName);
+                factionManager.setName(faction, newName);
                 Bukkit.broadcastMessage(logo + "\u00A77The faction \u00A7b" + oldName + " \u00A77has changed its name to \u00A7b" + newName + "\u00A77!");
                 break;
 
