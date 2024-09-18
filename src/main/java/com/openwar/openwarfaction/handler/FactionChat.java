@@ -53,7 +53,7 @@ public class FactionChat implements Listener {
                         break;
                 }
                 for (Player factionMember : faction.getOnlineMembers()) {
-                    factionMember.sendMessage("§8‖§3" + faction.getName() + "§8‖ " + rankPl + " §f• " + player.getName() + ": §b" + event.getMessage());
+                    factionMember.sendMessage("§8‖§3" + faction.getName() + "§8‖ " + rankPl + " §f• §7" + player.getName() + "§8→ §f" + event.getMessage());
                 }
                 event.setCancelled(true);
             } else {

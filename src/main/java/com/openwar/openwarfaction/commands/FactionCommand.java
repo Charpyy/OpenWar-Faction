@@ -486,8 +486,8 @@ public class FactionCommand implements CommandExecutor {
                 else {
                     player.sendMessage("\u00A78- \u00A77Home: \u00A7fNot Set.");
                 }
-                player.sendMessage("\u00A78- Progression: "+getProgressBar(playerFaction.getExp(), playerFaction.getExperienceNeededForNextLevel()));
-                player.sendMessage("\u00A78- Members list:");
+                player.sendMessage("\u00A78- §7Progression: "+getProgressBar(playerFaction.getExp(), playerFaction.getExperienceNeededForNextLevel()));
+                player.sendMessage("\u00A78- §7Members list:");
                 for (Map.Entry<UUID, Rank> entry : playerFaction.getMembers().entrySet()) {
                     UUID memberUUID = entry.getKey();
                     Player member = Bukkit.getPlayer(memberUUID);
