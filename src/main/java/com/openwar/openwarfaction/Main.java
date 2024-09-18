@@ -60,6 +60,11 @@ public final class Main extends JavaPlugin {
     public void onDisable() {
         factionManager.saveFactionsToCSV(CSV_FILE_PATH);
         factionManager.saveClaimsToCSV(claimsFilePath);
+        System.out.println("########################");
+        System.out.println(" ");
+        System.out.println(" OpenWar - Faction Saved !");
+        System.out.println(" ");
+        System.out.println("########################");
     }
 
     public void startAutoSaveTask() {

@@ -40,20 +40,20 @@ public class FactionChat implements Listener {
                 Rank rank = faction.getRank(playerUUID);
                 switch(rank.toString()) {
                     case "LEADER":
-                        rankPl = "§cLEADER";
+                        rankPl = "§c§lLEADER";
                         break;
                     case "OFFICER":
-                        rankPl = "§6OFFICER";
+                        rankPl = "§6§lOFFICER";
                         break;
                     case "MEMBER":
-                        rankPl = "§eMEMBER";
+                        rankPl = "§e§lMEMBER";
                         break;
                     case "RECRUE":
-                        rankPl = "§7RECRUE";
+                        rankPl = "§7§lRECRUE";
                         break;
                 }
                 for (Player factionMember : faction.getOnlineMembers()) {
-                    factionMember.sendMessage("§8‖§2" + faction.getName() + "§8‖ " + rankPl + " §f• " + player.getName() + ": §b" + event.getMessage());
+                    factionMember.sendMessage("§8‖§3" + faction.getName() + "§8‖ " + rankPl + " §f• " + player.getName() + ": §b" + event.getMessage());
                 }
                 event.setCancelled(true);
             } else {

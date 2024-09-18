@@ -6,10 +6,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,18 +36,16 @@ public class FactionManager {
                 writer.append(factionUUID.toString()).append(",")
                         .append(faction.getName()).append(",")
                         .append(faction.getLeaderUUID().toString()).append(",");
+
                 StringBuilder members = new StringBuilder();
-                for (UUID memberUUID : faction.getMembers().keySet()) {
-                    members.append(memberUUID.toString()).append(";");
-                }
-                if (members.length() > 0) {
-                    members.setLength(members.length() - 1);
+                for (Map.Entry<UUID, Rank> entry : faction.getMembers().entrySet()) {
+                    members.append(entry.getKey().toString()).append(":").append(entry.getValue().toString()).append(";");
                 }
                 writer.append(members.toString()).append(",");
 
                 Location home = faction.getHomeLocation();
                 if (home != null) {
-                    writer.append(home.getWorld().getName()).append(",")
+                    writer.append(home.getWorld() != null ? home.getWorld().getName() : "null").append(",")
                             .append(String.valueOf(home.getX())).append(",")
                             .append(String.valueOf(home.getY())).append(",")
                             .append(String.valueOf(home.getZ())).append(",");
@@ -67,21 +62,32 @@ public class FactionManager {
     }
 
 
+
     public void loadFactionsFromCSV(String filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line = reader.readLine();
+            String line;
+            reader.readLine(); // Ignorer l'en-tête
+            System.out.println("Démarrage du chargement des factions depuis le fichier : " + filePath);
+
             while ((line = reader.readLine()) != null) {
+                System.out.println("Chargement de la ligne : " + line);
                 String[] data = line.split(",");
                 UUID factionUUID = UUID.fromString(data[0]);
                 String factionName = data[1];
                 UUID leaderUUID = UUID.fromString(data[2]);
                 Map<UUID, Rank> members = new HashMap<>();
+
                 String[] memberUUIDs = data[3].split(";");
-                for (String memberUUID : memberUUIDs) {
-                    if (!memberUUID.isEmpty()) {
-                        members.put(UUID.fromString(memberUUID), Rank.MEMBER);
+                for (String memberData : memberUUIDs) {
+                    if (!memberData.isEmpty()) {
+                        String[] parts = memberData.split(":");
+                        UUID memberUUID = UUID.fromString(parts[0]);
+                        Rank rank = parts.length > 1 ? Rank.valueOf(parts[1]) : Rank.RECRUE;
+                        members.put(memberUUID, rank);
+                        System.out.println("Membre ajouté : " + memberUUID + " avec le rôle : " + rank);
                     }
                 }
+
                 Location homeLocation = null;
                 if (!data[4].equals("null")) {
                     World world = Bukkit.getWorld(data[4]);
@@ -97,24 +103,29 @@ public class FactionManager {
                 faction.setHomeLocation(homeLocation);
                 faction.setLevel(level);
                 faction.setExp(exp);
-                factions.put(factionUUID, faction);
 
+                for (Map.Entry<UUID, Rank> entry : members.entrySet()) {
+                    faction.addMemberRank(entry.getKey(), entry.getValue());
+                }
+
+
+                factions.put(factionUUID, faction);
                 playerFactions.put(faction.getLeaderUUID(), factionUUID);
                 for (UUID memberUUID : members.keySet()) {
                     playerFactions.put(memberUUID, factionUUID);
                 }
 
-                System.out.println("Faction loaded: " + factionUUID);
-                System.out.println("  Name: " + factionName);
-                System.out.println("  Leader: " + leaderUUID);
-                System.out.println("  Members: " + members.keySet());
+                System.out.println("Faction chargée : " + factionUUID);
+                System.out.println("  Nom : " + factionName);
+                System.out.println("  Leader : " + leaderUUID);
+                System.out.println("  Membres : " + members.keySet());
                 if (homeLocation != null) {
-                    System.out.println("  Home Location: " + homeLocation.getWorld().getName() + " (" + homeLocation.getX() + ", " + homeLocation.getY() + ", " + homeLocation.getZ() + ")");
+                    System.out.println("  Home Location : " + homeLocation.getWorld().getName() + " (" + homeLocation.getX() + ", " + homeLocation.getY() + ", " + homeLocation.getZ() + ")");
                 } else {
-                    System.out.println("  Home Location: none");
+                    System.out.println("  Home Location : none");
                 }
-                System.out.println("  Level: " + level);
-                System.out.println("  Experience: " + exp);
+                System.out.println("  Niveau : " + level);
+                System.out.println("  Expérience : " + exp);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -207,8 +218,12 @@ public class FactionManager {
     }
 
 
-    public void promoteMember(UUID playerUUID, Faction faction) {
-        faction.promoteMember(playerUUID);
+    public void promoteMember(UUID targetUUID, Faction faction,UUID playerUUID) {
+        faction.promoteMember(targetUUID, playerUUID);
+    }
+
+    public void demoteMember(UUID targetUUID, Faction faction) {
+        faction.demoteMember(targetUUID);
     }
 
     public void claimLand(Chunk chunk, Faction faction) {
@@ -236,11 +251,10 @@ public class FactionManager {
             }
         }
     }
-
-    public void addMemberToFaction(UUID playerUUID, UUID factionUUID) {
+    public void addMemberToFaction(UUID playerUUID, UUID factionUUID, Rank rank) {
         Faction faction = factions.get(factionUUID);
         if (faction != null) {
-            faction.addMember(playerUUID);
+            faction.addMemberRank(playerUUID, rank);
             playerFactions.put(playerUUID, factionUUID);
             invitations.remove(playerUUID);
         }

@@ -85,6 +85,9 @@ public class Faction {
     public void addMember(UUID playerUUID) {
         members.put(playerUUID, Rank.RECRUE);
     }
+    public void addMemberRank(UUID memberUUID, Rank rank) {
+        members.put(memberUUID, rank);
+    }
 
     public List<Player> getOnlineMembers() {
         List<Player> onlineMembers = new ArrayList<>();
@@ -110,15 +113,20 @@ public class Faction {
         return members.get(playerUUID);
     }
 
-    public void promoteMember(UUID playerUUID) {
-        Rank currentRank = members.get(playerUUID);
-        if (currentRank == Rank.RECRUE) {
-            members.put(playerUUID, Rank.MEMBER);
-        } else if (currentRank == Rank.MEMBER) {
-            members.put(playerUUID, Rank.OFFICER);
-        } else if (currentRank == Rank.OFFICER) {
-            members.put(playerUUID, Rank.LEADER);
-            this.leaderUUID = playerUUID;
+    public void promoteMember(UUID target, UUID playerUUID) {
+        Rank currentRank = members.get(target);
+        Rank playerRank = members.get(playerUUID);
+
+        if (playerRank == Rank.LEADER) {
+            if (currentRank == Rank.RECRUE) {
+                members.put(target, Rank.MEMBER);
+            } else if (currentRank == Rank.MEMBER) {
+                members.put(target, Rank.OFFICER);
+            } else if (currentRank == Rank.OFFICER) {
+                members.put(target, Rank.LEADER);
+                members.put(playerUUID, Rank.OFFICER);
+                this.leaderUUID = target;
+            }
         }
     }
 

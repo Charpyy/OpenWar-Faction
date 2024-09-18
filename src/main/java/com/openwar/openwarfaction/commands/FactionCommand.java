@@ -323,7 +323,7 @@ public class FactionCommand implements CommandExecutor {
                     player.sendMessage(logo + "§cThis faction doesn't exist. §7Debug: " + invitedFactionUUID);
                     return true;
                 }
-                factionManager.addMemberToFaction(playerUUID, invitedFactionUUID);
+                factionManager.addMemberToFaction(playerUUID, invitedFactionUUID, Rank.RECRUE);
                 player.sendMessage(logo + "§7You joined: §c" + faction.getName());
 
                 for (UUID memberUUID : faction.getMembers().keySet()) {
@@ -336,12 +336,12 @@ public class FactionCommand implements CommandExecutor {
 
             case "promote":
                 faction = factionManager.getFactionByPlayer(playerUUID);
-                if (args.length < 2) {
-                    player.sendMessage(logo + "§cPlease provide the name of the player to promote.");
-                    return true;
-                }
                 if (faction == null) {
                     player.sendMessage(logo + "§cYou are not in any faction.");
+                    return true;
+                }
+                if (args.length < 2) {
+                    player.sendMessage(logo + "§cPlease provide the name of the player to promote.");
                     return true;
                 }
                 if (!factionManager.isFactionLeader(playerUUID)) {
@@ -359,28 +359,28 @@ public class FactionCommand implements CommandExecutor {
                     player.sendMessage(logo + "§cThat player is not online.");
                     return true;
                 }
-                factionManager.promoteMember(promoteTarget.getUniqueId(), factionManager.getFactionByPlayer(playerUUID));
+                factionManager.promoteMember(promoteTarget.getUniqueId(), factionTarget, playerUUID);
                 player.sendMessage(logo + "Player " + promoteTarget.getName() + " promoted!");
                 for (UUID memberUUID : faction.getMembers().keySet()) {
                     Player member = Bukkit.getPlayer(memberUUID);
                     if (member != null) {
-                        member.sendMessage(logo + "§a" + promoteTarget.getName() + " §7as been promoted to "+ faction.getRank(promoteTarget.getUniqueId()));
+                        member.sendMessage(logo + "§a" + promoteTarget.getName() + " §7as been promoted to §f"+ faction.getRank(promoteTarget.getUniqueId()));
                     }
                 }
                 break;
 
             case "demote":
                 faction = factionManager.getFactionByPlayer(playerUUID);
-                if (args.length < 2) {
-                    player.sendMessage(logo + "§cPlease provide the name of the player to promote.");
-                    return true;
-                }
                 if (faction == null) {
                     player.sendMessage(logo + "§cYou are not in any faction.");
                     return true;
                 }
+                if (args.length < 2) {
+                    player.sendMessage(logo + "§cPlease provide the name of the player to promote.");
+                    return true;
+                }
                 if (!factionManager.isFactionLeader(playerUUID)) {
-                    player.sendMessage(logo + "§cOnly the leader can promote players.");
+                    player.sendMessage(logo + "§cOnly the leader can demote players.");
                     //TODO avec le /f perm pouvoir avoir la perm de promote ou demote suivant le rank
                     return true;
                 }
@@ -394,12 +394,15 @@ public class FactionCommand implements CommandExecutor {
                     player.sendMessage(logo + "§cThat player is not online.");
                     return true;
                 }
-                factionManager.promoteMember(demoteTarget.getUniqueId(), factionManager.getFactionByPlayer(playerUUID));
+                if (player == demoteTarget) {
+                    player.sendMessage(logo + "§cYou can't demote yourself, promote someone to leader instead.");
+                }
+                factionManager.demoteMember(demoteTarget.getUniqueId(), factionManager.getFactionByPlayer(playerUUID));
                 player.sendMessage(logo + "Player " + demoteTarget.getName() + " demoted!");
                 for (UUID memberUUID : faction.getMembers().keySet()) {
                     Player member = Bukkit.getPlayer(memberUUID);
                     if (member != null) {
-                        member.sendMessage(logo + "§c" + demoteTarget.getName() + " §7as been demoted to "+ faction.getRank(demoteTarget.getUniqueId()));
+                        member.sendMessage(logo + "§c" + demoteTarget.getName() + " §7as been demoted to §f"+ faction.getRank(demoteTarget.getUniqueId()));
                     }
                 }
                 break;
@@ -483,8 +486,8 @@ public class FactionCommand implements CommandExecutor {
                 else {
                     player.sendMessage("\u00A78- \u00A77Home: \u00A7fNot Set.");
                 }
-                player.sendMessage("\u00A77- Progression: "+getProgressBar(playerFaction.getExp(), playerFaction.getExperienceNeededForNextLevel()));
-                player.sendMessage("\u00A77- Members list:");
+                player.sendMessage("\u00A78- Progression: "+getProgressBar(playerFaction.getExp(), playerFaction.getExperienceNeededForNextLevel()));
+                player.sendMessage("\u00A78- Members list:");
                 for (Map.Entry<UUID, Rank> entry : playerFaction.getMembers().entrySet()) {
                     UUID memberUUID = entry.getKey();
                     Player member = Bukkit.getPlayer(memberUUID);
