@@ -118,7 +118,7 @@ public class FactionCommand implements CommandExecutor {
                 if (confirmDisbanding.containsKey(playerUUID.toString()) && confirmDisbanding.get(playerUUID.toString())) {
                     Faction factionToDisband = factionManager.getFactionByPlayer(playerUUID);
                     factionManager.deleteFaction(factionToDisband);
-                    Bukkit.broadcastMessage(logo + "\u00A7c" + player.getName() + " \u00A77has disbanded the faction \u00A7b" + factionToDisband.getName() + "\u00A77!");
+                    Bukkit.broadcastMessage(logo + "\u00A7c" + player.getName() + " \u00A77has disbanded the faction \u00A7b" + factionToDisband.getName() + "\u00A77");
                     player.sendMessage(logo + "\u00A7cYour faction has been deleted.");
                     confirmDisbanding.remove(playerUUID.toString());
                 } else {
@@ -304,7 +304,7 @@ public class FactionCommand implements CommandExecutor {
                 UUID factionUUID = faction.getFactionUUID();
                 factionManager.invitePlayerToFaction(target.getUniqueId(), factionUUID);
                 player.sendMessage(logo + "§7Player §f" + target.getName() + " §7invited to the faction.");
-                target.sendMessage(logo + "§7The faction §f" + faction.getName() + " §7has invited you, §f/f join");
+                target.sendMessage(logo + "§7The faction §a" + faction.getName() + " §7has invited you, §f/f join");
                 break;
 
 
