@@ -214,13 +214,10 @@ public class FactionGUI {
                 if (factionLevel < 12) {
                     return "§aUnlocked §fChest Lvl 3 §3Next Upgrade level: §f12";
                 }
-                if (factionLevel < 16) {
-                    return "§aUnlocked §fChest Lvl 4 §3Next Upgrade level: §f16";
+                if (factionLevel < 14) {
+                    return "§aUnlocked §fChest Lvl 4 §3Next Upgrade level: §f14";
                 }
-                if (factionLevel < 20) {
-                    return "§aUnlocked §fChest Lvl 5 §3Next Upgrade level: §f20";
-                }
-                break;
+                return "§4Max Level §cChest Lvl 5";
             case "shop":
                 if (factionLevel < 3) {
                     return "§4Locked §cUnlock at level: §f3";

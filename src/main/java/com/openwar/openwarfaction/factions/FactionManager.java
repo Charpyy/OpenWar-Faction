@@ -67,7 +67,7 @@ public class FactionManager {
     public void loadFactionsFromCSV(String filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
-            reader.readLine(); // Ignorer l'en-tête
+            reader.readLine();
             System.out.println("Démarrage du chargement des factions depuis le fichier : " + filePath);
 
             while ((line = reader.readLine()) != null) {
@@ -168,7 +168,7 @@ public class FactionManager {
         }
     }
     public Inventory getFactionChest(Faction faction) {
-        return factionChests.computeIfAbsent(faction.getFactionUUID(), key -> Bukkit.createInventory(null, 27, "Faction Chest"));
+        return factionChests.computeIfAbsent(faction.getFactionUUID(), key -> Bukkit.createInventory(null, 45, "§cFaction §f- §cChest"));
     }
 
     public void saveFactionChests() {
