@@ -54,7 +54,15 @@ public class FactionManager {
                     writer.append("null,null,null,null,");
                 }
                 writer.append(String.valueOf(faction.getLevel())).append(",")
-                        .append(String.valueOf(faction.getExp())).append("\n");
+                        .append(String.valueOf(faction.getExp())).append(",");
+                int[] perms=faction.getPermissions();
+                for (i=0;i<perms.length;i++){
+                    if(i>0){
+                        writer.append(";")
+                    }
+                    writer.append(String.valueOf(perms[i]));
+                }
+                writer.append("\n");
             }
             writer.flush();
         } catch (IOException e) {
@@ -99,11 +107,12 @@ public class FactionManager {
                 }
                 int level = Integer.parseInt(data[8]);
                 int exp = Integer.parseInt(data[9]);
-
+                int[] perms = data[10].split(";");
                 Faction faction = new Faction(factionName, leaderUUID, factionUUID);
                 faction.setHomeLocation(homeLocation);
                 faction.setLevel(level);
                 faction.setExp(exp);
+                faction.setPermissions(perms);
 
                 for (Map.Entry<UUID, Rank> entry : members.entrySet()) {
                     faction.addMemberRank(entry.getKey(), entry.getValue());

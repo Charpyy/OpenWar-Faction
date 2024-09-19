@@ -33,7 +33,7 @@ public class Faction {
         this.leaderUUID = leaderUUID;
         this.members = new HashMap<>();
         this.members.put(leaderUUID, Rank.LEADER);
-        this.permissions=new int[5];
+        this.permissions={0b1111011110,0b0111000010,0b0110000010,0b0100000010,0b0000000000};
     }
     public UUID getFactionUUID() {
         return factionUUID;
@@ -160,5 +160,11 @@ public class Faction {
         }else{
             this.permissions[rank.getOrder()]&=~perm.getFlag();
         }
+    }
+    public int[] getPermissions(){
+        return this.permissions;
+    }
+    public void setPermissions(int[] permissions){
+        this.permissions=permissions;
     }
 }
