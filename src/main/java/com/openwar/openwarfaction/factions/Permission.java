@@ -20,29 +20,3 @@ public enum Permission {
         return this.flag;
     }
 }
-public enum PermRank {
-    OFFICER(0),
-    MEMBER(1),
-    RECRUE(2),
-    ALLY(3),
-    NEUTRAL(4);
-    private byte order;
-    private PermRank(byte n){
-        this.order=n;
-    }
-    public byte getOrder(){
-        return this.order;
-    }
-    public static PermRank getPermRank(Rank rank){
-        if(rank==Rank.RECRUE){
-            return PermRank.RECRUE;
-        }
-        if(rank==Rank.MEMBER){
-            return PermRank.MEMBER;
-        }
-        if(rank==Rank.OFFICER){
-            return PermRank.OFFICER;
-        }
-        return null;
-    }
-}

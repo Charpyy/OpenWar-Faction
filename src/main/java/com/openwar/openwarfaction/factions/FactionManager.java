@@ -56,9 +56,9 @@ public class FactionManager {
                 writer.append(String.valueOf(faction.getLevel())).append(",")
                         .append(String.valueOf(faction.getExp())).append(",");
                 int[] perms=faction.getPermissions();
-                for (i=0;i<perms.length;i++){
+                for (int i=0;i<perms.length;i++){
                     if(i>0){
-                        writer.append(";")
+                        writer.append(";");
                     }
                     writer.append(String.valueOf(perms[i]));
                 }
@@ -107,7 +107,11 @@ public class FactionManager {
                 }
                 int level = Integer.parseInt(data[8]);
                 int exp = Integer.parseInt(data[9]);
-                int[] perms = data[10].split(";");
+                String[] permsString = data[10].split(";");
+                int[] perms = new int[permsString.length];
+                for(int i=0;i<permsString.length;i++){
+                    perms[i]=Integer.parseInt(permsString[i]);
+                }
                 Faction faction = new Faction(factionName, leaderUUID, factionUUID);
                 faction.setHomeLocation(homeLocation);
                 faction.setLevel(level);
