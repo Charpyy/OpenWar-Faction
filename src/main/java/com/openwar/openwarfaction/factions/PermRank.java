@@ -32,7 +32,7 @@ public enum PermRank {
     }
     public static PermRank fromString(String text) {
         for (PermRank p : PermRank.values()) {
-            if (text.toUpperCase() == p.name()) {
+            if (text.toUpperCase().equals(p.name())) {
                 return p;
             }
         }

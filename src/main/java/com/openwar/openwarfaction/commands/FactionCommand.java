@@ -591,6 +591,7 @@ public class FactionCommand implements CommandExecutor {
                         PermRank rank=PermRank.fromString(args[2]);
                         if(rank==null){
                             player.sendMessage(logo + "Unknown rank. Rank must be OFFICER|MEMBER|RECRUE|ALLY|NEUTRAL.");
+                            return true;
                         }
                         Permission perm=Permission.fromString(args[3]);
                         if(perm==null){

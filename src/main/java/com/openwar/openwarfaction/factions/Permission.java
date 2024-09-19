@@ -22,7 +22,7 @@ public enum Permission {
     }
     public static Permission fromString(String text) {
         for (Permission p : Permission.values()) {
-            if (text.toUpperCase() == p.name()) {
+            if (text.toUpperCase().equals(p.name())) {
                 return p;
             }
         }
