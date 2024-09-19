@@ -1,11 +1,7 @@
 package com.openwar.openwarfaction.commands;
 
 import com.openwar.openwarfaction.Main;
-import com.openwar.openwarfaction.factions.Faction;
-import com.openwar.openwarfaction.factions.FactionGUI;
-import com.openwar.openwarfaction.factions.FactionManager;
-import com.openwar.openwarfaction.factions.Rank;
-import com.openwar.openwarfaction.factions.Permission;
+import com.openwar.openwarfaction.factions.*;
 import com.openwar.openwarfaction.handler.FactionChat;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -402,11 +398,6 @@ public class FactionCommand implements CommandExecutor {
                     player.sendMessage(logo + "§cPlease provide the name of the player to promote.");
                     return true;
                 }
-                if (!factionManager.isFactionLeader(playerUUID)) {
-                    player.sendMessage(logo + "§cOnly the leader can promote players.");
-                    //TODO avec le /f perm pouvoir avoir la perm de promote ou demote suivant le rank
-                    return true;
-                }
                 Player promoteTarget = Bukkit.getPlayer(args[1]);
                 Faction factionTarget = factionManager.getFactionByPlayer(promoteTarget.getUniqueId());
                 if (factionTarget != faction) {
@@ -415,6 +406,11 @@ public class FactionCommand implements CommandExecutor {
                 }
                 if (promoteTarget == null) {
                     player.sendMessage(logo + "§cThat player is not online.");
+                    return true;
+                }
+                if (!factionManager.canPromote(promoteTarget.getUniqueId(),faction,playerUUID)) {
+                    player.sendMessage(logo + "§cYou don't have permission to demote this player.");
+                    //DONE avec le /f perm pouvoir avoir la perm de promote ou demote suivant le rank
                     return true;
                 }
                 factionManager.promoteMember(promoteTarget.getUniqueId(), factionTarget, playerUUID);
@@ -437,23 +433,24 @@ public class FactionCommand implements CommandExecutor {
                     player.sendMessage(logo + "§cPlease provide the name of the player to promote.");
                     return true;
                 }
-                if (!factionManager.isFactionLeader(playerUUID)) {
-                    player.sendMessage(logo + "§cOnly the leader can demote players.");
-                    //TODO avec le /f perm pouvoir avoir la perm de promote ou demote suivant le rank
+                Player demoteTarget = Bukkit.getPlayer(args[1]);
+                if (demoteTarget == null) {
+                    player.sendMessage(logo + "§cThat player is not online.");
                     return true;
                 }
-                Player demoteTarget = Bukkit.getPlayer(args[1]);
                 Faction factionTargetdemote = factionManager.getFactionByPlayer(demoteTarget.getUniqueId());
                 if (factionTargetdemote != faction) {
                     player.sendMessage(logo + "§cThat player is not on your faction.");
                     return true;
                 }
-                if (demoteTarget == null) {
-                    player.sendMessage(logo + "§cThat player is not online.");
-                    return true;
-                }
                 if (player == demoteTarget) {
                     player.sendMessage(logo + "§cYou can't demote yourself, promote someone to leader instead.");
+                    return true;
+                }
+                if (!factionManager.canPromote(demoteTarget.getUniqueId(),faction,playerUUID)) {
+                    player.sendMessage(logo + "§cYou don't have permission to demote this player.");
+                    //DONE avec le /f perm pouvoir avoir la perm de promote ou demote suivant le rank
+                    return true;
                 }
                 factionManager.demoteMember(demoteTarget.getUniqueId(), factionManager.getFactionByPlayer(playerUUID));
                 player.sendMessage(logo + "Player " + demoteTarget.getName() + " demoted!");
@@ -550,6 +547,73 @@ public class FactionCommand implements CommandExecutor {
                     UUID memberUUID = entry.getKey();
                     Player member = Bukkit.getPlayer(memberUUID);
                     player.sendMessage(" §7- §b"+member.getName());
+                }
+                break;
+            case "perm":
+                faction = factionManager.getFactionByPlayer(playerUUID);
+                if (faction == null) {
+                    player.sendMessage(logo + "§cYou are not in any faction.");
+                    return true;
+                }
+                if(args.length<2){
+                    player.sendMessage(logo + "Usage: /f perm <set|show>");
+                    return true;
+                }
+                switch (args[1].toLowerCase()){
+                    case "show":
+                        String message="";
+                        for(PermRank rank : PermRank.values()){
+                            message+=rank.getAbr()+" ";
+                        }
+                        player.sendMessage(message);
+                        for(Permission perm : Permission.values()){
+                            message="";
+                            for (PermRank rank : PermRank.values()){
+                                if(faction.hasPermission(rank,perm)){
+                                    message+="§2YES ";
+                                }else{
+                                    message+="§4 NO ";
+                                }
+                            }
+                            message+="§r"+perm.name();
+                            player.sendMessage(message);
+                        }
+                        break;
+                    case "set":
+                        if (!faction.getLeaderUUID().equals(playerUUID)) {
+                            player.sendMessage(logo + "\u00A7cOnly the leader can change the permissions.");
+                            return true;
+                        }
+                        if(args.length<5){
+                            player.sendMessage(logo + "Usage: /f perm set <OFFICER|MEMBER|RECRUE|ALLY|NEUTRAL> [permission] <Yes|No>");
+                            return true;
+                        }
+                        PermRank rank=PermRank.fromString(args[2]);
+                        if(rank==null){
+                            player.sendMessage(logo + "Unknown rank. Rank must be OFFICER|MEMBER|RECRUE|ALLY|NEUTRAL.");
+                        }
+                        Permission perm=Permission.fromString(args[3]);
+                        if(perm==null){
+                            String permlist="";
+                            for(Permission p : Permission.values()){
+                                permlist+=p.name()+",";
+                            }
+                            player.sendMessage(logo + "Unknown permission. Permisson must be "+permlist.substring(0, permlist.length()-1)+".");
+                            return true;
+                        }
+                        switch (args[4].toLowerCase()){
+                            case "yes":
+                                faction.setPermission(rank,perm,true);
+                                break;
+                            case "no":
+                                faction.setPermission(rank,perm,false);
+                                break;
+                            default:
+                                player.sendMessage(logo + "You must set the permission to yes or no.");
+                        }
+                        break;
+                    default:
+                        player.sendMessage(logo + "Unknown subcommand. Usage: /f perm <set|show>");
                 }
                 break;
 //            case "allfactions":

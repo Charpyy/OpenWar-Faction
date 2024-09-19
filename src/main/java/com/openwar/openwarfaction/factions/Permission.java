@@ -10,13 +10,22 @@ public enum Permission {
     BUILD(0x040),
     CONTAINERS(0x080),
     INTERACT(0x0100),
-    DIPLOMACY(0x0200);
-    
+    DIPLOMACY(0x0200),
+    RANK(0x0400);
+
     private final int flag;
     private Permission(int flag) {
         this.flag = flag;
     }
     public int getFlag(){
         return this.flag;
+    }
+    public static Permission fromString(String text) {
+        for (Permission p : Permission.values()) {
+            if (text.toUpperCase() == p.name()) {
+                return p;
+            }
+        }
+        return null;
     }
 }

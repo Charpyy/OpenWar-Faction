@@ -277,6 +277,11 @@ public class FactionManager {
     public void promoteMember(UUID targetUUID, Faction faction,UUID playerUUID) {
         faction.promoteMember(targetUUID, playerUUID);
     }
+    public boolean canPromote(UUID target,Faction faction, UUID playerUUID){
+        Rank currentRank = faction.getRank(target);
+        Rank playerRank = faction.getRank(playerUUID);
+        return playerRank.isAbove(currentRank) && hasPermissionInFaction(target,faction,Permission.RANK);
+    }
 
     public void demoteMember(UUID targetUUID, Faction faction) {
         faction.demoteMember(targetUUID);

@@ -119,20 +119,17 @@ public class Faction {
         return members.get(playerUUID);
     }
 
+
     public void promoteMember(UUID target, UUID playerUUID) {
         Rank currentRank = members.get(target);
-        Rank playerRank = members.get(playerUUID);
-
-        if (playerRank == Rank.LEADER) {
-            if (currentRank == Rank.RECRUE) {
-                members.put(target, Rank.MEMBER);
-            } else if (currentRank == Rank.MEMBER) {
-                members.put(target, Rank.OFFICER);
-            } else if (currentRank == Rank.OFFICER) {
-                members.put(target, Rank.LEADER);
-                members.put(playerUUID, Rank.OFFICER);
-                this.leaderUUID = target;
-            }
+        if (currentRank == Rank.RECRUE) {
+            members.put(target, Rank.MEMBER);
+        } else if (currentRank == Rank.MEMBER) {
+            members.put(target, Rank.OFFICER);
+        } else if (currentRank == Rank.OFFICER) {
+            members.put(target, Rank.LEADER);
+            members.put(playerUUID, Rank.OFFICER);
+            this.leaderUUID = target;
         }
     }
 

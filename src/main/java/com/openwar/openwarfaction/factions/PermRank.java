@@ -1,17 +1,22 @@
 package com.openwar.openwarfaction.factions;
 
 public enum PermRank {
-    OFFICER(0),
-    MEMBER(1),
-    RECRUE(2),
-    ALLY(3),
-    NEUTRAL(4);
+    OFFICER(0,"OFF"),
+    MEMBER(1,"MEM"),
+    RECRUE(2,"REC"),
+    ALLY(3,"ALY"),
+    NEUTRAL(4,"NEU");
     private int order;
-    private PermRank(int n){
+    private String abr;
+    private PermRank(int n,String abrev){
         this.order=n;
+        this.abr=abrev;
     }
     public int getOrder(){
         return this.order;
+    }
+    public String getAbr(){
+        return this.abr;
     }
     public static PermRank getPermRank(Rank rank){
         if(rank==Rank.RECRUE){
@@ -22,6 +27,14 @@ public enum PermRank {
         }
         if(rank==Rank.OFFICER){
             return PermRank.OFFICER;
+        }
+        return null;
+    }
+    public static PermRank fromString(String text) {
+        for (PermRank p : PermRank.values()) {
+            if (text.toUpperCase() == p.name()) {
+                return p;
+            }
         }
         return null;
     }
