@@ -60,7 +60,7 @@ public class FactionGUI {
 
         double percentage = (double) factionExp / expRequired * 100;
         int progress = (int) ((percentage / 100) * 27);
-        lore.add("§eProgression: " + getProgressBar(progress, 27) + " §6" + String.format("%.2f", percentage) + "%");
+        lore.add("§eProgression: " + getProgressBar(progress, 10) + " §6" + String.format("%.2f", percentage) + "%");
 
         meta.setLore(lore);
         factionLevelItem.setItemMeta(meta);
@@ -187,7 +187,7 @@ public class FactionGUI {
         Faction faction = factionManager.getFactionByPlayer(player.getUniqueId());
         int factionLevel = faction.getLevel();
 
-        //TODO refaire ce putain de gui de merde.
+        //TODO FAIRE DES PUTAIN DE LIGNE AU LIEU DE TOUT FOUTRE SUR LA MËME ENCULER
         ItemStack factionChest = createCustomItem(Material.CHEST, "§f§lFaction Chest", getLoreForItem(factionLevel, "chest"));
         ItemStack factionShop = createCustomItem(Material.GRAY_SHULKER_BOX, "§8§lShop Faction", getLoreForItem(factionLevel, "shop"));
         ItemStack xpBoost = createCustomItem(Material.DRAGONS_BREATH, "§5§lXP Boost", getLoreForItem(factionLevel, "xp"));
@@ -204,7 +204,7 @@ public class FactionGUI {
     }
     private String getLoreForItem(int factionLevel, String itemName) {
         switch (itemName) {
-            case "faction":
+            case "chest":
                 if (factionLevel < 4) {
                     return "§aUnlocked §fChest Lvl 1 §3Next Upgrade level: §f4";
                 }
@@ -214,13 +214,10 @@ public class FactionGUI {
                 if (factionLevel < 12) {
                     return "§aUnlocked §fChest Lvl 3 §3Next Upgrade level: §f12";
                 }
-                if (factionLevel < 16) {
-                    return "§aUnlocked §fChest Lvl 4 §3Next Upgrade level: §f16";
+                if (factionLevel < 14) {
+                    return "§aUnlocked §fChest Lvl 4 §3Next Upgrade level: §f14";
                 }
-                if (factionLevel < 20) {
-                    return "§aUnlocked §fChest Lvl 5 §3Next Upgrade level: §f20";
-                }
-                break;
+                return "§4Max Level §cChest Lvl 5";
             case "shop":
                 if (factionLevel < 3) {
                     return "§4Locked §cUnlock at level: §f3";
