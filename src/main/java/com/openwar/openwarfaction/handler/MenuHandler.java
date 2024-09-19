@@ -55,6 +55,7 @@ public class MenuHandler implements Listener {
                 UUID playerUUID = player.getUniqueId();
                 Faction faction = factionManager.getFactionByPlayer(playerUUID);
                 Inventory factionChest = factionManager.getFactionChest(faction);
+                factionChest = fillChestWithBarriers(factionChest, faction.getLevel());
                 player.openInventory(factionChest);
             }
 
