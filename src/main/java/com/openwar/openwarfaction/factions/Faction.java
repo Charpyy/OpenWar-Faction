@@ -16,6 +16,7 @@ public class Faction {
     private Location homeLocation;
     private int level;
     private int exp;
+    private int[] permissions;
 
     private static final int[] levelRequirements = {
             564, 1470, 3625, 7030, 11684, 17587,
@@ -32,6 +33,7 @@ public class Faction {
         this.leaderUUID = leaderUUID;
         this.members = new HashMap<>();
         this.members.put(leaderUUID, Rank.LEADER);
+        this.permissions=new int[5];
     }
     public UUID getFactionUUID() {
         return factionUUID;
@@ -81,7 +83,9 @@ public class Faction {
     public Map<UUID, Rank> getMembers() {
         return members;
     }
-
+    public boolean isMember(UUID playerUUID){
+        return members.containsKey(playerUUID);
+    }
     public void addMember(UUID playerUUID) {
         members.put(playerUUID, Rank.RECRUE);
     }
@@ -146,5 +150,15 @@ public class Faction {
 
     public Location getHomeLocation() {
         return homeLocation;
+    }
+    public boolean hasPermission(PermRank rank,Permission perm){
+        return this.permissions[rank.getOrder()]&perm.getFlag()!=0;
+    }
+    public void setPermission(PermRank rank,Permission perm,boolean set){
+        if(set){
+            this.permissions[rank.getOrder()]|=perm.getFlag();
+        }else{
+            this.permissions[rank.getOrder()]&=~perm.getFlag();
+        }
     }
 }

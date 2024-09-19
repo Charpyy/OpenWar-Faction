@@ -331,4 +331,16 @@ public class FactionManager {
         faction.setName(newName);
         factionUUIDs.put(newName, faction.getFactionUUID());
     }
+    public boolean hasPermissionInFaction(UUID playerUUID, Faction faction,Permission perm){
+        if(faction.getLeaderUUID().equals(playerUUID)){
+            return true;
+        }
+        if(faction.isMember(playerUUID)){
+            return faction.hasPermission(PermRank.getPermRank(faction.getRank(playerUUID)),perm);
+        }
+        if(false){//vérifier si le joueur est un allié
+            return faction.hasPermission(PermRank.ALLY,perm);
+        }
+        return faction.hasPermission(PermRank.NEUTRAL,perm);
+    }
 }
