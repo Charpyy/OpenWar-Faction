@@ -125,12 +125,16 @@ public class FactionGUI {
         return slot < 9 || slot >= 45 || slot % 9 == 0 || slot % 9 == 8;
     }
 
-    private static ItemStack createCustomItem(Material material, String name, String lore) {
+    private ItemStack createCustomItem(Material material, String displayName, List<String> lore) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(name);
-        meta.setLore(Arrays.asList(lore));
-        item.setItemMeta(meta);
+
+        if (meta != null) {
+            meta.setDisplayName(displayName);
+            meta.setLore(lore);
+            item.setItemMeta(meta);
+        }
+
         return item;
     }
 
@@ -202,81 +206,93 @@ public class FactionGUI {
 
         player.openInventory(factionLevelMenu);
     }
-    private String getLoreForItem(int factionLevel, String itemName) {
+    private List<String> getLoreForItem(int factionLevel, String itemName) {
+        List<String> lore = new ArrayList<>();
         switch (itemName) {
             case "chest":
                 if (factionLevel < 4) {
-                    return "§aUnlocked §fChest Lvl 1 §3Next Upgrade level: §f4";
+                    lore.add("§aUnlocked §fChest Lvl 1");
+                    lore.add("§3Next Upgrade level: §f4");
+                } else if (factionLevel < 8) {
+                    lore.add("§aUnlocked §fChest Lvl 2");
+                    lore.add("§3Next Upgrade level: §f8");
+                } else if (factionLevel < 12) {
+                    lore.add("§aUnlocked §fChest Lvl 3");
+                    lore.add("§3Next Upgrade level: §f12");
+                } else if (factionLevel < 14) {
+                    lore.add("§aUnlocked §fChest Lvl 4");
+                    lore.add("§3Next Upgrade level: §f14");
+                } else {
+                    lore.add("§4Max Level");
+                    lore.add("§cChest Lvl 5");
                 }
-                if (factionLevel < 8) {
-                    return "§aUnlocked §fChest Lvl 2 §3Next Upgrade level: §f8";
-                }
-                if (factionLevel < 12) {
-                    return "§aUnlocked §fChest Lvl 3 §3Next Upgrade level: §f12";
-                }
-                if (factionLevel < 14) {
-                    return "§aUnlocked §fChest Lvl 4 §3Next Upgrade level: §f14";
-                }
-                return "§4Max Level §cChest Lvl 5";
+                break;
             case "shop":
                 if (factionLevel < 3) {
-                    return "§4Locked §cUnlock at level: §f3";
-                }
-                if (factionLevel < 6) {
-                    return "§aUnlocked §fShop Lvl 1 §3Next Upgrade level: §f6";
-                }
-                if (factionLevel < 8) {
-                    return "§aUnlocked §fShop Lvl 2 §3Next Upgrade level: §f8";
-                }
-                if (factionLevel < 10) {
-                    return "§aUnlocked §fShop Lvl 3 §3Next Upgrade level: §f10";
-                }
-                if (factionLevel < 12) {
-                    return "§aUnlocked §fShop Lvl 4 §3Next Upgrade level: §f12";
-                }
-                if (factionLevel > 12) {
-                    return "§4Max Level §cFaction Shop Lvl 5";
+                    lore.add("§4Locked");
+                    lore.add("§cUnlock at level: §f3");
+                } else if (factionLevel < 6) {
+                    lore.add("§aUnlocked §fShop Lvl 1");
+                    lore.add("§3Next Upgrade level: §f6");
+                } else if (factionLevel < 8) {
+                    lore.add("§aUnlocked §fShop Lvl 2");
+                    lore.add("§3Next Upgrade level: §f8");
+                } else if (factionLevel < 10) {
+                    lore.add("§aUnlocked §fShop Lvl 3");
+                    lore.add("§3Next Upgrade level: §f10");
+                } else if (factionLevel < 12) {
+                    lore.add("§aUnlocked §fShop Lvl 4");
+                    lore.add("§3Next Upgrade level: §f12");
+                } else if (factionLevel > 12) {
+                    lore.add("§4Max Level");
+                    lore.add("§cFaction Shop Lvl 5");
                 }
                 break;
             case "xp":
                 if (factionLevel < 3) {
-                    return "§4Locked §cUnlock at level: §f3";
-                }
-                if (factionLevel < 6) {
-                    return "§aUnlocked §f+15% XP §3Next Upgrade level: §f6";
-                }
-                if (factionLevel < 10) {
-                    return "§aUnlocked §f+35% XP §3Next Upgrade level: §f10";
-                }
-                if (factionLevel < 14) {
-                    return "§aUnlocked §f+55% XP §3Next Upgrade level: §f14";
-                }
-                if (factionLevel < 18) {
-                    return "§aUnlocked §f+75% XP §3Next Upgrade level: §f18";
-                }
-                if (factionLevel < 19) {
-                    return "§aUnlocked §f+90% XP §3Next Upgrade level: §f19";
-                }
-                if (factionLevel == 20) {
-                    return "§4Max Level §c+100% XP";
+                    lore.add("§4Locked");
+                    lore.add("§cUnlock at level: §f3");
+                } else if (factionLevel < 6) {
+                    lore.add("§aUnlocked §f+15% XP");
+                    lore.add("§3Next Upgrade level: §f6");
+                } else if (factionLevel < 10) {
+                    lore.add("§aUnlocked §f+35% XP");
+                    lore.add("§3Next Upgrade level: §f10");
+                } else if (factionLevel < 14) {
+                    lore.add("§aUnlocked §f+55% XP");
+                    lore.add("§3Next Upgrade level: §f14");
+                } else if (factionLevel < 18) {
+                    lore.add("§aUnlocked §f+75% XP");
+                    lore.add("§3Next Upgrade level: §f18");
+                } else if (factionLevel < 19) {
+                    lore.add("§aUnlocked §f+90% XP");
+                    lore.add("§3Next Upgrade level: §f19");
+                } else if (factionLevel == 20) {
+                    lore.add("§4Max Level");
+                    lore.add("§c+100% XP");
                 }
                 break;
             case "claims":
                 for (int i = 1; i <= 20; i += 2) {
                     if (factionLevel < i) {
-                        return "§aUnlocked §f" + (i + 2) + " CHUNKS §3Next Upgrade level: §f" + i;
+                        lore.add("§aUnlocked §f" + (i + 2) + " CHUNKS");
+                        lore.add("§3Next Upgrade level: §f" + i);
+                        break;
                     }
                 }
                 if (factionLevel == 20) {
-                    return "§4Max Level §c20 CHUNKS";
+                    lore.add("§4Max Level");
+                    lore.add("§c20 CHUNKS");
                 }
                 break;
             case "farm":
                 if (factionLevel >= 10) {
-                    return "§4Locked §cUnlock at level: §f10";
+                    lore.add("§4Locked");
+                    lore.add("§cUnlock at level: §f10");
+                } else {
+                    lore.add("§aUnlocked");
                 }
-                return "§aUnlocked";
+                break;
         }
-        return itemName;
+        return lore;
     }
-}
