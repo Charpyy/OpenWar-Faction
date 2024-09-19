@@ -58,6 +58,31 @@ public class FactionCommand implements CommandExecutor {
         }
 
         switch (args[0].toLowerCase()) {
+            case "kick":
+                Faction facc = factionManager.getFactionByPlayer(playerUUID);
+                if (facc == null) {
+                    player.sendMessage(logo + "§cYou are not in a faction.");
+                    return true;
+                }
+                if (args.length < 2) {
+                    player.sendMessage(logo + "§cYou need to provide a player name.");
+                    return true;
+                }
+                if (!factionManager.isFactionLeader(playerUUID)) {
+                    player.sendMessage(logo + "§cYou need to be leader of the faction.");
+                    return true;
+                }
+                Player target = Bukkit.getPlayer(args[1]);
+                facc.removeMember(target.getUniqueId());
+                factionManager.removePlayerFromFaction(target.getUniqueId());
+                target.sendMessage(logo+"§cYou have been kicked from your faction by §4"+player.getName());
+                for (UUID memberUUID : facc.getMembers().keySet()) {
+                    Player member = Bukkit.getPlayer(memberUUID);
+                    if (member != null) {
+                        member.sendMessage(logo + "§c"+target.getName()+" §7as been kicked from your faction by §c"+player.getName());
+                    }
+                }
+                break;
             case "create":
                 if (args.length < 2) {
                     player.sendMessage(logo + "\u00A7cPlease provide a faction name.");
@@ -153,6 +178,18 @@ public class FactionCommand implements CommandExecutor {
                         player.sendMessage(logo + "\u00A7cYou can only claim land adjacent to your existing claims.");
                         return true;
                     }
+                }
+                int claims = claimedChunks.size();
+                int level = playerFaction.getLevel();
+                for (int i = 1; i <= 20; i += 2) {
+                    if (level < i && claims >= (i + 2)) {
+                        player.sendMessage( "§cYou can't claim more than §4" + (i + 2) + " §cchunks. §8(more faction level required)");
+                        return true;
+                    }
+                }
+                if (level == 20 && claims >= 20) {
+                    player.sendMessage("§cYou can't claim more than 20 chunks.");
+                    return true;
                 }
                 factionManager.claimLand(chunkToClaim, playerFaction);
                 player.sendMessage(logo + "\u00A77Land claimed for your faction!");
@@ -258,7 +295,7 @@ public class FactionCommand implements CommandExecutor {
 
                 faction = factionManager.getFactionByPlayer(playerUUID);
                 String oldName = faction.getName();
-                faction.setName(newName);
+                factionManager.setName(faction, newName);
                 Bukkit.broadcastMessage(logo + "\u00A77The faction \u00A7b" + oldName + " \u00A77has changed its name to \u00A7b" + newName + "\u00A77!");
                 break;
 
@@ -274,13 +311,13 @@ public class FactionCommand implements CommandExecutor {
                     player.sendMessage(logo + "§cYou are not in any faction.");
                     return true;
                 }
-                Player target = Bukkit.getPlayer(args[1]);
-                Faction factionTarget1 = factionManager.getFactionByPlayer(target.getUniqueId());
-                if (target == null) {
+                Player targett = Bukkit.getPlayer(args[1]);
+                Faction factionTarget1 = factionManager.getFactionByPlayer(targett.getUniqueId());
+                if (targett == null) {
                     player.sendMessage(logo + "§7That player is not online.");
                     return true;
                 }
-                if (player == target) {
+                if (player == targett) {
                     player.sendMessage(logo+"§cYou can't invite yourself lmao");
                     return true;
                 }
@@ -302,9 +339,9 @@ public class FactionCommand implements CommandExecutor {
                     return true;
                 }
                 UUID factionUUID = faction.getFactionUUID();
-                factionManager.invitePlayerToFaction(target.getUniqueId(), factionUUID);
-                player.sendMessage(logo + "§7Player §f" + target.getName() + " §7invited to the faction.");
-                target.sendMessage(logo + "§7The faction §f" + faction.getName() + " §7has invited you, §f/f join");
+                factionManager.invitePlayerToFaction(targett.getUniqueId(), factionUUID);
+                player.sendMessage(logo + "§7Player §f" + targett.getName() + " §7invited to the faction.");
+                targett.sendMessage(logo + "§7The faction §f" + faction.getName() + " §7has invited you, §f/f join");
                 break;
 
 
