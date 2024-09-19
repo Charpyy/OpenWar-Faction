@@ -3,6 +3,8 @@ package com.openwar.openwarfaction.factions;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import com.openwar.openwarfaction.factions.Permission;
+import com.openwar.openwarfaction.factions.PermRank;
 
 import java.util.*;
 
@@ -33,7 +35,7 @@ public class Faction {
         this.leaderUUID = leaderUUID;
         this.members = new HashMap<>();
         this.members.put(leaderUUID, Rank.LEADER);
-        this.permissions={0b1111011110,0b0111000010,0b0110000010,0b0100000010,0b0000000000};
+        this.permissions=new int[]{0b1111011110,0b0111000010,0b0110000010,0b0100000010,0b0000000000};
     }
     public UUID getFactionUUID() {
         return factionUUID;
@@ -152,7 +154,7 @@ public class Faction {
         return homeLocation;
     }
     public boolean hasPermission(PermRank rank,Permission perm){
-        return this.permissions[rank.getOrder()]&perm.getFlag()!=0;
+        return (this.permissions[rank.getOrder()] & perm.getFlag()) !=0;
     }
     public void setPermission(PermRank rank,Permission perm,boolean set){
         if(set){

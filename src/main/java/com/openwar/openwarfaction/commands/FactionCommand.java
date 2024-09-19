@@ -5,6 +5,7 @@ import com.openwar.openwarfaction.factions.Faction;
 import com.openwar.openwarfaction.factions.FactionGUI;
 import com.openwar.openwarfaction.factions.FactionManager;
 import com.openwar.openwarfaction.factions.Rank;
+import com.openwar.openwarfaction.factions.Permission;
 import com.openwar.openwarfaction.handler.FactionChat;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -73,6 +74,12 @@ public class FactionCommand implements CommandExecutor {
                     return true;
                 }
                 Player target = Bukkit.getPlayer(args[1]);
+                if(playerUUID==target.getUniqueId()){
+                    player.sendMessage(logo + "§cUse /f leave to leave your faction, you can't kick yourself.");
+                }
+                if(factionManager.isFactionLeader(target.getUniqueId())){ //cas où d'autre que le leader peuvent kick
+                    player.sendMessage(logo + "§cYou can't kick the leader.");
+                }
                 facc.removeMember(target.getUniqueId());
                 factionManager.removePlayerFromFaction(target.getUniqueId());
                 target.sendMessage(logo+"§cYou have been kicked from your faction by §4"+player.getName());
@@ -207,16 +214,30 @@ public class FactionCommand implements CommandExecutor {
                 break;
 
             case "home":
-                if (!factionManager.isFactionMember(playerUUID)) {
-                    player.sendMessage(logo + "§cYou are not in a faction.");
-                    return true;
-                }
-                if (waitingPlayers.containsKey(player.getUniqueId())) {
+                if (waitingPlayers.containsKey(playerUUID)) {
                     player.sendMessage(logo + "§cYou are already teleporting. Please wait and don't move.");
                     return true;
                 }
-
-                Faction faction = factionManager.getFactionByPlayer(playerUUID);
+                Faction faction;
+                if (args.length >= 2){
+                    if (factionManager.factionExists(args[1])) {
+                        faction=factionManager.getFactionByName(args[1]);
+                    }else{
+                        player.sendMessage(logo + "§cThis faction don't exist.");
+                        return true;
+                    }
+                }else{
+                    if (factionManager.isFactionMember(playerUUID)) {
+                        faction = factionManager.getFactionByPlayer(playerUUID);
+                    }else{
+                        player.sendMessage(logo + "§cYou are not in a faction.");
+                        return true;
+                    }
+                }
+                if(!factionManager.hasPermissionInFaction(playerUUID,faction,Permission.HOME)){
+                    player.sendMessage(logo + "§cYou don't have permission to perform this action.");
+                    return true;
+                }
                 Location home = faction.getHomeLocation();
 
                 if (home != null) {
@@ -242,7 +263,7 @@ public class FactionCommand implements CommandExecutor {
                         }
                     }.runTaskTimer(plugin, 0, 20);
                 } else {
-                    player.sendMessage(logo + "\u00A7cYour faction does not have a home set.");
+                    player.sendMessage(logo + "\u00A7cThe faction does not have a home set.");
                 }
                 break;
 
