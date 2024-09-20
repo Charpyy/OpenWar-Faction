@@ -1,8 +1,6 @@
 package com.openwar.openwarfaction.handler;
 import com.openwar.openwarfaction.Main;
-import com.openwar.openwarfaction.factions.Faction;
-import com.openwar.openwarfaction.factions.FactionGUI;
-import com.openwar.openwarfaction.factions.FactionManager;
+import com.openwar.openwarfaction.factions.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -68,10 +66,117 @@ public class MenuHandler implements Listener {
         if (view.getTitle().contains("§cFaction §f- §cChest")) {
             Player player = (Player) event.getWhoClicked();
             int clickedSlot = event.getSlot();
+            if (clickedSlot < 0) {
+                return;
+            }
             ItemStack item = event.getClickedInventory().getItem(clickedSlot);
             if (item != null && item.getType() == Material.BARRIER) {
                 event.setCancelled(true);
             }
+            Bukkit.getServer().getScheduler().runTaskLater(plugin, player::updateInventory, 1L);
+        }
+
+
+        if (view.getTitle().contains("§b§lFaction Perms §f- §3Page 1")) {
+            Player player = (Player) event.getWhoClicked();
+            int clickedSlot = event.getSlot();
+            if (clickedSlot < 0) {
+                return;
+            }
+
+            ItemStack item = event.getClickedInventory().getItem(clickedSlot);
+            if (item == null) {
+                return;
+            }
+
+            if (item.getType() == Material.PAPER) {
+                event.setCancelled(true);
+                return;
+            }
+
+            if (item.getType() == Material.STAINED_GLASS_PANE) {
+                if (clickedSlot == 0) {
+                    FactionGUI factionGUI = new FactionGUI(factionManager);
+                    factionGUI.openFactionPermPage2(player);
+                    event.setCancelled(true);
+                    return;
+                }
+
+                Faction faction = factionManager.getFactionByPlayer(player.getUniqueId());
+                Permission perm = null;
+                PermRank rank = null;
+
+                int col = clickedSlot / 9;
+                int row = clickedSlot % 9;
+
+                if (row >= 2 && row <= 8 && col >= 1) {
+                    perm = Permission.values()[row - 2];
+                    rank = PermRank.values()[col - 1];
+
+
+                    boolean hasPerm = faction.hasPermission(rank, perm);
+                    faction.setPermission(rank, perm, !hasPerm);
+
+                    ItemStack newPermPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) (hasPerm ? 14 : 5));
+                    ItemMeta newMeta = newPermPane.getItemMeta();
+                    newMeta.setDisplayName(hasPerm ? "§4NO" : "§aYES");
+                    newPermPane.setItemMeta(newMeta);
+
+                    event.getClickedInventory().setItem(clickedSlot, newPermPane);
+                }
+
+                event.setCancelled(true);
+                Bukkit.getServer().getScheduler().runTaskLater(plugin, player::updateInventory, 1L);
+            }
+        }
+
+        if (view.getTitle().contains("§b§lFaction Perms §f- §3Page 2")) {
+            Player player = (Player) event.getWhoClicked();
+            int clickedSlot = event.getSlot();
+            if (clickedSlot < 0) {
+                return;
+            }
+
+            ItemStack item = event.getClickedInventory().getItem(clickedSlot);
+            if (item.getType() == Material.PAPER) {
+                event.setCancelled(true);
+                return;
+            }
+            if (item == null || item.getType() != Material.STAINED_GLASS_PANE) {
+                return;
+            }
+
+            if (clickedSlot == 0) {
+                FactionGUI factionGUI = new FactionGUI(factionManager);
+                factionGUI.openFactionPermMenu(player);
+                event.setCancelled(true);
+                return;
+            }
+
+            Faction faction = factionManager.getFactionByPlayer(player.getUniqueId());
+            Permission perm = null;
+            PermRank rank = null;
+
+
+            int row = clickedSlot % 9;
+            int col = clickedSlot / 9;
+
+            if (row >= 2 && row <= 7 && col >= 1 && col <= 6) {
+                perm = Permission.values()[row - 2 + 6];
+                rank = PermRank.values()[col - 1];
+
+                boolean hasPerm = faction.hasPermission(rank, perm);
+                faction.setPermission(rank, perm, !hasPerm);
+
+                ItemStack newPermPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) (hasPerm ? 14 : 5));
+                ItemMeta newMeta = newPermPane.getItemMeta();
+                newMeta.setDisplayName(hasPerm ? "§4NO" : "§aYES");
+                newPermPane.setItemMeta(newMeta);
+
+                event.getClickedInventory().setItem(clickedSlot, newPermPane);
+            }
+
+            event.setCancelled(true);
             Bukkit.getServer().getScheduler().runTaskLater(plugin, player::updateInventory, 1L);
         }
     }
