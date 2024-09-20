@@ -9,10 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class FactionGUI {
 
@@ -73,12 +70,19 @@ public class FactionGUI {
         meta.setDisplayName("§8§lInformations");
         List<String> lore = new ArrayList<>();
         lore.add("§7Name: §f" + faction.getName());
-        lore.add("§7Members: §f" + faction.getMembers().size());
-
+        lore.add("§7Members Online: §f" + faction.getOnlineMembers().size() +"§7/§f"+ faction.getMembers().size());
+        FactionManager fm = new FactionManager();
+        lore.add("§7Claims: §f"+fm.getClaimedChunks(faction).size());
         if (faction.getHomeLocation() != null) {
             lore.add("§7Home Location: \u00A78X: \u00A77" + (int) faction.getHomeLocation().getX() + " \u00A78Y: \u00A77" + (int) faction.getHomeLocation().getY() + " \u00A78Z: \u00A77" + (int) faction.getHomeLocation().getZ());
         } else {
             lore.add("§7Home Location: \u00A7fNot Set.");
+        }
+        lore.add("§7Members Name: ");
+        for (Map.Entry<UUID, Rank> entry : faction.getMembers().entrySet()) {
+            UUID memberUUID = entry.getKey();
+            Player member = Bukkit.getPlayer(memberUUID);
+            lore.add(" §7- §b"+member.getName());
         }
 
         meta.setLore(lore);

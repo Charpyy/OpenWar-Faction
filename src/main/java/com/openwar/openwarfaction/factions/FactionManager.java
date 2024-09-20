@@ -149,11 +149,11 @@ public class FactionManager {
 
     public void saveClaimsToCSV(String filePath) {
         try (FileWriter writer = new FileWriter(filePath)) {
-            writer.append("chunkX,chunkZ,factionName\n");
+            writer.append("chunkX,chunkZ,factionUUID\n");
             for (Map.Entry<Chunk, Faction> entry : claimedLand.entrySet()) {
                 Chunk chunk = entry.getKey();
                 Faction faction = entry.getValue();
-                writer.append(chunk.getX() + "," + chunk.getZ() + "," + faction.getName() + "\n");
+                writer.append(chunk.getX() + "," + chunk.getZ() + "," + faction.getFactionUUID() + "\n");
             }
             writer.flush();
         } catch (IOException e) {
@@ -169,9 +169,9 @@ public class FactionManager {
                 String[] data = line.split(",");
                 int chunkX = Integer.parseInt(data[0]);
                 int chunkZ = Integer.parseInt(data[1]);
-                String factionName = data[2];
+                UUID factionUUID = UUID.fromString(data[2]);
                 Chunk chunk = Bukkit.getWorld("world").getChunkAt(chunkX, chunkZ);
-                Faction faction = getFactionByName(factionName);
+                Faction faction = getFactionByUUID(factionUUID);
                 if (faction != null) {
                     claimedLand.put(chunk, faction);
                 }

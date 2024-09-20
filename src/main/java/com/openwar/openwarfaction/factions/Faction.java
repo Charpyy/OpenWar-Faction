@@ -146,6 +146,9 @@ public class Faction {
     public void setHomeLocation(Location homeLocation) {
         this.homeLocation = homeLocation;
     }
+    public void removeHomeLocation() {
+        this.homeLocation = null;
+    }
 
     public Location getHomeLocation() {
         return homeLocation;
