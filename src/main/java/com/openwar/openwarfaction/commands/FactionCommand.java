@@ -556,7 +556,7 @@ public class FactionCommand implements CommandExecutor {
                     return true;
                 }
                 if(args.length<2){
-                    player.sendMessage(logo + "Usage: /f perm <set|show>");
+                    player.sendMessage(logo + "§cUsage: §f/f perm (set|show)");
                     return true;
                 }
                 switch (args[1].toLowerCase()){
@@ -572,7 +572,7 @@ public class FactionCommand implements CommandExecutor {
                                 if(faction.hasPermission(rank,perm)){
                                     message+="§2YES ";
                                 }else{
-                                    message+="§4 NO ";
+                                    message+="§4NO ";
                                 }
                             }
                             message+="§r"+perm.name();
@@ -585,12 +585,12 @@ public class FactionCommand implements CommandExecutor {
                             return true;
                         }
                         if(args.length<5){
-                            player.sendMessage(logo + "Usage: /f perm set <OFFICER|MEMBER|RECRUE|ALLY|NEUTRAL> [permission] <Yes|No>");
+                            player.sendMessage(logo + "§cUsage: §f/f perm set §7(OFFICER|MEMBER|RECRUE|ALLY|NEUTRAL) [permission] §7(§aYes§7|§cNo§7)");
                             return true;
                         }
                         PermRank rank=PermRank.fromString(args[2]);
                         if(rank==null){
-                            player.sendMessage(logo + "Unknown rank. Rank must be OFFICER|MEMBER|RECRUE|ALLY|NEUTRAL.");
+                            player.sendMessage(logo + "§cUnknown rank. §fRank must be OFFICER|MEMBER|RECRUE|ALLY|NEUTRAL.");
                             return true;
                         }
                         Permission perm=Permission.fromString(args[3]);
@@ -605,16 +605,18 @@ public class FactionCommand implements CommandExecutor {
                         switch (args[4].toLowerCase()){
                             case "yes":
                                 faction.setPermission(rank,perm,true);
+                                player.sendMessage(logo+"§7Permission of §f"+rank+"§7 for §f"+perm+" §7as been updated to §aYES");
                                 break;
                             case "no":
                                 faction.setPermission(rank,perm,false);
+                                player.sendMessage(logo+"§7Permission of §f"+rank+"§7 for §f"+perm+" §7as been updated to §cNO");
                                 break;
                             default:
-                                player.sendMessage(logo + "You must set the permission to yes or no.");
+                                player.sendMessage(logo + "§cYou must set the permission to yes or no.");
                         }
                         break;
                     default:
-                        player.sendMessage(logo + "Unknown subcommand. Usage: /f perm <set|show>");
+                        player.sendMessage(logo + "§7Unknown subcommand. §cUsage: §f/f perm (set|show)");
                 }
                 break;
 //            case "allfactions":

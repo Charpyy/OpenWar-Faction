@@ -85,6 +85,11 @@ public class FactionGUI {
         infoItem.setItemMeta(meta);
         return infoItem;
     }
+    private ItemStack createFpermItem() {
+        ItemStack fperm = new ItemStack(Material.ANVIL);
+        setItemLore(fperm, "§3§lFaction Perms", "§7Click here to open", null);
+        return fperm;
+    }
 
     private ItemStack createUpgradeItem() {
         ItemStack upgrade = new ItemStack(Material.WHITE_SHULKER_BOX);
@@ -159,11 +164,13 @@ public class FactionGUI {
         ItemStack infoItem = createFactionInfoItem(faction);
         ItemStack upgradeItem = createUpgradeItem();
         ItemStack leaderHead = getLeaderHead(Bukkit.getOfflinePlayer(faction.getLeaderUUID()).getName());
+        ItemStack fperm = createFpermItem();
 
         menu.setItem(24, factionLevelItem);
         menu.setItem(30, infoItem);
         menu.setItem(32, upgradeItem);
         menu.setItem(20, leaderHead);
+        menu.setItem(22, fperm);
 
         player.openInventory(menu);
     }
@@ -191,7 +198,6 @@ public class FactionGUI {
         Faction faction = factionManager.getFactionByPlayer(player.getUniqueId());
         int factionLevel = faction.getLevel();
 
-        //TODO FAIRE DES PUTAIN DE LIGNE AU LIEU DE TOUT FOUTRE SUR LA MËME ENCULER
         ItemStack factionChest = createCustomItem(Material.CHEST, "§f§lFaction Chest", getLoreForItem(factionLevel, "chest"));
         ItemStack factionShop = createCustomItem(Material.GRAY_SHULKER_BOX, "§8§lShop Faction", getLoreForItem(factionLevel, "shop"));
         ItemStack xpBoost = createCustomItem(Material.DRAGONS_BREATH, "§5§lXP Boost", getLoreForItem(factionLevel, "xp"));
@@ -206,6 +212,60 @@ public class FactionGUI {
 
         player.openInventory(factionLevelMenu);
     }
+    //=============================================== FPERMS MENU =======================
+    public void openFactionPermMenu(Player player) {
+        Inventory menu = Bukkit.createInventory(null, 54, "§b§lFaction Perms");
+        setMenuBackground(menu);
+        UUID playerUUID = player.getUniqueId();
+        Faction faction = factionManager.getFactionByPlayer(playerUUID);
+
+        int slot = 1;
+        for (PermRank rank : PermRank.values()) {
+            ItemStack rankPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 1);
+            ItemMeta meta = rankPane.getItemMeta();
+            meta.setDisplayName(rank.getAbr());
+            rankPane.setItemMeta(meta);
+            menu.setItem(slot, rankPane);
+            slot++;
+        }
+
+        int startRow = 1;
+        for (int i = 0; i < Permission.values().length; i++) {
+            if (startRow >= 6) break;
+
+            Permission perm = Permission.values()[i];
+
+            for (int j = 0; j < PermRank.values().length; j++) {
+                PermRank rank = PermRank.values()[j];
+                boolean hasPerm = faction.hasPermission(rank, perm);
+
+                ItemStack permPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) (hasPerm ? 5 : 14));
+                ItemMeta meta = permPane.getItemMeta();
+                meta.setDisplayName(hasPerm ? "§2YES" : "§4NO");
+                permPane.setItemMeta(meta);
+
+                int index = startRow * 9 + j+1;
+                if (index < 54) {
+                    menu.setItem(index, permPane);
+                }
+            }
+
+            int infoIndex = startRow * 9 + 8;
+            if (infoIndex < 54) {
+                ItemStack permInfo = new ItemStack(Material.PAPER);
+                ItemMeta permMeta = permInfo.getItemMeta();
+                permMeta.setDisplayName("§r" + perm.name());
+                permInfo.setItemMeta(permMeta);
+                menu.setItem(infoIndex, permInfo);
+            }
+
+            startRow++;
+        }
+
+        player.openInventory(menu);
+    }
+
+
 
     private List<String> getLoreForItem(int factionLevel, String itemName) {
         List<String> lore = new ArrayList<>();

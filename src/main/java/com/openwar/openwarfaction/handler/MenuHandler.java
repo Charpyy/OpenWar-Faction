@@ -42,6 +42,10 @@ public class MenuHandler implements Listener {
                 FactionGUI factionGUI = new FactionGUI(factionManager);
                 factionGUI.openUpgradeInventory(player);
             }
+            if (clickedSlot == 22) {
+                FactionGUI factionGUI = new FactionGUI(factionManager);
+                factionGUI.openFactionPermMenu(player);
+            }
 
             Bukkit.getServer().getScheduler().runTaskLater(plugin, player::updateInventory, 1L);
         }
