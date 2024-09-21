@@ -265,13 +265,13 @@ public class FactionCommand implements CommandExecutor {
                     player.sendMessage(logo + "§cYou don't have permission to perform this action.");
                     return true;
                 }
-                Location home = faction.getHomeLocation();
+                Location home = faction3.getHomeLocation();
                 if (home != null) {
                     Chunk chunk = home.getChunk();
                     FactionManager fm = new FactionManager();
-                    if (!fm.isLandClaimed(chunk) && fm.getFactionByChunk(chunk) != faction) {
+                    if (!fm.isLandClaimed(chunk) && fm.getFactionByChunk(chunk) != faction3) {
                         player.sendMessage(logo + "§cYour faction home as been removed since it isnt on your claimed land.");
-                        faction.removeHomeLocation();
+                        faction3.removeHomeLocation();
                         return true;
                     }
                 }
