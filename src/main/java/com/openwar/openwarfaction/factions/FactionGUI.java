@@ -67,7 +67,7 @@ public class FactionGUI {
         lore.add("§eExperience: §6" + factionExp + "§e / §6" + expRequired);
 
         double percentage = (double) factionExp / expRequired * 100;
-        int progress = (int) ((percentage / 100) * 27);
+        int progress = (int) ((percentage / 100) * 10);
         lore.add("§eProgression: " + getProgressBar(progress, 10) + " §6" + String.format("%.2f", percentage) + "%");
 
         meta.setLore(lore);

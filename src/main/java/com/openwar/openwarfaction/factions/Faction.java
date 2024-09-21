@@ -62,6 +62,8 @@ public class Faction {
 
     private void levelUp() {
         level++;
+        exp = 0;
+        getOnlineMembers();
     }
 
     public int getLevel() {
