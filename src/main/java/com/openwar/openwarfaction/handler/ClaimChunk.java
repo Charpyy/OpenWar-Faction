@@ -14,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class ClaimChunk implements Listener {
 
@@ -32,28 +33,27 @@ public class ClaimChunk implements Listener {
         if (player.getWorld().getName().equals("world")) {
             Chunk fromChunk = event.getFrom().getChunk();
             Chunk toChunk = event.getTo().getChunk();
-            if (!fromChunk.equals(toChunk)) {
-                Faction faction = factionManager.getFactionByChunk(toChunk);
 
-                if (faction != null) {
+            if (!fromChunk.equals(toChunk)) {
+                Faction fromFaction = factionManager.getFactionByChunk(fromChunk);
+                Faction toFaction = factionManager.getFactionByChunk(toChunk);
+
+                if (toFaction != null && (fromFaction == null || !fromFaction.getFactionUUID().equals(toFaction.getFactionUUID()))) {
                     if (!playerLastChunk.containsKey(player) || !playerLastChunk.get(player).equals(toChunk)) {
-                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §7You entered faction claim of §c" + faction.getName() + " §8«"));
+                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §fYou entered faction claim of §c" + toFaction.getName() + " §8«"));
                         playerLastChunk.put(player, toChunk);
                     }
-                } else {
+                } else if (toFaction == null && fromFaction != null) {
                     if (playerLastChunk.containsKey(player)) {
-                        Chunk lastChunk = playerLastChunk.get(player);
-                        Faction lastFaction = factionManager.getFactionByChunk(lastChunk);
-
-                        if (lastFaction != null) {
-                            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §7You left faction claim of §c" + lastFaction.getName() + " §8«"));
-                        }
+                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §fYou left faction claim of §c" + fromFaction.getName() + " §8«"));
                         playerLastChunk.remove(player);
                     }
                 }
             }
         }
     }
+
+
 
     @EventHandler
     public void onPlayerBuild(PlayerInteractEvent event) {
