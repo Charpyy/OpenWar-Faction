@@ -9,10 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class FactionGUI {
 
@@ -36,7 +33,19 @@ public class FactionGUI {
             }
         }
     }
+    private void setMenuBackground27(Inventory menu) {
+        ItemStack glassPane = createColoredGlassPane(Material.STAINED_GLASS_PANE, (short) 0, " ");
+        for (int i = 0; i < 27; i++) {
+            menu.setItem(i, glassPane);
+        }
 
+        ItemStack borderGlassPane = createColoredGlassPane(Material.STAINED_GLASS_PANE, (short) 15, " ");
+        for (int i = 0; i < 27; i++) {
+            if (isBorderSlot(i)) {
+                menu.setItem(i, borderGlassPane);
+            }
+        }
+    }
     private ItemStack createColoredGlassPane(Material material, short data, String name) {
         ItemStack glassPane = new ItemStack(material, 1, data);
         ItemMeta meta = glassPane.getItemMeta();
@@ -58,7 +67,7 @@ public class FactionGUI {
         lore.add("§eExperience: §6" + factionExp + "§e / §6" + expRequired);
 
         double percentage = (double) factionExp / expRequired * 100;
-        int progress = (int) ((percentage / 100) * 27);
+        int progress = (int) ((percentage / 100) * 10);
         lore.add("§eProgression: " + getProgressBar(progress, 10) + " §6" + String.format("%.2f", percentage) + "%");
 
         meta.setLore(lore);
@@ -73,12 +82,19 @@ public class FactionGUI {
         meta.setDisplayName("§8§lInformations");
         List<String> lore = new ArrayList<>();
         lore.add("§7Name: §f" + faction.getName());
-        lore.add("§7Members: §f" + faction.getMembers().size());
-
+        lore.add("§7Members Online: §f" + faction.getOnlineMembers().size() +"§7/§f"+ faction.getMembers().size());
+        FactionManager fm = new FactionManager();
+        lore.add("§7Claims: §f"+fm.getClaimedChunks(faction).size());
         if (faction.getHomeLocation() != null) {
             lore.add("§7Home Location: \u00A78X: \u00A77" + (int) faction.getHomeLocation().getX() + " \u00A78Y: \u00A77" + (int) faction.getHomeLocation().getY() + " \u00A78Z: \u00A77" + (int) faction.getHomeLocation().getZ());
         } else {
             lore.add("§7Home Location: \u00A7fNot Set.");
+        }
+        lore.add("§7Members Name: ");
+        for (Map.Entry<UUID, Rank> entry : faction.getMembers().entrySet()) {
+            UUID memberUUID = entry.getKey();
+            Player member = Bukkit.getPlayer(memberUUID);
+            lore.add(" §7- §b"+member.getName());
         }
 
         meta.setLore(lore);
@@ -214,26 +230,22 @@ public class FactionGUI {
     }
     //=============================================== FPERMS MENU =======================
     public void openFactionPermMenu(Player player) {
-        Inventory menu = Bukkit.createInventory(null, 54, "§b§lFaction Perms");
+        Inventory menu = Bukkit.createInventory(null, 54, "§b§lFaction Perms §f- §3Page 1");
         setMenuBackground(menu);
         UUID playerUUID = player.getUniqueId();
         Faction faction = factionManager.getFactionByPlayer(playerUUID);
 
-        int slot = 1;
-        for (PermRank rank : PermRank.values()) {
-            ItemStack rankPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 1);
-            ItemMeta meta = rankPane.getItemMeta();
-            meta.setDisplayName(rank.getAbr());
-            rankPane.setItemMeta(meta);
-            menu.setItem(slot, rankPane);
-            slot++;
-        }
-
-        int startRow = 1;
+        int startCol = 2;
         for (int i = 0; i < Permission.values().length; i++) {
-            if (startRow >= 6) break;
+            if (startCol >= 8) break;
 
             Permission perm = Permission.values()[i];
+
+            ItemStack permInfo = new ItemStack(Material.PAPER);
+            ItemMeta permMeta = permInfo.getItemMeta();
+            permMeta.setDisplayName("§r§8" + perm.name());
+            permInfo.setItemMeta(permMeta);
+            menu.setItem(startCol, permInfo);
 
             for (int j = 0; j < PermRank.values().length; j++) {
                 PermRank rank = PermRank.values()[j];
@@ -241,29 +253,158 @@ public class FactionGUI {
 
                 ItemStack permPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) (hasPerm ? 5 : 14));
                 ItemMeta meta = permPane.getItemMeta();
-                meta.setDisplayName(hasPerm ? "§2YES" : "§4NO");
+                meta.setDisplayName(hasPerm ? "§aYES" : "§4NO");
                 permPane.setItemMeta(meta);
 
-                int index = startRow * 9 + j+1;
+                int index = (j + 1) * 9 + startCol;
                 if (index < 54) {
                     menu.setItem(index, permPane);
                 }
             }
 
-            int infoIndex = startRow * 9 + 8;
-            if (infoIndex < 54) {
-                ItemStack permInfo = new ItemStack(Material.PAPER);
-                ItemMeta permMeta = permInfo.getItemMeta();
-                permMeta.setDisplayName("§r" + perm.name());
-                permInfo.setItemMeta(permMeta);
-                menu.setItem(infoIndex, permInfo);
-            }
-
-            startRow++;
+            startCol++;
         }
+
+        int slot = 9;
+        for (PermRank rank : PermRank.values()) {
+            ItemStack rankPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 1);
+            ItemMeta meta = rankPane.getItemMeta();
+            meta.setDisplayName("§3"+rank.getAbr());
+            rankPane.setItemMeta(meta);
+            menu.setItem(slot, rankPane);
+            slot += 9;
+        }
+
+        int gray = 10;
+        for (int i = 0; i < 6; i++) {
+            ItemStack grayPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
+            ItemMeta meta = grayPane.getItemMeta();
+            meta.setDisplayName("§8->");
+            grayPane.setItemMeta(meta);
+            if (gray < 54) {
+                menu.setItem(gray, grayPane);
+            }
+            gray += 9;
+        }
+        // Next page
+        ItemStack limePane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
+        ItemMeta meta = limePane.getItemMeta();
+        meta.setDisplayName("§8» §aNext Page");
+        limePane.setItemMeta(meta);
+        menu.setItem(0, limePane);
+        gray = 17;
+        for (int i = 0; i < 6; i++) {
+            ItemStack grayPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
+            ItemMeta metaa = grayPane.getItemMeta();
+            metaa.setDisplayName(" ");
+            grayPane.setItemMeta(metaa);
+            if (gray < 54) {
+                menu.setItem(gray, grayPane);
+            }
+            gray += 9;
+        }
+        ItemStack black = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
+        ItemMeta metaData = black.getItemMeta();
+        metaData.setDisplayName(" ");
+        black.setItemMeta(metaData);
+        menu.setItem(8, black);
 
         player.openInventory(menu);
     }
+
+    public void openFactionPermPage2(Player player) {
+        Inventory menu = Bukkit.createInventory(null, 54, "§b§lFaction Perms §f- §3Page 2");
+        setMenuBackground(menu);
+        UUID playerUUID = player.getUniqueId();
+        Faction faction = factionManager.getFactionByPlayer(playerUUID);
+
+        int startCol = 2;
+        for (int i = 6; i < Permission.values().length; i++) {
+            if (startCol >= 9) break;
+
+            Permission perm = Permission.values()[i];
+
+            ItemStack permInfo = new ItemStack(Material.PAPER);
+            ItemMeta permMeta = permInfo.getItemMeta();
+            permMeta.setDisplayName("§r§8" + perm.name());
+            permInfo.setItemMeta(permMeta);
+            menu.setItem(startCol, permInfo);
+
+            for (int j = 0; j < PermRank.values().length; j++) {
+                PermRank rank = PermRank.values()[j];
+                boolean hasPerm = faction.hasPermission(rank, perm);
+
+                ItemStack permPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) (hasPerm ? 5 : 14));
+                ItemMeta meta = permPane.getItemMeta();
+                meta.setDisplayName(hasPerm ? "§aYES" : "§4NO");
+                permPane.setItemMeta(meta);
+
+                int index = (j + 1) * 9 + startCol;
+                if (index < 54) {
+                    menu.setItem(index, permPane);
+                }
+            }
+
+            startCol++;
+        }
+        int slot = 9;
+        for (PermRank rank : PermRank.values()) {
+            ItemStack rankPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 1);
+            ItemMeta meta = rankPane.getItemMeta();
+            meta.setDisplayName("§3"+rank.getAbr());
+            rankPane.setItemMeta(meta);
+            menu.setItem(slot, rankPane);
+            slot += 9;
+        }
+
+        int gray = 10;
+        for (int i = 0; i < 6; i++) {
+            ItemStack grayPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
+            ItemMeta meta = grayPane.getItemMeta();
+            meta.setDisplayName("§8->");
+            grayPane.setItemMeta(meta);
+            if (gray < 54) {
+                menu.setItem(gray, grayPane);
+            }
+            gray += 9;
+        }
+        gray = 16;
+        for (int i = 0; i < 6; i++) {
+            ItemStack grayPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
+            ItemMeta meta = grayPane.getItemMeta();
+            meta.setDisplayName(" ");
+            grayPane.setItemMeta(meta);
+            if (gray < 54) {
+                menu.setItem(gray, grayPane);
+            }
+            gray += 9;
+        }
+        // Previous page
+        ItemStack limePane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
+        ItemMeta meta = limePane.getItemMeta();
+        meta.setDisplayName("§8« §cPrevious Page");
+        limePane.setItemMeta(meta);
+        menu.setItem(0, limePane);
+
+        player.openInventory(menu);
+    }
+    public void openFactionShopMain(Player player){
+        Inventory menu = Bukkit.createInventory(null, 27, "§b§lFaction Shops");
+        setMenuBackground27(menu);
+
+        List<String> lore1 = new ArrayList<>();
+        lore1.add("§bAll vehicles from MCHELI");
+
+        List<String> lore2 = new ArrayList<>();
+        lore2.add("§aUsefull machine from HBM");
+
+        ItemStack mcheli = createCustomItem(Material.matchMaterial("mcheli:ah64"), "§3MCHeli", lore1);
+        ItemStack hbm = createCustomItem(Material.matchMaterial("hbm:machine_rtg_grey"), "§2HBM", lore2);
+
+        menu.setItem(12, mcheli);
+        menu.setItem(14, hbm);
+    }
+
 
 
 
@@ -335,12 +476,14 @@ public class FactionGUI {
                 break;
             case "claims":
                 for (int i = 1; i <= 20; i += 2) {
+                    int maxChunks = (i == 1) ? 4 : (i + 2);
                     if (factionLevel < i) {
-                        lore.add("§8» §aUnlocked §f" + (i + 2) + " CHUNKS");
+                        lore.add("§8» §aUnlocked §f" + maxChunks + " §7Chunks");
                         lore.add("§3Next Upgrade level: §f" + i);
                         break;
                     }
                 }
+
                 if (factionLevel == 20) {
                     lore.add("§8» §4Max Level");
                     lore.add("§c20 CHUNKS");
@@ -348,10 +491,10 @@ public class FactionGUI {
                 break;
             case "farm":
                 if (factionLevel >= 10) {
+                    lore.add("§8» §aUnlocked");
+                } else {
                     lore.add("§8» §4Locked");
                     lore.add("§cUnlock at level: §f10");
-                } else {
-                    lore.add("§aUnlocked");
                 }
                 break;
         }

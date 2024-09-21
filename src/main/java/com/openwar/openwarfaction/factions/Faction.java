@@ -62,6 +62,8 @@ public class Faction {
 
     private void levelUp() {
         level++;
+        exp = 0;
+        getOnlineMembers();
     }
 
     public int getLevel() {
@@ -145,6 +147,9 @@ public class Faction {
     }
     public void setHomeLocation(Location homeLocation) {
         this.homeLocation = homeLocation;
+    }
+    public void removeHomeLocation() {
+        this.homeLocation = null;
     }
 
     public Location getHomeLocation() {

@@ -101,6 +101,21 @@ public class FactionCommand implements CommandExecutor {
                     }
                 }
                 break;
+            case "unclaim":
+                if (!factionManager.isFactionMember(playerUUID)) {
+                    player.sendMessage(logo + "§cYou are not in a faction.");
+                    return true;
+                }
+                Faction facPlayer = factionManager.getFactionByPlayer(playerUUID);
+                Location ploc = player.getLocation();
+                Chunk unclaim = ploc.getChunk();
+                if (factionManager.hasPermissionInFaction(playerUUID, facPlayer, Permission.CLAIM) && factionManager.getFactionByChunk(unclaim) == facPlayer) {
+                    factionManager.unclaimLand(unclaim);
+                    player.sendMessage(logo + "§7Chunk UnClaimed.");
+                    return true;
+                }
+                player.sendMessage(logo + "§cYou are not in a claimed land.");
+                break;
             case "create":
                 if (args.length < 2) {
                     player.sendMessage(logo + "\u00A7cPlease provide a faction name.");
@@ -200,8 +215,9 @@ public class FactionCommand implements CommandExecutor {
                 int claims = claimedChunks.size();
                 int level = faction2.getLevel();
                 for (int i = 1; i <= 20; i += 2) {
-                    if (level < i && claims >= (i + 2)) {
-                        player.sendMessage( "§cYou can't claim more than §4" + (i + 2) + " §cchunks. §8(more faction level required)");
+                    int maxClaims = (i == 1) ? 4 : (i + 2);
+                    if (level < i && claims >= maxClaims) {
+                        player.sendMessage("§cYou can't claim more than §4" + maxClaims + " §cchunks. §8(more faction level required)");
                         return true;
                     }
                 }
@@ -249,8 +265,16 @@ public class FactionCommand implements CommandExecutor {
                     player.sendMessage(logo + "§cYou don't have permission to perform this action.");
                     return true;
                 }
-                Location home = faction3.getHomeLocation();
-
+                Location home = faction.getHomeLocation();
+                if (home != null) {
+                    Chunk chunk = home.getChunk();
+                    FactionManager fm = new FactionManager();
+                    if (!fm.isLandClaimed(chunk) && fm.getFactionByChunk(chunk) != faction) {
+                        player.sendMessage(logo + "§cYour faction home as been removed since it isnt on your claimed land.");
+                        faction.removeHomeLocation();
+                        return true;
+                    }
+                }
                 if (home != null) {
                     waitingPlayers.put(player.getUniqueId(), true);
                     new BukkitRunnable() {

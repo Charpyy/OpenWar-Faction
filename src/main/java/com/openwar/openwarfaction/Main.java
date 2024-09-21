@@ -45,7 +45,7 @@ public final class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerMove(this), this);
         getServer().getPluginManager().registerEvents(new ClaimChunk(factionManager), this);
         getServer().getPluginManager().registerEvents(factionChat, this);
-        getServer().getPluginManager().registerEvents(new MenuHandler(this, factionManager),this);
+        getServer().getPluginManager().registerEvents(new MenuHandler(this, factionManager, economy),this);
         setupEconomy();
         factionManager.loadFactionsFromCSV(CSV_FILE_PATH);
         this.getCommand("f").setExecutor(new FactionCommand(factionChat, factionManager, getWaitingPlayers(), this, economy));
