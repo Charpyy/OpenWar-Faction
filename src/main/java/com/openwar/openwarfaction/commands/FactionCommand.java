@@ -268,8 +268,7 @@ public class FactionCommand implements CommandExecutor {
                 Location home = faction3.getHomeLocation();
                 if (home != null) {
                     Chunk chunk = home.getChunk();
-                    FactionManager fm = new FactionManager();
-                    if (!fm.isLandClaimed(chunk) && fm.getFactionByChunk(chunk) != faction3) {
+                    if (!factionManager.isLandClaimed(chunk) && factionManager.getFactionByChunk(chunk) != faction3) {
                         player.sendMessage(logo + "§cYour faction home as been removed since it isnt on your claimed land.");
                         faction3.removeHomeLocation();
                         return true;
