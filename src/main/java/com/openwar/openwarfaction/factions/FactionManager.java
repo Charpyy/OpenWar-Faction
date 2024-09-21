@@ -338,8 +338,11 @@ public class FactionManager {
     public List<Chunk> getClaimedChunks(Faction faction) {
         List<Chunk> claimedChunks = new ArrayList<>();
         for (Map.Entry<Chunk, Faction> entry : claimedLand.entrySet()) {
-            if (entry.getValue().equals(faction)) {
-                claimedChunks.add(entry.getKey());
+            Chunk chunk = entry.getKey();
+            Faction claimedFaction = entry.getValue();
+
+            if (claimedFaction.equals(faction)) {
+                claimedChunks.add(chunk);
             }
         }
         return claimedChunks;

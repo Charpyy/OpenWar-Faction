@@ -33,7 +33,19 @@ public class FactionGUI {
             }
         }
     }
+    private void setMenuBackground27(Inventory menu) {
+        ItemStack glassPane = createColoredGlassPane(Material.STAINED_GLASS_PANE, (short) 0, " ");
+        for (int i = 0; i < 27; i++) {
+            menu.setItem(i, glassPane);
+        }
 
+        ItemStack borderGlassPane = createColoredGlassPane(Material.STAINED_GLASS_PANE, (short) 15, " ");
+        for (int i = 0; i < 27; i++) {
+            if (isBorderSlot(i)) {
+                menu.setItem(i, borderGlassPane);
+            }
+        }
+    }
     private ItemStack createColoredGlassPane(Material material, short data, String name) {
         ItemStack glassPane = new ItemStack(material, 1, data);
         ItemMeta meta = glassPane.getItemMeta();
@@ -335,7 +347,6 @@ public class FactionGUI {
 
             startCol++;
         }
-
         int slot = 9;
         for (PermRank rank : PermRank.values()) {
             ItemStack rankPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 1);
@@ -377,6 +388,25 @@ public class FactionGUI {
 
         player.openInventory(menu);
     }
+    public void openFactionShopMain(Player player){
+        Inventory menu = Bukkit.createInventory(null, 27, "§b§lFaction Shops");
+        setMenuBackground27(menu);
+
+        List<String> lore1 = new ArrayList<>();
+        lore1.add("§bAll vehicles from MCHELI");
+
+        List<String> lore2 = new ArrayList<>();
+        lore2.add("§aUsefull machine from HBM");
+
+        ItemStack mcheli = createCustomItem(Material.matchMaterial("mcheli:ah64"), "§3MCHeli", lore1);
+        ItemStack hbm = createCustomItem(Material.matchMaterial("hbm:machine_rtg_grey"), "§2HBM", lore2);
+
+        menu.setItem(12, mcheli);
+        menu.setItem(14, hbm);
+    }
+
+
+
 
     private List<String> getLoreForItem(int factionLevel, String itemName) {
         List<String> lore = new ArrayList<>();
@@ -446,12 +476,14 @@ public class FactionGUI {
                 break;
             case "claims":
                 for (int i = 1; i <= 20; i += 2) {
+                    int maxChunks = (i == 1) ? 4 : (i + 2);
                     if (factionLevel < i) {
-                        lore.add("§8» §aUnlocked §f" + (i + 2) + " CHUNKS");
+                        lore.add("§8» §aUnlocked §f" + maxChunks + " §7Chunks");
                         lore.add("§3Next Upgrade level: §f" + i);
                         break;
                     }
                 }
+
                 if (factionLevel == 20) {
                     lore.add("§8» §4Max Level");
                     lore.add("§c20 CHUNKS");
@@ -459,10 +491,10 @@ public class FactionGUI {
                 break;
             case "farm":
                 if (factionLevel >= 10) {
+                    lore.add("§8» §aUnlocked");
+                } else {
                     lore.add("§8» §4Locked");
                     lore.add("§cUnlock at level: §f10");
-                } else {
-                    lore.add("§aUnlocked");
                 }
                 break;
         }

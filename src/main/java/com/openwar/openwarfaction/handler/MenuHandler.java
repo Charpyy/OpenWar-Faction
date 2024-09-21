@@ -3,6 +3,7 @@ import com.openwar.openwarfaction.Main;
 import com.openwar.openwarfaction.factions.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -172,8 +173,93 @@ public class MenuHandler implements Listener {
             event.setCancelled(true);
             Bukkit.getServer().getScheduler().runTaskLater(plugin, player::updateInventory, 1L);
         }
+    if (view.getTitle().contains("§k§l!!!§r§3§l MCHELI SHOP §8§r§8§k§l!!!")) {
+        event.setCancelled(true);
+        Player player = (Player) event.getWhoClicked();
+        int clickedSlot = event.getSlot();
+        Faction faction = factionManager.getFactionByPlayer(player.getUniqueId());
+        String factionName = faction.getName();
+        UUID factionId = faction.getFactionUUID();
+        int factionLevel = faction.getLevel();
+        int shoplevel = 0;
+        if (factionLevel < 6) {
+            shoplevel = 1;
+        } else if (factionLevel < 8) {
+            shoplevel = 2;
+        } else if (factionLevel < 10) {
+            shoplevel = 3;
+        } else if (factionLevel < 12) {
+            shoplevel = 4;
+        } else if (factionLevel > 12) {
+            shoplevel = 5;
+        }
+
+        if (clickedSlot == 15) {
+            FacShop("Anti-Air", "antiair", shoplevel, player);
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+        } else if (clickedSlot == 13) {
+            FacShop("Helicopter", "heli", shoplevel, player);
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+        } else if (clickedSlot == 11) {
+            FacShop("Planes", "plane", shoplevel, player);
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+        } else if (clickedSlot == 21) {
+            FacShop("Tanks", "tank", shoplevel, player);
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+        } else if (clickedSlot == 23) {
+            FacShop("Boats", "bato", shoplevel, player);
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+        }
+            }
+            if (inventory.getTitle().contains("§8§l⟪ §b")) {
+                event.setCancelled(true);
+
+                if (clickedItem != null && clickedItem.hasItemMeta()) {
+                    ItemMeta itemMeta = clickedItem.getItemMeta();
+                    if (itemMeta.getDisplayName().contains("§8» §cBack")) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+                        openFactionShopMainMenu(player); // Ouvre le menu principal du shop
+                    } else if (itemMeta.getDisplayName().contains("§8§l⟦ §b")) {
+                        List<String> lore = itemMeta.getLore();
+                        if (lore != null && lore.size() > 1) {
+                            String[] priceSplit = lore.get(0).split("\\$");
+                            int price = Integer.parseInt(priceSplit[1]);
+
+                            double playerBalance = economy.getBalance(player);
+                            if (playerBalance >= price) {
+                                economy.withdrawPlayer(player, price);
+                                if (player.getInventory().firstEmpty() != -1) { // Vérifie si le joueur a de la place
+                                    player.getInventory().addItem(clickedItem.clone());
+                                } else {
+                                    player.getWorld().dropItemNaturally(player.getLocation(), clickedItem.clone());
+                                }
+
+                                player.sendMessage("§8§l⟦§bFac-Shop§8§l⟧ §7You have purchased §f1 §8" + itemMeta.getDisplayName() + " §7for §6$" + price + " §7!");
+                                player.closeInventory();
+                            } else {
+                                player.sendMessage("§8§l⟦§bFac-Shop§8§l⟧ §cYou do not have enough money!");
+                                player.closeInventory();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    private void FacShop(String name, String type, int level, Player player) {
+        player.sendMessage("You bought a " + name + " from the shop!");
+        // Implémentation de la logique spécifique pour le type d'objet ici
     }
 
+    private int getShopLevel(String factionId) {
+        // Logique pour récupérer le niveau du shop d'une faction
+        // Exemple : return shopLevelMap.get(factionId);
+        return 1; // Par défaut, retourne 1
+    }
+
+    private void openFactionShopMainMenu(Player player) {
+        // Logique pour ouvrir le menu principal du shop de faction
+        // Exemple : player.openInventory(factionShopMainMenu);
+    }
     public static Inventory fillChestWithBarriers(Inventory inventory, int factionLevel) {
         for (int i = 0; i < inventory.getSize(); i++) {
             ItemStack currentItem = inventory.getItem(i);
@@ -241,4 +327,8 @@ public class MenuHandler implements Listener {
         }
         return 5;
     }
+
+
+
+
 }

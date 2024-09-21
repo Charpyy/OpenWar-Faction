@@ -200,8 +200,9 @@ public class FactionCommand implements CommandExecutor {
                 int claims = claimedChunks.size();
                 int level = playerFaction.getLevel();
                 for (int i = 1; i <= 20; i += 2) {
-                    if (level < i && claims >= (i + 2)) {
-                        player.sendMessage( "§cYou can't claim more than §4" + (i + 2) + " §cchunks. §8(more faction level required)");
+                    int maxClaims = (i == 1) ? 4 : (i + 2);
+                    if (level < i && claims >= maxClaims) {
+                        player.sendMessage("§cYou can't claim more than §4" + maxClaims + " §cchunks. §8(more faction level required)");
                         return true;
                     }
                 }
