@@ -284,7 +284,7 @@ public class FactionGUI {
         for (int i = 0; i < 6; i++) {
             ItemStack grayPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
             ItemMeta metaa = grayPane.getItemMeta();
-            metaa.setDisplayName("");
+            metaa.setDisplayName(" ");
             grayPane.setItemMeta(metaa);
             if (gray < 54) {
                 menu.setItem(gray, grayPane);
@@ -361,7 +361,7 @@ public class FactionGUI {
         for (int i = 0; i < 6; i++) {
             ItemStack grayPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
             ItemMeta meta = grayPane.getItemMeta();
-            meta.setDisplayName("");
+            meta.setDisplayName(" ");
             grayPane.setItemMeta(meta);
             if (gray < 54) {
                 menu.setItem(gray, grayPane);

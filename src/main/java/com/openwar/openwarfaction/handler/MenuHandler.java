@@ -85,11 +85,7 @@ public class MenuHandler implements Listener {
             }
 
             ItemStack item = event.getClickedInventory().getItem(clickedSlot);
-            if (item == null) {
-                return;
-            }
-
-            if (item.getType() == Material.PAPER) {
+            if (item == null || item.getType() != Material.STAINED_GLASS_PANE || item.getType() == Material.PAPER || item.getItemMeta().getDisplayName().equals(" ")) {
                 event.setCancelled(true);
                 return;
             }
@@ -109,7 +105,7 @@ public class MenuHandler implements Listener {
                 int col = clickedSlot / 9;
                 int row = clickedSlot % 9;
 
-                if (row >= 2 && row <= 8 && col >= 1) {
+                if (row >= 2 && row <= 8 && col >= 1 && col < 8) {
                     perm = Permission.values()[row - 2];
                     rank = PermRank.values()[col - 1];
 
@@ -138,11 +134,8 @@ public class MenuHandler implements Listener {
             }
 
             ItemStack item = event.getClickedInventory().getItem(clickedSlot);
-            if (item.getType() == Material.PAPER) {
+            if (item == null || item.getType() != Material.STAINED_GLASS_PANE || item.getType() == Material.PAPER || item.getItemMeta().getDisplayName().equals(" ")) {
                 event.setCancelled(true);
-                return;
-            }
-            if (item == null || item.getType() != Material.STAINED_GLASS_PANE) {
                 return;
             }
 
