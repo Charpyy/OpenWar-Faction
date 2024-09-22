@@ -42,11 +42,11 @@ public final class Main extends JavaPlugin {
         System.out.println(" OpenWar - Faction loading...");
         this.factionManager = new FactionManager();
         this.factionChat = new FactionChat(factionManager);
+        setupEconomy();
         getServer().getPluginManager().registerEvents(new PlayerMove(this), this);
         getServer().getPluginManager().registerEvents(new ClaimChunk(factionManager), this);
         getServer().getPluginManager().registerEvents(factionChat, this);
         getServer().getPluginManager().registerEvents(new MenuHandler(this, factionManager, economy),this);
-        setupEconomy();
         factionManager.loadFactionsFromCSV(CSV_FILE_PATH);
         this.getCommand("f").setExecutor(new FactionCommand(factionChat, factionManager, getWaitingPlayers(), this, economy));
         this.getCommand("fadmin").setExecutor(new AdminCommand(factionManager, this));

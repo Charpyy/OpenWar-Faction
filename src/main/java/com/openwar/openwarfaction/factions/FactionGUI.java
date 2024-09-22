@@ -1,6 +1,7 @@
 package com.openwar.openwarfaction.factions;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -33,6 +34,7 @@ public class FactionGUI {
             }
         }
     }
+
     private void setMenuBackground27(Inventory menu) {
         ItemStack glassPane = createColoredGlassPane(Material.STAINED_GLASS_PANE, (short) 0, " ");
         for (int i = 0; i < 27; i++) {
@@ -41,11 +43,12 @@ public class FactionGUI {
 
         ItemStack borderGlassPane = createColoredGlassPane(Material.STAINED_GLASS_PANE, (short) 15, " ");
         for (int i = 0; i < 27; i++) {
-            if (isBorderSlot(i)) {
+            if (isBorderSlot27(i)) {
                 menu.setItem(i, borderGlassPane);
             }
         }
     }
+
     private ItemStack createColoredGlassPane(Material material, short data, String name) {
         ItemStack glassPane = new ItemStack(material, 1, data);
         ItemMeta meta = glassPane.getItemMeta();
@@ -82,9 +85,9 @@ public class FactionGUI {
         meta.setDisplayName("§8§lInformations");
         List<String> lore = new ArrayList<>();
         lore.add("§7Name: §f" + faction.getName());
-        lore.add("§7Members Online: §f" + faction.getOnlineMembers().size() +"§7/§f"+ faction.getMembers().size());
+        lore.add("§7Members Online: §f" + faction.getOnlineMembers().size() + "§7/§f" + faction.getMembers().size());
         FactionManager fm = new FactionManager();
-        lore.add("§7Claims: §f"+fm.getClaimedChunks(faction).size());
+        lore.add("§7Claims: §f" + fm.getClaimedChunks(faction).size());
         if (faction.getHomeLocation() != null) {
             lore.add("§7Home Location: \u00A78X: \u00A77" + (int) faction.getHomeLocation().getX() + " \u00A78Y: \u00A77" + (int) faction.getHomeLocation().getY() + " \u00A78Z: \u00A77" + (int) faction.getHomeLocation().getZ());
         } else {
@@ -94,13 +97,14 @@ public class FactionGUI {
         for (Map.Entry<UUID, Rank> entry : faction.getMembers().entrySet()) {
             UUID memberUUID = entry.getKey();
             Player member = Bukkit.getPlayer(memberUUID);
-            lore.add(" §7- §b"+member.getName());
+            lore.add(" §7- §b" + member.getName());
         }
 
         meta.setLore(lore);
         infoItem.setItemMeta(meta);
         return infoItem;
     }
+
     private ItemStack createFpermItem() {
         ItemStack fperm = new ItemStack(Material.ANVIL);
         setItemLore(fperm, "§3§lFaction Perms", "§7Click here to open", null);
@@ -142,6 +146,11 @@ public class FactionGUI {
 
     private static boolean isBorderSlot(int slot) {
         return slot < 9 || slot >= 45 || slot % 9 == 0 || slot % 9 == 8;
+    }
+
+
+    private static boolean isBorderSlot27(int slot) {
+        return slot < 9 || slot >= 18 || slot % 9 == 0 || slot % 9 == 8;
     }
 
     private ItemStack createCustomItem(Material material, String displayName, List<String> lore) {
@@ -228,6 +237,7 @@ public class FactionGUI {
 
         player.openInventory(factionLevelMenu);
     }
+
     //=============================================== FPERMS MENU =======================
     public void openFactionPermMenu(Player player) {
         Inventory menu = Bukkit.createInventory(null, 54, "§b§lFaction Perms §f- §3Page 1");
@@ -269,7 +279,7 @@ public class FactionGUI {
         for (PermRank rank : PermRank.values()) {
             ItemStack rankPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 1);
             ItemMeta meta = rankPane.getItemMeta();
-            meta.setDisplayName("§3"+rank.getAbr());
+            meta.setDisplayName("§3" + rank.getAbr());
             rankPane.setItemMeta(meta);
             menu.setItem(slot, rankPane);
             slot += 9;
@@ -351,7 +361,7 @@ public class FactionGUI {
         for (PermRank rank : PermRank.values()) {
             ItemStack rankPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 1);
             ItemMeta meta = rankPane.getItemMeta();
-            meta.setDisplayName("§3"+rank.getAbr());
+            meta.setDisplayName("§3" + rank.getAbr());
             rankPane.setItemMeta(meta);
             menu.setItem(slot, rankPane);
             slot += 9;
@@ -388,7 +398,8 @@ public class FactionGUI {
 
         player.openInventory(menu);
     }
-    public void openFactionShopMain(Player player){
+//===============================FACTION SHOP MENU MAIN==========================================================================
+    public void openFactionShopMain(Player player) {
         Inventory menu = Bukkit.createInventory(null, 27, "§b§lFaction Shops");
         setMenuBackground27(menu);
 
@@ -399,12 +410,272 @@ public class FactionGUI {
         lore2.add("§aUsefull machine from HBM");
 
         ItemStack mcheli = createCustomItem(Material.matchMaterial("mcheli:ah64"), "§3MCHeli", lore1);
-        ItemStack hbm = createCustomItem(Material.matchMaterial("hbm:machine_rtg_grey"), "§2HBM", lore2);
+        //ItemStack hbm = createCustomItem(Material.matchMaterial("hbm:machine_rtg_grey"), "§2HBM", lore2);
 
         menu.setItem(12, mcheli);
-        menu.setItem(14, hbm);
+        //menu.setItem(14, hbm);
+
+        player.openInventory(menu);
     }
 
+    public void openFactionShopMCHELI(Player player) {
+        Inventory mcheliShop = Bukkit.createInventory(null, 36, "§k§l!!!§r§3§l MCHELI SHOP §8§r§8§k§l!!!");
+        ItemStack blackGlass = new ItemStack(Material.STAINED_GLASS_PANE,1,(short) 15);
+        ItemMeta blackMeta = blackGlass.getItemMeta();
+        if (blackMeta != null) {
+            blackMeta.setDisplayName(" ");
+            blackGlass.setItemMeta(blackMeta);
+        }
+        for (int i = 0; i < mcheliShop.getSize(); i++) {
+            mcheliShop.setItem(i, blackGlass);
+        }
+        ItemStack antiAir = new ItemStack(Material.matchMaterial("mcheli:mim-23") != null ? Material.matchMaterial("mcheli:mim-23") : Material.BARRIER);
+        ItemMeta antiAirMeta = antiAir.getItemMeta();
+        if (antiAirMeta != null) {
+            antiAirMeta.setDisplayName(ChatColor.GRAY + "Anti - Air");
+            antiAir.setItemMeta(antiAirMeta);
+        }
+        ItemStack helicopters = new ItemStack(Material.matchMaterial("mcheli:ch47") != null ? Material.matchMaterial("mcheli:ch47") : Material.BARRIER);
+        ItemMeta helicoptersMeta = helicopters.getItemMeta();
+        if (helicoptersMeta != null) {
+            helicoptersMeta.setDisplayName(ChatColor.GRAY + "Helicopter");
+            helicopters.setItemMeta(helicoptersMeta);
+        }
+        ItemStack planes = new ItemStack(Material.matchMaterial("mcheli:f22a") != null ? Material.matchMaterial("mcheli:f22a") : Material.BARRIER);
+        ItemMeta planesMeta = planes.getItemMeta();
+        if (planesMeta != null) {
+            planesMeta.setDisplayName(ChatColor.GRAY + "Plane");
+            planes.setItemMeta(planesMeta);
+        }
+        ItemStack tanks = new ItemStack(Material.matchMaterial("mcheli:merkava_mk4") != null ? Material.matchMaterial("mcheli:merkava_mk4") : Material.BARRIER);
+        ItemMeta tanksMeta = tanks.getItemMeta();
+        if (tanksMeta != null) {
+            tanksMeta.setDisplayName(ChatColor.GRAY + "Tank");
+            tanks.setItemMeta(tanksMeta);
+        }
+        ItemStack boats = new ItemStack(Material.matchMaterial("mcheli:zodiac") != null ? Material.matchMaterial("mcheli:zodiac") : Material.BARRIER);
+        ItemMeta boatsMeta = boats.getItemMeta();
+        if (boatsMeta != null) {
+            boatsMeta.setDisplayName(ChatColor.GRAY + "Boats");
+            boats.setItemMeta(boatsMeta);
+        }
+        mcheliShop.setItem(15, antiAir);
+        mcheliShop.setItem(13, helicopters);
+        mcheliShop.setItem(11, planes);
+        mcheliShop.setItem(21, tanks);
+        mcheliShop.setItem(23, boats);
+        ItemStack whiteGlass = new ItemStack(Material.STAINED_GLASS_PANE,1 ,(short) 0);
+        ItemMeta whiteMeta = whiteGlass.getItemMeta();
+        if (whiteMeta != null) {
+            whiteMeta.setDisplayName(" ");
+            whiteGlass.setItemMeta(whiteMeta);
+        }
+        int[] whiteSlots = {10, 12, 14, 16, 19, 20, 22, 24, 25};
+        for (int slot : whiteSlots) {
+            mcheliShop.setItem(slot, whiteGlass);
+        }
+        player.openInventory(mcheliShop);
+    }
+
+    //================================================== FACTION SHOP MCHELI MENU =====================================================================
+    public void openFacShop(Player player, String category, String categoryName, int level) {
+        List<String> factionShopItems;
+
+        //categorie
+        switch (category.toLowerCase()) {
+            case "heli":
+                factionShopItems = getFactionShopHeliItems();
+                break;
+            case "tank":
+                factionShopItems = getFactionShopTankItems();
+                break;
+            case "antiair":
+                factionShopItems = getFactionShopAntiAirItems();
+                break;
+            case "bato":
+                factionShopItems = getFactionShopBatoItems();
+                break;
+            case "plane":
+                factionShopItems = getFactionShopPlaneItems();
+                break;
+            default:
+                factionShopItems = new ArrayList<>();
+                break;
+        }
+
+        List<ItemStack> items = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        List<String> prices = new ArrayList<>();
+
+        for (String itemData : factionShopItems) {
+            String[] parts = itemData.split("\\$");
+            int requiredLevel = Integer.parseInt(parts[0]);
+
+            if (requiredLevel <= level) {
+                names.add(parts[2]);
+                prices.add(parts[1]);
+                items.add(parseItem(parts[2]));
+            }
+        }
+
+        int totalItems = items.size();
+        System.out.println("Total items: "+items.size());
+
+        int rows = (int) Math.ceil(totalItems / 7.0) + 2;
+        if (rows < 3) rows = 3;
+
+        Inventory inv = Bukkit.createInventory(null, rows * 9, "§8§l⟪ §b" + categoryName + " §8§l⟫");
+
+
+        inv.setItem(4, createGlassPane("§8» §cBack", Material.STAINED_GLASS_PANE, (short) 14));
+        int slot = 10;
+        for (int i = 0; i < totalItems; i++) {
+            ItemStack item = items.get(i);
+            String name = names.get(i);
+            String price = prices.get(i);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§8§l⟦ §b" + name + " §8§l⟧");
+            meta.setLore(Collections.singletonList(ChatColor.DARK_GRAY + "▶ " + ChatColor.GRAY + "Buy for: " + ChatColor.GOLD + "$" + price));
+            item.setItemMeta(meta);
+            System.out.println("Added item: " + item + " to slot: " + slot);
+            inv.setItem(slot, item);
+            if (slot == 16 || slot == 25 || slot == 34)
+            {
+                slot= slot+2;
+            }
+            slot++;
+        }
+        //if ((slot - 9) % 9 == 0) {
+        //    slot += 2;
+        //    System.out.println("item: "+item+ " in slot: " + slot);
+        //}
+        addBorders(inv, rows);
+        inv.setItem(4, createGlassPane("§8» §cBack", Material.STAINED_GLASS_PANE, (short) 14));
+        player.openInventory(inv);
+    }
+
+    private List<String> getFactionShopHeliItems() {
+        return Arrays.asList(
+                "1$4560$mcheli robinson r44",
+                "1$3100$mcheli bell47g",
+                "1$3200$mcheli bell47gf",
+                "1$6400$mcheli mh6",
+                "1$6900$mcheli bell206l",
+                "1$2310$mcheli fl282",
+                "1$4300$mcheli robinson r44f",
+                "1$8490$mcheli nh90",
+                "2$8200$mcheli mi24ps",
+                "2$8800$mcheli sh3",
+                "2$19850$mcheli bell207",
+                "3$11340$mcheli ch47",
+                "3$13450$mcheli w3",
+                "3$18100$mcheli mh53e",
+                "3$20840$mcheli ah6",
+                "4$19450$mcheli sh60",
+                "4$21400$mcheli oh1",
+                "4$23040$mcheli penetrator",
+                "4$24500$mcheli ec665",
+                "5$18210$mcheli uh1c",
+                "5$34560$mcheli mi24",
+                "5$36780$mcheli mi28",
+                "5$32450$mcheli mh60l dap",
+                "5$40510$mcheli mh60g",
+                "5$41350$mcheli ah64",
+                "5$35900$mcheli ka50n",
+                "5$36100$mcheli ka52",
+                "5$37810$mcheli ah1z"
+        );
+    }
+
+    private List<String> getFactionShopTankItems() {
+        return Arrays.asList(
+                "1$1450$mcheli growler",
+                "2$2400$mcheli mxtmv",
+                "2$9450$mcheli m1129",
+                "2$9800$mcheli kurganets25",
+                "3$12310$mcheli kv2",
+                "3$23400$mcheli m26",
+                "4$35670$mcheli merkava mk4",
+                "4$37200$mcheli m1a2",
+                "5$45120$mcheli t84",
+                "5$46900$mcheli t90"
+        );
+    }
+
+    private List<String> getFactionShopAntiAirItems() {
+        return Arrays.asList(
+                "2$5600$mcheli bofors40mml60",
+                "2$6700$mcheli 25mmaamg",
+                "2$3400$mcheli fgm148",
+                "3$5900$mcheli fim92",
+                "3$21340$mcheli mk15",
+                "3$25300$mcheli mim23",
+                "5$39000$mcheli s75"
+        );
+    }
+
+    private List<String> getFactionShopBatoItems() {
+        return Arrays.asList(
+                "1$750$mcheli zodiac",
+                "2$4530$mcheli mark5",
+                "4$14340$mcheli cb90",
+                "5$27890$mcheli project1204"
+        );
+    }
+
+    private List<String> getFactionShopPlaneItems() {
+        return  Arrays.asList(
+                "1$6120$mcheli p51d",
+                "1$6670$mcheli a6m2",
+                "1$4330$mcheli t4",
+                "1$4160$mcheli an2",
+                "2$8370$mcheli h8k",
+                "2$7440$mcheli macchi mc72",
+                "2$8900$mcheli n1k1",
+                "2$7930$mcheli f1m",
+                "2$9310$mcheli macchi m33",
+                "2$7610$mcheli emb314",
+                "2$6940$mcheli us2",
+                "3$19330$mcheli mv22",
+                "3$21890$mcheli b29",
+                "4$23940$mcheli mig29",
+                "4$24510$mcheli su33",
+                "4$27600$mcheli a10",
+                "4$25890$mcheli su47",
+                "4$25910$mcheli su37",
+                "5$34560$mcheli fa18f",
+                "5$36780$mcheli f15s mtd",
+                "5$58210$mcheli b2a",
+                "5$38340$mcheli f35c",
+                "5$39100$mcheli f22a",
+                "5$39540$mcheli f35b",
+                "5$45900$mcheli ac130",
+                "5$40310$mcheli f35a"
+        );
+    }
+
+    private ItemStack parseItem(String itemName) {
+        Material material = Material.matchMaterial(itemName.replace("mcheli ", "mcheli:").replace(" ", "_"));
+        return new ItemStack(material != null ? material : Material.BARRIER);
+    }
+
+    private ItemStack createGlassPane(String name, Material material, short color) {
+        ItemStack pane = new ItemStack(material, 1, color);
+        ItemMeta meta = pane.getItemMeta();
+        meta.setDisplayName(name);
+        pane.setItemMeta(meta);
+        return pane;
+    }
+
+    private void addBorders(Inventory inv, int rows) {
+        int size = rows * 9;
+        for (int i = 0; i < size; i++) {
+            if (i < 9 || (i % 9 == 0) || (i % 9 == 8) || (i >= size - 9)) {
+                ItemStack pane = createGlassPane(" ", Material.STAINED_GLASS_PANE, (short) 15);
+                inv.setItem(i, pane);
+            }
+        }
+    }
 
 
 
