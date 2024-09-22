@@ -712,7 +712,7 @@ public class FactionGUI {
                 } else if (factionLevel < 12) {
                     lore.add("§8» §aUnlocked §fShop Lvl 4");
                     lore.add("§3Next Upgrade level: §f12");
-                } else if (factionLevel > 12) {
+                } else {
                     lore.add("§8» §4Max Level");
                     lore.add("§cFaction Shop Lvl 5");
                 }

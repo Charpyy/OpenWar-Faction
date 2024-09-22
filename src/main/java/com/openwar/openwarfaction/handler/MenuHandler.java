@@ -211,7 +211,7 @@ public class MenuHandler implements Listener {
                 shoplevel = 3;
             } else if (factionLevel < 12) {
                 shoplevel = 4;
-            } else if (factionLevel > 12) {
+            } else {
                 shoplevel = 5;
             }
             FactionGUI fg = new FactionGUI(factionManager);
