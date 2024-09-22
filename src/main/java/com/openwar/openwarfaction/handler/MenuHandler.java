@@ -251,10 +251,11 @@ public class MenuHandler implements Listener {
                         double playerBalance = economy.getBalance(player);
                         if (playerBalance >= price) {
                             economy.withdrawPlayer(player, price);
+                            ItemStack give = new ItemStack(clickedItem.getType());
                             if (player.getInventory().firstEmpty() != -1) {
-                                player.getInventory().addItem(clickedItem.clone());
+                                player.getInventory().addItem(give);
                             } else {
-                                player.getWorld().dropItemNaturally(player.getLocation(), clickedItem.clone());
+                                player.getWorld().dropItemNaturally(player.getLocation(), give);
                             }
                             player.sendMessage("§8§l⟦§bFac-Shop§8§l⟧ §7You have purchased §f1 §8" + itemMeta.getDisplayName() + " §7for §6$" + price + " §7!");
                             player.closeInventory();

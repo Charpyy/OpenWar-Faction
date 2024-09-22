@@ -520,7 +520,6 @@ public class FactionGUI {
         }
 
         int totalItems = items.size();
-        System.out.println("Total items: "+items.size());
 
         int rows = (int) Math.ceil(totalItems / 7.0) + 2;
         if (rows < 3) rows = 3;
