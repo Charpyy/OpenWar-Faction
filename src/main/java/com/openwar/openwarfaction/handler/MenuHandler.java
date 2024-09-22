@@ -3,8 +3,10 @@ import com.openwar.openwarfaction.Main;
 import com.openwar.openwarfaction.factions.*;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,8 +16,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 public class MenuHandler implements Listener {
@@ -57,13 +58,16 @@ public class MenuHandler implements Listener {
             Player player = (Player) event.getWhoClicked();
             event.setCancelled(true);
             int clickedSlot = event.getSlot();
-
+            UUID playerUUID = player.getUniqueId();
+            Faction faction = factionManager.getFactionByPlayer(playerUUID);
             if (clickedSlot == 20) {
-                UUID playerUUID = player.getUniqueId();
-                Faction faction = factionManager.getFactionByPlayer(playerUUID);
                 Inventory factionChest = factionManager.getFactionChest(faction);
                 factionChest = fillChestWithBarriers(factionChest, faction.getLevel());
                 player.openInventory(factionChest);
+            }
+            if (clickedSlot == 22){
+                FactionGUI fg =  new FactionGUI(factionManager);
+                fg.openFactionShopMain(player);
             }
 
             Bukkit.getServer().getScheduler().runTaskLater(plugin, player::updateInventory, 1L);
@@ -177,13 +181,26 @@ public class MenuHandler implements Listener {
             event.setCancelled(true);
             Bukkit.getServer().getScheduler().runTaskLater(plugin, player::updateInventory, 1L);
         }
+        if (view.getTitle().contains("§b§lFaction Shops")) {
+            event.setCancelled(true);
+            Player player = (Player) event.getWhoClicked();
+            int clickedSlot = event.getSlot();
+            if (clickedSlot < 0) {
+                return;
+            }
+            if (clickedSlot == 12) {
+                FactionGUI fg = new FactionGUI(factionManager);
+                fg.openFactionShopMCHELI(player);
+            }
+        }
         if (view.getTitle().contains("§k§l!!!§r§3§l MCHELI SHOP §8§r§8§k§l!!!")) {
             event.setCancelled(true);
             Player player = (Player) event.getWhoClicked();
             int clickedSlot = event.getSlot();
+            if (clickedSlot < 0) {
+                return;
+            }
             Faction faction = factionManager.getFactionByPlayer(player.getUniqueId());
-            String factionName = faction.getName();
-            UUID factionId = faction.getFactionUUID();
             int factionLevel = faction.getLevel();
             int shoplevel = 0;
             if (factionLevel < 6) {
@@ -194,24 +211,24 @@ public class MenuHandler implements Listener {
                 shoplevel = 3;
             } else if (factionLevel < 12) {
                 shoplevel = 4;
-            } else if (factionLevel > 12) {
+            } else {
                 shoplevel = 5;
             }
-
+            FactionGUI fg = new FactionGUI(factionManager);
             if (clickedSlot == 15) {
-                FacShop("Anti-Air", "antiair", shoplevel, player);
+                fg.openFacShop(player, "antiair", "Anti - Air", shoplevel);
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             } else if (clickedSlot == 13) {
-                FacShop("Helicopter", "heli", shoplevel, player);
+                fg.openFacShop(player, "heli", "Helicopter", shoplevel);
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             } else if (clickedSlot == 11) {
-                FacShop("Planes", "plane", shoplevel, player);
+                fg.openFacShop(player, "plane", "Plane", shoplevel);
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             } else if (clickedSlot == 21) {
-                FacShop("Tanks", "tank", shoplevel, player);
+                fg.openFacShop(player, "tank", "Tank", shoplevel);
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             } else if (clickedSlot == 23) {
-                FacShop("Boats", "bato", shoplevel, player);
+                fg.openFacShop(player, "bato", "Boat", shoplevel);
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             }
         }
@@ -228,17 +245,17 @@ public class MenuHandler implements Listener {
                 } else if (itemMeta.getDisplayName().contains("§8§l⟦ §b")) {
                     Player player = (Player) event.getWhoClicked();
                     List<String> lore = itemMeta.getLore();
-                    if (lore != null && lore.size() > 1) {
+                    if (lore != null) {
                         String[] priceSplit = lore.get(0).split("\\$");
                         int price = Integer.parseInt(priceSplit[1]);
-
                         double playerBalance = economy.getBalance(player);
                         if (playerBalance >= price) {
                             economy.withdrawPlayer(player, price);
+                            ItemStack give = new ItemStack(clickedItem.getType());
                             if (player.getInventory().firstEmpty() != -1) {
-                                player.getInventory().addItem(clickedItem.clone());
+                                player.getInventory().addItem(give);
                             } else {
-                                player.getWorld().dropItemNaturally(player.getLocation(), clickedItem.clone());
+                                player.getWorld().dropItemNaturally(player.getLocation(), give);
                             }
                             player.sendMessage("§8§l⟦§bFac-Shop§8§l⟧ §7You have purchased §f1 §8" + itemMeta.getDisplayName() + " §7for §6$" + price + " §7!");
                             player.closeInventory();
@@ -251,20 +268,16 @@ public class MenuHandler implements Listener {
             }
         }
     }
-    private void FacShop(String name, String type, int level, Player player) {
-        player.sendMessage("You bought a " + name + " from the shop!");
-    }
 
-    private int getShopLevel(String factionId) {
-        // Logique pour récupérer le niveau du shop d'une faction
-        // Exemple : return shopLevelMap.get(factionId);
-        return 1; // Par défaut, retourne 1
-    }
+    //fonction pour généré des inventaire dynamique en fonction de la catégorie et du niveau de shop
+
+
 
     private void openFactionShopMainMenu(Player player) {
-        // Logique pour ouvrir le menu principal du shop de faction
-        // Exemple : player.openInventory(factionShopMainMenu);
+        FactionGUI fg =  new FactionGUI(factionManager);
+        fg.openFactionShopMain(player);
     }
+
     public static Inventory fillChestWithBarriers(Inventory inventory, int factionLevel) {
         for (int i = 0; i < inventory.getSize(); i++) {
             ItemStack currentItem = inventory.getItem(i);
