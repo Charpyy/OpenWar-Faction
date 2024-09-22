@@ -410,6 +410,7 @@ public class FactionGUI {
         lore2.add("§aUsefull machine from HBM");
 
         ItemStack mcheli = createCustomItem(Material.matchMaterial("mcheli:ah64"), "§3MCHeli", lore1);
+        //TODO FAIRE HBM DU COUP MAINTENANT LOL
         //ItemStack hbm = createCustomItem(Material.matchMaterial("hbm:machine_rtg_grey"), "§2HBM", lore2);
 
         menu.setItem(12, mcheli);
@@ -537,7 +538,6 @@ public class FactionGUI {
             meta.setDisplayName("§8§l⟦ §b" + name + " §8§l⟧");
             meta.setLore(Collections.singletonList(ChatColor.DARK_GRAY + "▶ " + ChatColor.GRAY + "Buy for: " + ChatColor.GOLD + "$" + price));
             item.setItemMeta(meta);
-            System.out.println("Added item: " + item + " to slot: " + slot);
             inv.setItem(slot, item);
             if (slot == 16 || slot == 25 || slot == 34)
             {
@@ -545,10 +545,6 @@ public class FactionGUI {
             }
             slot++;
         }
-        //if ((slot - 9) % 9 == 0) {
-        //    slot += 2;
-        //    System.out.println("item: "+item+ " in slot: " + slot);
-        //}
         addBorders(inv, rows);
         inv.setItem(4, createGlassPane("§8» §cBack", Material.STAINED_GLASS_PANE, (short) 14));
         player.openInventory(inv);
