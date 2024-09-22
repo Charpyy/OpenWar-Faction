@@ -19,6 +19,7 @@ public class Faction {
     private int level;
     private int exp;
     private int[] permissions;
+    private String logo = "\u00A78» \u00A7bFaction \u00A78« \u00A77";
 
     private static final int[] levelRequirements = {
             564, 1470, 3625, 7030, 11684, 17587,
@@ -63,7 +64,12 @@ public class Faction {
     private void levelUp() {
         level++;
         exp = 0;
-        getOnlineMembers();
+        for (UUID memberUUID : members.keySet()) {
+            Player player = Bukkit.getPlayer(memberUUID);
+            if (player != null && player.isOnline()) {
+                player.sendMessage(logo+"§3§k§l!!!§r §fYour faction is now level §6§l"+ level +" §3§k§l!!!");
+            }
+        }
     }
 
     public int getLevel() {

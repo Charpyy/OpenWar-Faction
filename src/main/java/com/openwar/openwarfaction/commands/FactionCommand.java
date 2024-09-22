@@ -111,7 +111,7 @@ public class FactionCommand implements CommandExecutor {
                 Chunk unclaim = ploc.getChunk();
                 if (factionManager.hasPermissionInFaction(playerUUID, facPlayer, Permission.CLAIM) && factionManager.getFactionByChunk(unclaim) == facPlayer) {
                     factionManager.unclaimLand(unclaim);
-                    player.sendMessage(logo + "§7Chunk UnClaimed.");
+                    player.sendMessage(logo + "§7Chunk §fUnclaimed.");
                     return true;
                 }
                 player.sendMessage(logo + "§cYou are not in a claimed land.");
@@ -623,7 +623,6 @@ public class FactionCommand implements CommandExecutor {
                     else {
                         player.sendMessage("\u00A78- \u00A77Home: \u00A7fNot Set.");
                     }
-                    player.sendMessage("\u00A78- §7Progression: "+getProgressBar(factionB.getExp(), factionB.getExperienceNeededForNextLevel()));
                 }
                 player.sendMessage("\u00A78- §7Members list:");
                 for (Map.Entry<UUID, Rank> entry : factionB.getMembers().entrySet()) {
