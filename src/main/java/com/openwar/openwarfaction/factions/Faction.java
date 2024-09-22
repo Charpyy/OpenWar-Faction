@@ -35,7 +35,7 @@ public class Faction {
         this.leaderUUID = leaderUUID;
         this.members = new HashMap<>();
         this.members.put(leaderUUID, Rank.LEADER);
-        this.permissions=new int[]{0b1111011110,0b0111000010,0b0110000010,0b0100000010,0b0000000000};
+        this.permissions=new int[]{0b0111111011110,0b0010111000010,0b0000110000010,0b0000100000010,0b000000000000};
     }
     public UUID getFactionUUID() {
         return factionUUID;
