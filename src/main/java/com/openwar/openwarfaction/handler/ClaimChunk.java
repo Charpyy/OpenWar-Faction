@@ -30,6 +30,8 @@ public class ClaimChunk implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
 
+
+        //TODO replace world to faction
         if (player.getWorld().getName().equals("world")) {
             Chunk fromChunk = event.getFrom().getChunk();
             Chunk toChunk = event.getTo().getChunk();

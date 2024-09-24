@@ -192,11 +192,16 @@ public class FactionCommand implements CommandExecutor {
                     return true;
                 }
                 Chunk chunkToClaim = player.getLocation().getChunk();
+                Faction faction2 = factionManager.getFactionByPlayer(playerUUID);
+                Faction factionChunk = factionManager.getFactionByChunk(chunkToClaim);
+                if (faction2 == factionChunk) {
+                    player.sendMessage(logo + "\u00A7cYou already own this claim");
+                    return true;
+                }
                 if (factionManager.isLandClaimed(chunkToClaim)) {
                     player.sendMessage(logo + "\u00A7cThis land is already claimed by another faction.");
                     return true;
                 }
-                Faction faction2 = factionManager.getFactionByPlayer(playerUUID);
                 List<Chunk> claimedChunks = factionManager.getClaimedChunks(faction2);
                 if (!claimedChunks.isEmpty()) {
                     boolean isAdjacent = false;
