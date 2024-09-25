@@ -55,7 +55,7 @@ public final class Main extends JavaPlugin {
 
 
         this.factionChat = new FactionChat(fm);
-        this.factionGUI = new FactionGUI(fm, pl);
+        this.factionGUI = new FactionGUI(fm, pl,this);
 
         getServer().getPluginManager().registerEvents(new PlayerMove(this), this);
         getServer().getPluginManager().registerEvents(new ClaimChunk(fm), this);

@@ -1,5 +1,6 @@
 package com.openwar.openwarfaction.factions;
 
+import com.openwar.openwarfaction.Main;
 import com.openwar.openwarlevels.level.PlayerDataManager;
 import com.openwar.openwarlevels.level.PlayerLevel;
 import org.bukkit.Bukkit;
@@ -13,15 +14,19 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class FactionGUI {
 
     private final FactionManager factionManager;
     private final PlayerDataManager pl;
+    private final Main main;
+    private final Map<UUID, ItemStack> leaderHeadCache = new HashMap<>();
 
-    public FactionGUI(FactionManager factionManager, PlayerDataManager pl) {
+    public FactionGUI(FactionManager factionManager, PlayerDataManager pl, Main main) {
         this.factionManager = factionManager;
         this.pl = pl;
+        this.main = main;
     }
 
 
@@ -185,31 +190,34 @@ public class FactionGUI {
     }
 
     //========================================================= MAIN MENU =====================================
+
     public void openFactionMenu(Player player) {
         UUID playerUUID = player.getUniqueId();
-        if (factionManager == null) {
-            System.out.println("FACTION MANAGER NULL");
-            return;
-        }
         Faction faction = factionManager.getFactionByPlayer(playerUUID);
         Inventory menu = Bukkit.createInventory(null, 54, "§b§lFaction Menu§f - §3" + faction.getName());
-        setMenuBackground(menu);
 
+        setMenuBackground(menu);
         ItemStack factionLevelItem = createFactionLevelItem(faction);
         ItemStack infoItem = createFactionInfoItem(faction);
         ItemStack upgradeItem = createUpgradeItem();
-        ItemStack leaderHead = getLeaderHead(Bukkit.getOfflinePlayer(faction.getLeaderUUID()).getName());
         ItemStack fperm = createFpermItem();
-
+        ItemStack load = createCustomItem(Material.SKULL_ITEM, "§7Loading data ...", null);
+        Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
+            ItemStack leaderHead = getLeaderHead(Bukkit.getOfflinePlayer(faction.getLeaderUUID()).getName());
+            Bukkit.getScheduler().runTask(main, () -> {
+                menu.setItem(20, leaderHead);
+                player.updateInventory();
+            });
+        });
         menu.setItem(24, factionLevelItem);
         menu.setItem(30, infoItem);
         menu.setItem(32, upgradeItem);
-        menu.setItem(20, leaderHead);
         menu.setItem(22, fperm);
+        menu.setItem(20, load);
 
         player.openInventory(menu);
+        
     }
-
     //============================================================ UPGRADE MENU =========================
     public void openUpgradeInventory(Player player) {
         Inventory factionLevelMenu = Bukkit.createInventory(null, 54, "§c§lFaction §f- §c§lUpgrade");
