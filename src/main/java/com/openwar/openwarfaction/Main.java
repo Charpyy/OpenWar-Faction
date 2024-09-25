@@ -51,10 +51,11 @@ public final class Main extends JavaPlugin {
         System.out.println(" ");
         System.out.println(" OpenWar - Faction loading...");
 
+        if (!setupDepend()) {return;}
+
+
         this.factionChat = new FactionChat(fm);
         this.factionGUI = new FactionGUI(fm, pl);
-
-        if (!setupDepend()) {return;}
 
         getServer().getPluginManager().registerEvents(new PlayerMove(this), this);
         getServer().getPluginManager().registerEvents(new ClaimChunk(fm), this);

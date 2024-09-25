@@ -187,6 +187,10 @@ public class FactionGUI {
     //========================================================= MAIN MENU =====================================
     public void openFactionMenu(Player player) {
         UUID playerUUID = player.getUniqueId();
+        if (factionManager == null) {
+            System.out.println("FACTION MANAGER NULL");
+            return;
+        }
         Faction faction = factionManager.getFactionByPlayer(playerUUID);
         Inventory menu = Bukkit.createInventory(null, 54, "§b§lFaction Menu§f - §3" + faction.getName());
         setMenuBackground(menu);
