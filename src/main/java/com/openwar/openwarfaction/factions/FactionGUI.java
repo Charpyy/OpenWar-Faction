@@ -194,7 +194,7 @@ public class FactionGUI {
     public void openFactionMenu(Player player) {
         UUID playerUUID = player.getUniqueId();
         Faction faction = factionManager.getFactionByPlayer(playerUUID);
-        Inventory menu = Bukkit.createInventory(null, 54, "§b§lFaction Menu§f - §3" + faction.getName());
+        Inventory menu = Bukkit.createInventory(null, 54, "§7§k§l!!§r §c=== §8§l⟦§4§l" + faction.getName()+"§r§8§l⟧ §c=== §7§k§l!!");
 
         setMenuBackground(menu);
         ItemStack factionLevelItem = createFactionLevelItem(faction);
@@ -216,7 +216,7 @@ public class FactionGUI {
         menu.setItem(20, load);
 
         player.openInventory(menu);
-        
+
     }
     //============================================================ UPGRADE MENU =========================
     public void openUpgradeInventory(Player player) {
@@ -303,39 +303,13 @@ public class FactionGUI {
             slot += 9;
         }
 
-        int gray = 10;
-        for (int i = 0; i < 6; i++) {
-            ItemStack grayPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
-            ItemMeta meta = grayPane.getItemMeta();
-            meta.setDisplayName("§8->");
-            grayPane.setItemMeta(meta);
-            if (gray < 54) {
-                menu.setItem(gray, grayPane);
-            }
-            gray += 9;
-        }
-        // Next page
+        slotGris(menu, 10);
+        slotGris(menu, 17);
         ItemStack limePane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
         ItemMeta meta = limePane.getItemMeta();
         meta.setDisplayName("§8» §aNext Page");
         limePane.setItemMeta(meta);
-        menu.setItem(0, limePane);
-        gray = 17;
-        for (int i = 0; i < 6; i++) {
-            ItemStack grayPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
-            ItemMeta metaa = grayPane.getItemMeta();
-            metaa.setDisplayName(" ");
-            grayPane.setItemMeta(metaa);
-            if (gray < 54) {
-                menu.setItem(gray, grayPane);
-            }
-            gray += 9;
-        }
-        ItemStack black = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
-        ItemMeta metaData = black.getItemMeta();
-        metaData.setDisplayName(" ");
-        black.setItemMeta(metaData);
-        menu.setItem(8, black);
+        menu.setItem(8, limePane);
 
         player.openInventory(menu);
     }
@@ -348,6 +322,67 @@ public class FactionGUI {
 
         int startCol = 2;
         for (int i = 6; i < Permission.values().length; i++) {
+            if (startCol >= 8) break;
+
+            Permission perm = Permission.values()[i];
+
+            ItemStack permInfo = new ItemStack(Material.PAPER);
+            ItemMeta permMeta = permInfo.getItemMeta();
+            permMeta.setDisplayName("§r§8" + perm.name());
+            permInfo.setItemMeta(permMeta);
+            menu.setItem(startCol, permInfo);
+
+            for (int j = 0; j < PermRank.values().length; j++) {
+                PermRank rank = PermRank.values()[j];
+                boolean hasPerm = faction.hasPermission(rank, perm);
+
+                ItemStack permPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) (hasPerm ? 5 : 14));
+                ItemMeta meta = permPane.getItemMeta();
+                meta.setDisplayName(hasPerm ? "§aYES" : "§4NO");
+                permPane.setItemMeta(meta);
+
+                int index = (j + 1) * 9 + startCol;
+                if (index < 54) {
+                    menu.setItem(index, permPane);
+                }
+            }
+
+            startCol++;
+        }
+        int slot = 9;
+        for (PermRank rank : PermRank.values()) {
+            ItemStack rankPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 1);
+            ItemMeta meta = rankPane.getItemMeta();
+            meta.setDisplayName("§3" + rank.getAbr());
+            rankPane.setItemMeta(meta);
+            menu.setItem(slot, rankPane);
+            slot += 9;
+        }
+        slotGris(menu, 10);
+        slotGris(menu, 17);
+        ItemStack limePane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
+        ItemMeta meta = limePane.getItemMeta();
+        meta.setDisplayName("§8» §aNext Page");
+        limePane.setItemMeta(meta);
+        menu.setItem(8, limePane);
+
+        ItemStack redPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
+        ItemMeta redmeta = limePane.getItemMeta();
+        redmeta.setDisplayName("§8« §cPrevious Page");
+        redPane.setItemMeta(redmeta);
+        menu.setItem(0, redPane);
+
+        player.openInventory(menu);
+    }
+
+    public void openFactionPermPage3(Player player) {
+        Inventory menu = Bukkit.createInventory(null, 54, "§b§lFaction Perms §f- §3Page 3");
+        setMenuBackground(menu);
+        UUID playerUUID = player.getUniqueId();
+        Faction faction = factionManager.getFactionByPlayer(playerUUID);
+
+        int startCol = 2;
+        for (int i = 12; i < Permission.values().length; i++) {
             if (startCol >= 9) break;
 
             Permission perm = Permission.values()[i];
@@ -385,28 +420,12 @@ public class FactionGUI {
             slot += 9;
         }
 
-        int gray = 10;
-        for (int i = 0; i < 6; i++) {
-            ItemStack grayPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
-            ItemMeta meta = grayPane.getItemMeta();
-            meta.setDisplayName("§8->");
-            grayPane.setItemMeta(meta);
-            if (gray < 54) {
-                menu.setItem(gray, grayPane);
-            }
-            gray += 9;
-        }
-        gray = 16;
-        for (int i = 0; i < 6; i++) {
-            ItemStack grayPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
-            ItemMeta meta = grayPane.getItemMeta();
-            meta.setDisplayName(" ");
-            grayPane.setItemMeta(meta);
-            if (gray < 54) {
-                menu.setItem(gray, grayPane);
-            }
-            gray += 9;
-        }
+        slotGris(menu, 16);
+        slotGris(menu, 15);
+        slotGris(menu, 14);
+        slotGris(menu, 13);
+        slotGris(menu, 12);
+        slotGris(menu, 10);
         // Previous page
         ItemStack limePane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
         ItemMeta meta = limePane.getItemMeta();
@@ -783,5 +802,18 @@ public class FactionGUI {
                 break;
         }
         return lore;
+    }
+
+    private void slotGris(Inventory menu, int slot) {
+        for (int i = 0; i < 6; i++) {
+            ItemStack grayPane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
+            ItemMeta meta = grayPane.getItemMeta();
+            meta.setDisplayName(" ");
+            grayPane.setItemMeta(meta);
+            if (slot < 54) {
+                menu.setItem(slot, grayPane);
+            }
+            slot += 9;
+        }
     }
 }
