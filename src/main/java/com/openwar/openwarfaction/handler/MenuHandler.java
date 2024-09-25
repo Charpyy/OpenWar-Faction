@@ -234,11 +234,16 @@ public class MenuHandler implements Listener {
             event.setCancelled(true);
             Player player = (Player) event.getWhoClicked();
             int clickedSlot = event.getSlot();
+            Faction faction = factionManager.getFactionByPlayer(player.getUniqueId());
+            int level = faction.getLevel();
             if (clickedSlot < 0) {
                 return;
             }
             if (clickedSlot == 12) {
-                factionGUI.openFactionShopMCHELI(player);
+                if (level >= 3) {
+                    factionGUI.openFactionShopMCHELI(player);
+                    player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+                }
             }
         }
         if (view.getTitle().contains("§k§l!!!§r§3§l MCHELI SHOP §8§r§8§k§l!!!")) {
