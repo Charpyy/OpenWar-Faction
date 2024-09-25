@@ -10,6 +10,7 @@ import com.openwar.openwarfaction.handler.PlayerMove;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -41,6 +42,7 @@ public final class Main extends JavaPlugin {
         System.out.println(" ");
         System.out.println(" OpenWar - Faction loading...");
         this.factionManager = new FactionManager();
+        getServer().getServicesManager().register(FactionManager.class, factionManager, this, ServicePriority.High);
         this.factionChat = new FactionChat(factionManager);
         setupEconomy();
         getServer().getPluginManager().registerEvents(new PlayerMove(this), this);
