@@ -22,7 +22,7 @@ public final class Main extends JavaPlugin {
     private FactionChat factionChat;
     private HashMap<UUID, Boolean> waitingPlayers = new HashMap<>();
     private Economy economy = null;
-    private static final String CSV_FILE_PATH = "plugins/OpenWar-Faction/factions.csv";
+    private final String CSV_FILE_PATH = getDataFolder() + "/factions.csv";
     private final String claimsFilePath = getDataFolder() + "/claims.csv";
     FactionGUI factionGUI;
     FactionManager fm;
@@ -30,29 +30,31 @@ public final class Main extends JavaPlugin {
     public HashMap<UUID, Boolean> getWaitingPlayers() {
         return waitingPlayers;
     }
-    private boolean setupEconomy() {
+
+    private boolean setupDepend() {
         RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) {
+        RegisteredServiceProvider<PlayerDataManager> levelProvider = getServer().getServicesManager().getRegistration(PlayerDataManager.class);
+        RegisteredServiceProvider<FactionManager> factionDataProvider = getServer().getServicesManager().getRegistration(FactionManager.class);
+        if (rsp == null || levelProvider == null || factionDataProvider == null) {
+            System.out.println("ERROR !!!!!!!!!!!!!!!!!!!!");
             return false;
         }
         economy = rsp.getProvider();
-        return economy != null;
+        pl = levelProvider.getProvider();
+        fm = factionDataProvider.getProvider();
+        return true;
     }
 
     @Override
     public void onEnable() {
-        System.out.println("########################");
+        System.out.println("====================================");
         System.out.println(" ");
         System.out.println(" OpenWar - Faction loading...");
-        RegisteredServiceProvider<PlayerDataManager> levelProvider = getServer().getServicesManager().getRegistration(PlayerDataManager.class);
-        RegisteredServiceProvider<FactionManager> factionDataProvider = getServer().getServicesManager().getRegistration(FactionManager.class);
-        pl = levelProvider.getProvider();
-        fm = factionDataProvider.getProvider();
 
         this.factionChat = new FactionChat(fm);
         this.factionGUI = new FactionGUI(fm, pl);
 
-        setupEconomy();
+        if (!setupDepend()) {return;}
 
         getServer().getPluginManager().registerEvents(new PlayerMove(this), this);
         getServer().getPluginManager().registerEvents(new ClaimChunk(fm), this);
@@ -69,7 +71,7 @@ public final class Main extends JavaPlugin {
         System.out.println(" ");
         System.out.println(" OpenWar - Faction loaded !");
         System.out.println(" ");
-        System.out.println("########################");
+        System.out.println("====================================");
         startAutoSaveTask();
     }
 
@@ -79,11 +81,11 @@ public final class Main extends JavaPlugin {
         fm.saveClaimsToCSV(claimsFilePath);
         fm.saveFactionChests();
 
-        System.out.println("########################");
+        System.out.println("====================================");
         System.out.println(" ");
         System.out.println(" OpenWar - Faction Saved !");
         System.out.println(" ");
-        System.out.println("########################");
+        System.out.println("====================================");
     }
 
     public void startAutoSaveTask() {
