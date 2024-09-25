@@ -24,12 +24,13 @@ public class MenuHandler implements Listener {
     private final Main plugin;
     private final FactionManager factionManager;
     private final Economy economy;
+    private final FactionGUI factionGUI;
 
-
-    public MenuHandler(Main plugin, FactionManager factionManager, Economy economy) {
+    public MenuHandler(Main plugin, FactionManager factionManager, Economy economy, FactionGUI factionGUI) {
         this.factionManager = factionManager;
         this.plugin = plugin;
         this.economy = economy;
+        this.factionGUI = factionGUI;
     }
 
     @EventHandler
@@ -43,11 +44,9 @@ public class MenuHandler implements Listener {
             int clickedSlot = event.getSlot();
 
             if (clickedSlot == 32) {
-                FactionGUI factionGUI = new FactionGUI(factionManager);
                 factionGUI.openUpgradeInventory(player);
             }
             if (clickedSlot == 22) {
-                FactionGUI factionGUI = new FactionGUI(factionManager);
                 factionGUI.openFactionPermMenu(player);
             }
 
@@ -66,8 +65,7 @@ public class MenuHandler implements Listener {
                 player.openInventory(factionChest);
             }
             if (clickedSlot == 22){
-                FactionGUI fg =  new FactionGUI(factionManager);
-                fg.openFactionShopMain(player);
+                factionGUI.openFactionShopMain(player);
             }
 
             Bukkit.getServer().getScheduler().runTaskLater(plugin, player::updateInventory, 1L);
@@ -101,7 +99,6 @@ public class MenuHandler implements Listener {
 
             if (item.getType() == Material.STAINED_GLASS_PANE) {
                 if (clickedSlot == 0) {
-                    FactionGUI factionGUI = new FactionGUI(factionManager);
                     factionGUI.openFactionPermPage2(player);
                     event.setCancelled(true);
                     return;
@@ -149,7 +146,6 @@ public class MenuHandler implements Listener {
             }
 
             if (clickedSlot == 0) {
-                FactionGUI factionGUI = new FactionGUI(factionManager);
                 factionGUI.openFactionPermMenu(player);
                 event.setCancelled(true);
                 return;
@@ -189,8 +185,7 @@ public class MenuHandler implements Listener {
                 return;
             }
             if (clickedSlot == 12) {
-                FactionGUI fg = new FactionGUI(factionManager);
-                fg.openFactionShopMCHELI(player);
+                factionGUI.openFactionShopMCHELI(player);
             }
         }
         if (view.getTitle().contains("§k§l!!!§r§3§l MCHELI SHOP §8§r§8§k§l!!!")) {
@@ -214,21 +209,20 @@ public class MenuHandler implements Listener {
             } else {
                 shoplevel = 5;
             }
-            FactionGUI fg = new FactionGUI(factionManager);
             if (clickedSlot == 15) {
-                fg.openFacShop(player, "antiair", "Anti - Air", shoplevel);
+                factionGUI.openFacShop(player, "antiair", "Anti - Air", shoplevel);
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             } else if (clickedSlot == 13) {
-                fg.openFacShop(player, "heli", "Helicopter", shoplevel);
+                factionGUI.openFacShop(player, "heli", "Helicopter", shoplevel);
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             } else if (clickedSlot == 11) {
-                fg.openFacShop(player, "plane", "Plane", shoplevel);
+                factionGUI.openFacShop(player, "plane", "Plane", shoplevel);
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             } else if (clickedSlot == 21) {
-                fg.openFacShop(player, "tank", "Tank", shoplevel);
+                factionGUI.openFacShop(player, "tank", "Tank", shoplevel);
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             } else if (clickedSlot == 23) {
-                fg.openFacShop(player, "bato", "Boat", shoplevel);
+                factionGUI.openFacShop(player, "bato", "Boat", shoplevel);
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             }
         }
@@ -274,8 +268,7 @@ public class MenuHandler implements Listener {
 
 
     private void openFactionShopMainMenu(Player player) {
-        FactionGUI fg =  new FactionGUI(factionManager);
-        fg.openFactionShopMain(player);
+        factionGUI.openFactionShopMain(player);
     }
 
     public static Inventory fillChestWithBarriers(Inventory inventory, int factionLevel) {

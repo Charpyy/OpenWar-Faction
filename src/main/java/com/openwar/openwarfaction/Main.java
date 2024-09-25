@@ -2,11 +2,13 @@ package com.openwar.openwarfaction;
 
 import com.openwar.openwarfaction.commands.AdminCommand;
 import com.openwar.openwarfaction.commands.FactionCommand;
+import com.openwar.openwarfaction.factions.FactionGUI;
 import com.openwar.openwarfaction.factions.FactionManager;
 import com.openwar.openwarfaction.handler.ClaimChunk;
 import com.openwar.openwarfaction.handler.FactionChat;
 import com.openwar.openwarfaction.handler.MenuHandler;
 import com.openwar.openwarfaction.handler.PlayerMove;
+import com.openwar.openwarlevels.level.PlayerDataManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -17,12 +19,14 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public final class Main extends JavaPlugin {
+    private PlayerDataManager pl;
     private FactionManager factionManager;
     private FactionChat factionChat;
     private HashMap<UUID, Boolean> waitingPlayers = new HashMap<>();
     private Economy economy = null;
     private static final String CSV_FILE_PATH = "plugins/OpenWar-Faction/factions.csv";
     private final String claimsFilePath = getDataFolder() + "/claims.csv";
+    FactionGUI factionGUI;
 
     public HashMap<UUID, Boolean> getWaitingPlayers() {
         return waitingPlayers;
@@ -41,19 +45,26 @@ public final class Main extends JavaPlugin {
         System.out.println("########################");
         System.out.println(" ");
         System.out.println(" OpenWar - Faction loading...");
-        this.factionManager = new FactionManager();
-        getServer().getServicesManager().register(FactionManager.class, factionManager, this, ServicePriority.High);
+        RegisteredServiceProvider<PlayerDataManager> levelProvider = getServer().getServicesManager().getRegistration(PlayerDataManager.class);
+        PlayerDataManager playerDataManager = levelProvider.getProvider();
+
         this.factionChat = new FactionChat(factionManager);
+        this.factionGUI = new FactionGUI(factionManager, pl);
+
         setupEconomy();
+
         getServer().getPluginManager().registerEvents(new PlayerMove(this), this);
         getServer().getPluginManager().registerEvents(new ClaimChunk(factionManager), this);
         getServer().getPluginManager().registerEvents(factionChat, this);
-        getServer().getPluginManager().registerEvents(new MenuHandler(this, factionManager, economy),this);
-        factionManager.loadFactionsFromCSV(CSV_FILE_PATH);
-        this.getCommand("f").setExecutor(new FactionCommand(factionChat, factionManager, getWaitingPlayers(), this, economy));
+        getServer().getPluginManager().registerEvents(new MenuHandler(this, factionManager, economy, factionGUI),this);
+
+        this.getCommand("f").setExecutor(new FactionCommand(factionChat, factionManager, getWaitingPlayers(), this, economy, factionGUI));
         this.getCommand("fadmin").setExecutor(new AdminCommand(factionManager, this));
+
+        factionManager.loadFactionsFromCSV(CSV_FILE_PATH);
         factionManager.loadClaimsFromCSV(claimsFilePath);
         factionManager.loadFactionChests();
+
         System.out.println(" ");
         System.out.println(" OpenWar - Faction loaded !");
         System.out.println(" ");
@@ -66,6 +77,7 @@ public final class Main extends JavaPlugin {
         factionManager.saveFactionsToCSV(CSV_FILE_PATH);
         factionManager.saveClaimsToCSV(claimsFilePath);
         factionManager.saveFactionChests();
+
         System.out.println("########################");
         System.out.println(" ");
         System.out.println(" OpenWar - Faction Saved !");

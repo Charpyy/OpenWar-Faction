@@ -1,5 +1,7 @@
 package com.openwar.openwarfaction.factions;
 
+import com.openwar.openwarlevels.level.PlayerDataManager;
+import com.openwar.openwarlevels.level.PlayerLevel;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -15,9 +17,11 @@ import java.util.*;
 public class FactionGUI {
 
     private final FactionManager factionManager;
+    private final PlayerDataManager pl;
 
-    public FactionGUI(FactionManager factionManager) {
+    public FactionGUI(FactionManager factionManager, PlayerDataManager pl) {
         this.factionManager = factionManager;
+        this.pl = pl;
     }
 
 
@@ -123,9 +127,11 @@ public class FactionGUI {
 
         if (meta != null) {
             OfflinePlayer leader = Bukkit.getOfflinePlayer(leaderName);
+            PlayerLevel playerLevel = pl.loadPlayerData(leader.getUniqueId());
+            int level = playerLevel.getLevel();
             meta.setOwningPlayer(leader);
             meta.setDisplayName("§4§lFaction Leader");
-            meta.setLore(Arrays.asList("§c" + leaderName));
+            meta.setLore(Arrays.asList("§c" + leaderName+" §8(§cLevel: §4"+level+"§8)"));
             leaderHead.setItemMeta(meta);
         }
 
@@ -411,10 +417,10 @@ public class FactionGUI {
 
         ItemStack mcheli = createCustomItem(Material.matchMaterial("mcheli:ah64"), "§3MCHeli", lore1);
         //TODO FAIRE HBM DU COUP MAINTENANT LOL
-        //ItemStack hbm = createCustomItem(Material.matchMaterial("hbm:machine_rtg_grey"), "§2HBM", lore2);
+        ItemStack hbm = createCustomItem(Material.matchMaterial("hbm:machine_rtg_grey"), "§2HBM", lore2);
 
         menu.setItem(12, mcheli);
-        //menu.setItem(14, hbm);
+        menu.setItem(14, hbm);
 
         player.openInventory(menu);
     }
@@ -700,20 +706,20 @@ public class FactionGUI {
                     lore.add("§8» §4Locked");
                     lore.add("§cUnlock at level: §f3");
                 } else if (factionLevel < 6) {
-                    lore.add("§8» §aUnlocked §fShop Lvl 1");
+                    lore.add("§8» §aUnlocked §7Shop Level: §f1");
                     lore.add("§3Next Upgrade level: §f6");
                 } else if (factionLevel < 8) {
-                    lore.add("§8» §aUnlocked §fShop Lvl 2");
+                    lore.add("§8» §aUnlocked §7Shop Level: §f2");
                     lore.add("§3Next Upgrade level: §f8");
                 } else if (factionLevel < 10) {
-                    lore.add("§8» §aUnlocked §fShop Lvl 3");
+                    lore.add("§8» §aUnlocked §7Shop Level: §f3");
                     lore.add("§3Next Upgrade level: §f10");
                 } else if (factionLevel < 12) {
-                    lore.add("§8» §aUnlocked §fShop Lvl 4");
+                    lore.add("§8» §aUnlocked §7Shop Level: §f4");
                     lore.add("§3Next Upgrade level: §f12");
                 } else {
                     lore.add("§8» §4Max Level");
-                    lore.add("§cFaction Shop Lvl 5");
+                    lore.add("§cFaction Shop Level §45");
                 }
                 break;
             case "xp":

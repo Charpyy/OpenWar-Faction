@@ -30,13 +30,15 @@ public class FactionCommand implements CommandExecutor {
     private Economy economy;
     private Set<UUID> factionChatPlayers = new HashSet<>();
     private final FactionChat factionChat;
+    private final FactionGUI factionGUI;
 
-    public FactionCommand(FactionChat factionChat, FactionManager factionManager, HashMap<UUID, Boolean> waitingPlayers, Main plugin, Economy economy) {
+    public FactionCommand(FactionChat factionChat, FactionManager factionManager, HashMap<UUID, Boolean> waitingPlayers, Main plugin, Economy economy, FactionGUI factionGUI) {
         this.factionManager = factionManager;
         this.waitingPlayers = waitingPlayers;
         this.plugin = plugin;
         this.economy = economy;
         this.factionChat = factionChat;
+        this.factionGUI = factionGUI;
     }
 
     @Override
@@ -593,7 +595,6 @@ public class FactionCommand implements CommandExecutor {
                     player.sendMessage(logo + "§cYou are not in a faction.");
                     return true;
                 }
-                FactionGUI factionGUI = new FactionGUI(factionManager);
                 factionGUI.openFactionMenu(player);
                 break;
             case "f":
