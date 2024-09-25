@@ -127,7 +127,7 @@ public class FactionGUI {
 
         if (meta != null) {
             OfflinePlayer leader = Bukkit.getOfflinePlayer(leaderName);
-            PlayerLevel playerLevel = pl.loadPlayerData(leader.getUniqueId());
+            PlayerLevel playerLevel = pl.loadPlayerData(leader.getUniqueId(), factionManager);
             int level = playerLevel.getLevel();
             meta.setOwningPlayer(leader);
             meta.setDisplayName("§4§lFaction Leader");
