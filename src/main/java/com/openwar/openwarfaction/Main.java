@@ -12,7 +12,6 @@ import com.openwar.openwarlevels.level.PlayerDataManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -20,13 +19,13 @@ import java.util.UUID;
 
 public final class Main extends JavaPlugin {
     private PlayerDataManager pl;
-    private FactionManager factionManager;
     private FactionChat factionChat;
     private HashMap<UUID, Boolean> waitingPlayers = new HashMap<>();
     private Economy economy = null;
     private static final String CSV_FILE_PATH = "plugins/OpenWar-Faction/factions.csv";
     private final String claimsFilePath = getDataFolder() + "/claims.csv";
     FactionGUI factionGUI;
+    FactionManager fm;
 
     public HashMap<UUID, Boolean> getWaitingPlayers() {
         return waitingPlayers;
@@ -46,24 +45,26 @@ public final class Main extends JavaPlugin {
         System.out.println(" ");
         System.out.println(" OpenWar - Faction loading...");
         RegisteredServiceProvider<PlayerDataManager> levelProvider = getServer().getServicesManager().getRegistration(PlayerDataManager.class);
-        PlayerDataManager playerDataManager = levelProvider.getProvider();
+        RegisteredServiceProvider<FactionManager> factionDataProvider = getServer().getServicesManager().getRegistration(FactionManager.class);
+        pl = levelProvider.getProvider();
+        fm = factionDataProvider.getProvider();
 
-        this.factionChat = new FactionChat(factionManager);
-        this.factionGUI = new FactionGUI(factionManager, pl);
+        this.factionChat = new FactionChat(fm);
+        this.factionGUI = new FactionGUI(fm, pl);
 
         setupEconomy();
 
         getServer().getPluginManager().registerEvents(new PlayerMove(this), this);
-        getServer().getPluginManager().registerEvents(new ClaimChunk(factionManager), this);
+        getServer().getPluginManager().registerEvents(new ClaimChunk(fm), this);
         getServer().getPluginManager().registerEvents(factionChat, this);
-        getServer().getPluginManager().registerEvents(new MenuHandler(this, factionManager, economy, factionGUI),this);
+        getServer().getPluginManager().registerEvents(new MenuHandler(this, fm, economy, factionGUI),this);
 
-        this.getCommand("f").setExecutor(new FactionCommand(factionChat, factionManager, getWaitingPlayers(), this, economy, factionGUI));
-        this.getCommand("fadmin").setExecutor(new AdminCommand(factionManager, this));
+        this.getCommand("f").setExecutor(new FactionCommand(factionChat, fm, getWaitingPlayers(), this, economy, factionGUI));
+        this.getCommand("fadmin").setExecutor(new AdminCommand(fm, this));
 
-        factionManager.loadFactionsFromCSV(CSV_FILE_PATH);
-        factionManager.loadClaimsFromCSV(claimsFilePath);
-        factionManager.loadFactionChests();
+        fm.loadFactionsFromCSV(CSV_FILE_PATH);
+        fm.loadClaimsFromCSV(claimsFilePath);
+        fm.loadFactionChests();
 
         System.out.println(" ");
         System.out.println(" OpenWar - Faction loaded !");
@@ -74,9 +75,9 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        factionManager.saveFactionsToCSV(CSV_FILE_PATH);
-        factionManager.saveClaimsToCSV(claimsFilePath);
-        factionManager.saveFactionChests();
+        fm.saveFactionsToCSV(CSV_FILE_PATH);
+        fm.saveClaimsToCSV(claimsFilePath);
+        fm.saveFactionChests();
 
         System.out.println("########################");
         System.out.println(" ");
@@ -89,9 +90,9 @@ public final class Main extends JavaPlugin {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
             @Override
             public void run() {
-                factionManager.saveFactionsToCSV(CSV_FILE_PATH);
-                factionManager.saveClaimsToCSV(claimsFilePath);
-                factionManager.saveFactionChests();
+                fm.saveFactionsToCSV(CSV_FILE_PATH);
+                fm.saveClaimsToCSV(claimsFilePath);
+                fm.saveFactionChests();
             }
         }, 0L, 6000L);
     }
