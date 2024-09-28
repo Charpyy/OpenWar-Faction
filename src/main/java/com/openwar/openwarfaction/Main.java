@@ -2,6 +2,7 @@ package com.openwar.openwarfaction;
 
 import com.openwar.openwarfaction.commands.AdminCommand;
 import com.openwar.openwarfaction.commands.FactionCommand;
+import com.openwar.openwarfaction.commands.FactionTabCompletion;
 import com.openwar.openwarfaction.factions.FactionGUI;
 import com.openwar.openwarfaction.factions.FactionManager;
 import com.openwar.openwarfaction.handler.ClaimChunk;
@@ -64,6 +65,7 @@ public final class Main extends JavaPlugin {
 
         this.getCommand("f").setExecutor(new FactionCommand(factionChat, fm, getWaitingPlayers(), this, economy, factionGUI));
         this.getCommand("fadmin").setExecutor(new AdminCommand(fm, this));
+        getCommand("faction").setTabCompleter(new FactionTabCompletion());
 
         fm.loadFactionsFromCSV(CSV_FILE_PATH);
         fm.loadClaimsFromCSV(claimsFilePath);

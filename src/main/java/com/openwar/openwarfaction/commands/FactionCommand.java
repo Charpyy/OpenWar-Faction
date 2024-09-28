@@ -236,7 +236,7 @@ public class FactionCommand implements CommandExecutor {
                 player.sendMessage(logo + "\u00A77Land claimed for your faction!");
                 break;
 
-
+            //TODO a refaire avec plus d'info
             case "list":
                 if (factionManager.getAllFactions() == null){
                     player.sendMessage(logo + "No faction found.");
