@@ -35,7 +35,7 @@ public class FactionTabCompletion implements TabCompleter {
         }
         return filterSuggestions(suggestions, args[args.length - 1]);
     }
-    
+
     private List<String> filterSuggestions(List<String> suggestions, String input) {
         List<String> filtered = new ArrayList<>();
         for (String suggestion : suggestions) {
