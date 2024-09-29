@@ -243,7 +243,7 @@ public class FactionCommand implements CommandExecutor {
                 } else {
                     player.sendMessage(logo + "§7Factions List: ");
                     factionManager.getAllFactions().forEach(factions ->
-                            player.sendMessage("§8- §1" + factions.getName() + " §8‖ §7Members: §b" + factions.getMembers().size()));
+                            player.sendMessage("§8- §3" + factions.getName() + " §8‖ §7Members: §b" + factions.getMembers().size()));
                 }
                 break;
             case "info":
@@ -251,21 +251,19 @@ public class FactionCommand implements CommandExecutor {
                     player.sendMessage(logo + "\u00A7cPlease provide a faction name.");
                     return true;
                 }
-                System.out.println("Faction: "+args[1] );
                 Faction targetInfo = factionManager.getFactionByName(args[1]);
-                System.out.println("Faction : "+targetInfo);
                 if (targetInfo != null){
                     UUID leaderuuid = targetInfo.getLeaderUUID();
-                    Player leader = Bukkit.getPlayer(leaderuuid);
-                    player.sendMessage("§8» §cInformation of §4"+targetInfo.getName());
-                    //player.sendMessage("§7- §fLeader: §c"+leader.getName());
-                    player.sendMessage("§7- §fMembers Online: \u00A7f" + targetInfo.getOnlineMembers().size() +"§7/§f"+ targetInfo.getMembers().size());
-                    player.sendMessage("§7- §fLevel: \u00A7f" + targetInfo.getLevel());
-                    player.sendMessage("§7- §fExp: \u00A7f" + targetInfo.getExp());
-                    player.sendMessage("§7- §7Members list:");
+                    OfflinePlayer leader = Bukkit.getOfflinePlayer(leaderuuid);
+                    player.sendMessage(logo+"§7Faction §8‖ §1"+targetInfo.getName());
+                    player.sendMessage("§8› §fLeader§7: §c"+leader.getName());
+                    player.sendMessage("§8› §fMembers Online§7: " + targetInfo.getOnlineMembers().size() +"§7/§f"+ targetInfo.getMembers().size());
+                    player.sendMessage("§8› §fLevel§7: " + targetInfo.getLevel());
+                    player.sendMessage("§8› §fExp§7: " + targetInfo.getExp());
+                    player.sendMessage("§8› §fMembers list§7:");
                     for (Map.Entry<UUID, Rank> entry : targetInfo.getMembers().entrySet()) {
                         UUID memberUUID = entry.getKey();
-                        Player member = Bukkit.getPlayer(memberUUID);
+                        OfflinePlayer member = Bukkit.getOfflinePlayer(memberUUID);
                         player.sendMessage(" §8- §b"+member.getName());
                     }
                 }
@@ -636,25 +634,23 @@ public class FactionCommand implements CommandExecutor {
                         return true;
                     }
                 }
-
-                player.sendMessage(logo+ "\u00A7fFaction Info:");
-                player.sendMessage("\u00A78- \u00A77Faction Name: \u00A7f" + factionB.getName());
-                player.sendMessage("\u00A78- \u00A77Members Online: \u00A7f" + factionB.getOnlineMembers().size() +"§7/§f"+ factionB.getMembers().size());
+                player.sendMessage(logo+ "§7Faction §8‖ §1"+factionB.getName());
+                player.sendMessage("§8› §fMembers Online§7: §b" + factionB.getOnlineMembers().size() +"§7/§f"+ factionB.getMembers().size());
                 if(detailed){
-                    player.sendMessage("\u00A78- \u00A77Faction Level: \u00A7f" + factionB.getLevel());
-                    player.sendMessage("\u00A78- \u00A77Faction Exp: \u00A7f" + factionB.getExp());
+                    player.sendMessage("§8› §fFaction Level§7: §b" + factionB.getLevel());
+                    player.sendMessage("§8› §fFaction Exp§7: §b" + factionB.getExp());
                     if (factionB.getHomeLocation() != null) {
-                        player.sendMessage("\u00A78- \u00A77Home Location: \u00A78X: \u00A77" + (int) factionB.getHomeLocation().getX() + " \u00A78Y: \u00A77" + (int) factionB.getHomeLocation().getY() + " \u00A78Z: \u00A77" + (int) factionB.getHomeLocation().getZ());
+                        player.sendMessage("§8› §fHome Location§7: §7" + (int) factionB.getHomeLocation().getX() + " \u00A78Y: \u00A77" + (int) factionB.getHomeLocation().getY() + " \u00A78Z: \u00A77" + (int) factionB.getHomeLocation().getZ());
                     }
                     else {
-                        player.sendMessage("\u00A78- \u00A77Home: \u00A7fNot Set.");
+                        player.sendMessage("§8› §fHome Location§7: §cfNot Set.");
                     }
                 }
                 player.sendMessage("\u00A78- §7Members list:");
                 for (Map.Entry<UUID, Rank> entry : factionB.getMembers().entrySet()) {
                     UUID memberUUID = entry.getKey();
-                    Player member = Bukkit.getPlayer(memberUUID);
-                    player.sendMessage(" §7- §b"+member.getName());
+                    OfflinePlayer member = Bukkit.getOfflinePlayer(memberUUID);
+                    player.sendMessage(" §8- §b"+member.getName());
                 }
                 break;
             case "perm":
