@@ -771,19 +771,20 @@ public class FactionCommand implements CommandExecutor {
     private void showFactionInfo(Player player, Faction faction, boolean info) {
         OfflinePlayer leader = Bukkit.getOfflinePlayer(faction.getLeaderUUID());
         player.sendMessage("§8» §bFaction Information §8« ");
-        player.sendMessage("§8›› §7Name §8‖ §3"+faction.getName());
-        player.sendMessage("§8›› §7Leader§8: §c"+ leader.getName());
-        player.sendMessage("§8›› §7Online§8: §b" + faction.getOnlineMembers().size() +"§7/§b"+ faction.getMembers().size());
-        player.sendMessage("§8›› §7Level§8: §b" + faction.getLevel());
-        player.sendMessage("§8›› §7Exp§8: §b" + faction.getExp());
-        if (faction.getHomeLocation() != null && info) {
-            player.sendMessage("§8›› §7Home Location§8: §7" + (int) faction.getHomeLocation().getX() + " \u00A78Y: \u00A77" + (int) faction.getHomeLocation().getY() + " \u00A78Z: \u00A77" + (int) faction.getHomeLocation().getZ());
-        }
-        else {
-            player.sendMessage("§8›› §7Home Location§8: §cNot Set.");
+        player.sendMessage("§8⁕ §7Name §8‖ §3"+faction.getName()+" §8‖");
+        player.sendMessage("§8⁕ §7Leader §8» §c"+ leader.getName());
+        player.sendMessage("§8⁕ §7Online §8» §b" + faction.getOnlineMembers().size() +"§7/§b"+ faction.getMembers().size());
+        player.sendMessage("§8⁕ §7Level §8» §b" + faction.getLevel());
+        player.sendMessage("§8⁕ §7Exp §8» §b" + faction.getExp());
+        if (info) {
+            if (faction.getHomeLocation() != null) {
+                player.sendMessage("§8⁕  §7Home Location §8» §7" + (int) faction.getHomeLocation().getX() + " \u00A78Y: \u00A77" + (int) faction.getHomeLocation().getY() + " \u00A78Z: \u00A77" + (int) faction.getHomeLocation().getZ());
+            } else {
+                player.sendMessage("§8⁕  §7Home Location §8» §cNot Set.");
+            }
         }
         List<String> off = new ArrayList<>();
-        player.sendMessage("§8›› §7Members list:");
+        player.sendMessage("§8⁕  §7Members list §8:");
         for (Map.Entry<UUID, Rank> entry : faction.getMembers().entrySet()) {
             UUID memberUUID = entry.getKey();
             OfflinePlayer member = Bukkit.getOfflinePlayer(memberUUID);

@@ -105,7 +105,7 @@ public class FactionGUI {
         lore.add("§7Members Name: ");
         for (Map.Entry<UUID, Rank> entry : faction.getMembers().entrySet()) {
             UUID memberUUID = entry.getKey();
-            Player member = Bukkit.getPlayer(memberUUID);
+            OfflinePlayer member = Bukkit.getOfflinePlayer(memberUUID);
             lore.add(" §7- §b" + member.getName());
         }
 
