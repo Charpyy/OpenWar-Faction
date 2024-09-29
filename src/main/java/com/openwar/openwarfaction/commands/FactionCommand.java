@@ -769,21 +769,21 @@ public class FactionCommand implements CommandExecutor {
     }
 
     private void showFactionInfo(Player player, Faction faction, boolean info) {
-        OfflinePlayer leader = Bukkit.getPlayer(faction.getLeaderUUID());
+        OfflinePlayer leader = Bukkit.getOfflinePlayer(faction.getLeaderUUID());
         player.sendMessage("§8» §bFaction Information §8« ");
-        player.sendMessage("§8›› §7Faction Name§7: §3"+faction.getName());
-        player.sendMessage("§8›› §7Faction Leader§7: §c"+ leader.getName());
-        player.sendMessage("§8›› §7Members Online§8: §b" + faction.getOnlineMembers().size() +"§7/§f"+ faction.getMembers().size());
-        player.sendMessage("§8›› §7Faction Level§8: §b" + faction.getLevel());
-        player.sendMessage("§8›› §7Faction Exp§8: §b" + faction.getExp());
+        player.sendMessage("§8›› §7Name §8‖ §3"+faction.getName());
+        player.sendMessage("§8›› §7Leader§8: §c"+ leader.getName());
+        player.sendMessage("§8›› §7Online§8: §b" + faction.getOnlineMembers().size() +"§7/§b"+ faction.getMembers().size());
+        player.sendMessage("§8›› §7Level§8: §b" + faction.getLevel());
+        player.sendMessage("§8›› §7Exp§8: §b" + faction.getExp());
         if (faction.getHomeLocation() != null && info) {
             player.sendMessage("§8›› §7Home Location§8: §7" + (int) faction.getHomeLocation().getX() + " \u00A78Y: \u00A77" + (int) faction.getHomeLocation().getY() + " \u00A78Z: \u00A77" + (int) faction.getHomeLocation().getZ());
         }
         else {
-            player.sendMessage("§8›› §7Home Location§8: §cfNot Set.");
+            player.sendMessage("§8›› §7Home Location§8: §cNot Set.");
         }
         List<String> off = new ArrayList<>();
-        player.sendMessage("\u00A78- §7Members list:");
+        player.sendMessage("§8›› §7Members list:");
         for (Map.Entry<UUID, Rank> entry : faction.getMembers().entrySet()) {
             UUID memberUUID = entry.getKey();
             OfflinePlayer member = Bukkit.getOfflinePlayer(memberUUID);
