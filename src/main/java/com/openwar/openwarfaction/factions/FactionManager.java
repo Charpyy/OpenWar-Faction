@@ -1,6 +1,7 @@
 package com.openwar.openwarfaction.factions;
 
 import com.openwar.openwarfaction.handler.ClaimChunk;
+import com.sun.media.jfxmedia.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -130,10 +131,10 @@ public class FactionManager {
                 }
 
                 System.out.println("Faction chargée : " + factionUUID);
-                System.out.println("  Nom : " + factionName);
+                System.out.println("  Nom : " + factionName+" DEBUG:"+getFactionByName(factionName));
                 System.out.println("  Leader : " + leaderUUID);
                 System.out.println("  Membres : " + members.keySet());
-                if (homeLocation != null) {
+                if (homeLocation != null && !homeLocation.equals("null")) {
                     System.out.println("  Home Location : " + homeLocation.getWorld().getName() + " (" + homeLocation.getX() + ", " + homeLocation.getY() + ", " + homeLocation.getZ() + ")");
                 } else {
                     System.out.println("  Home Location : none");
@@ -245,12 +246,14 @@ public class FactionManager {
     }
 
     public Faction getFactionByName(String name) {
-        UUID factionId = factionUUIDs.get(name);
-        if (factionId != null) {
-            return factions.get(factionId);
+        for (Faction faction : factions.values()) {
+            if (faction.getName().equalsIgnoreCase(name)) {
+                return faction;
+            }
         }
         return null;
     }
+
 
     public Faction getFactionByPlayer(UUID playerUUID) {
         UUID factionUUID = playerFactions.get(playerUUID);
