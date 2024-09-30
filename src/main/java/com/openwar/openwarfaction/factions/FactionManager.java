@@ -224,6 +224,18 @@ public class FactionManager {
         return inventory;
     }
 
+    public void deleteInventoryFromConfig(UUID factionUUID) {
+        File file = new File("plugins/OpenWar-Faction/faction_chests.yml");
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        config.set("chests." + factionUUID.toString(), null);
+
+        try {
+            config.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void addFaction(Faction faction) {
         UUID factionId = faction.getFactionUUID();
         factions.put(factionId, faction);

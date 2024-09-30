@@ -182,6 +182,8 @@ public class FactionCommand implements CommandExecutor {
                     Bukkit.broadcastMessage(logo + "\u00A7c" + player.getName() + " \u00A77has disbanded the faction \u00A7b" + factionToDisband.getName() + "\u00A77!");
                     player.sendMessage(logo + "\u00A7cYour faction has been deleted.");
                     confirmDisbanding.remove(playerUUID.toString());
+                    factionManager.deleteInventoryFromConfig(factionToDisband.getFactionUUID());
+                    //TODO vérifier si cela foncctionne réellement
                 } else {
                     player.sendMessage(logo + "\u00A7fAre you sure you want to §cdisband §fyour faction? \u00A7fType §c/f disband §fagain to confirm.");
                     confirmDisbanding.put(playerUUID.toString(), true);
