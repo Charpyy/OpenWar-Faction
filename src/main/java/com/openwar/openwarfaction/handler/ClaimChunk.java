@@ -5,26 +5,38 @@ import com.openwar.openwarfaction.factions.FactionManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Chunk;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class ClaimChunk implements Listener {
 
     private final FactionManager factionManager;
     private final Map<Player, Chunk> playerLastChunk;
+    private List<Material> container;
 
     public ClaimChunk(FactionManager factionManager) {
         this.factionManager = factionManager;
         this.playerLastChunk = new HashMap<>();
+        container = new ArrayList<>();
+        loadContainer();
     }
+
+    private void loadContainer() {
+        container.add(Material.matchMaterial(""));
+        container.add(Material.matchMaterial(""));
+        container.add(Material.matchMaterial(""));
+    }
+
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
@@ -64,10 +76,16 @@ public class ClaimChunk implements Listener {
             Chunk blockChunk = event.getClickedBlock().getChunk();
             Faction chunkOwner = factionManager.getFactionByChunk(blockChunk);
             Faction playerFaction = factionManager.getFactionByPlayer(player.getUniqueId());
-            if (chunkOwner != null && !chunkOwner.equals(playerFaction)) {
+            //TODO si le joueur possède un item qui permet de faire pété des trucs genre une grenade, dans sa main, il faut permettre l'interaction car sinon il pourront pas raid, et faut test si ça permet pas de usebug
+            if (chunkOwner != null && !chunkOwner.equals(playerFaction) && isContainer(event.getClickedBlock())) {
                 player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§cYou cannot interact with anything here."));
                 event.setCancelled(true);
             }
         }
+    }
+
+    public boolean isContainer(Block bloc) {
+
+
     }
 }
