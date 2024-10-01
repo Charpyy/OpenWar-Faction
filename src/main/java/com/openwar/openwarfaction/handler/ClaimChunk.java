@@ -22,7 +22,7 @@ public class ClaimChunk implements Listener {
 
     private final FactionManager factionManager;
     private final Map<Player, Chunk> playerLastChunk;
-    private List<Material> container;
+    private List<String> container;
 
     public ClaimChunk(FactionManager factionManager) {
         this.factionManager = factionManager;
@@ -32,9 +32,9 @@ public class ClaimChunk implements Listener {
     }
 
     private void loadContainer() {
-        container.add(Material.matchMaterial(""));
-        container.add(Material.matchMaterial(""));
-        container.add(Material.matchMaterial(""));
+        container.add("");
+        container.add("");
+        container.add("");
     }
 
 
@@ -85,7 +85,12 @@ public class ClaimChunk implements Listener {
     }
 
     public boolean isContainer(Block bloc) {
-
-
+        String name = bloc.toString();
+        System.out.println("    DEBUG : "+name);
+        if (container.contains(name))
+        {
+            return true;
+        }
+        return false;
     }
 }
