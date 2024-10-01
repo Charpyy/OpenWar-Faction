@@ -87,10 +87,6 @@ public class ClaimChunk implements Listener {
     public boolean isContainer(Block bloc) {
         String name = bloc.toString();
         System.out.println("    DEBUG : "+name);
-        if (container.contains(name))
-        {
-            return true;
-        }
-        return false;
+        return container.contains(name);
     }
 }
