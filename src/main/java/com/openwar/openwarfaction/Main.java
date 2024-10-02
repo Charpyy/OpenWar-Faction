@@ -1,6 +1,5 @@
 package com.openwar.openwarfaction;
 
-import com.openwar.openwarfaction.commands.AdminCommand;
 import com.openwar.openwarfaction.commands.FactionCommand;
 import com.openwar.openwarfaction.commands.FactionTabCompletion;
 import com.openwar.openwarfaction.factions.FactionGUI;
