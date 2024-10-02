@@ -23,18 +23,24 @@ public class ClaimChunk implements Listener {
     private final FactionManager factionManager;
     private final Map<Player, Chunk> playerLastChunk;
     private List<String> container;
+    private List<String> door;
 
     public ClaimChunk(FactionManager factionManager) {
         this.factionManager = factionManager;
         this.playerLastChunk = new HashMap<>();
         container = new ArrayList<>();
-        loadContainer();
+        door = new ArrayList<>();
+        loadContainerAndDoor();
     }
 
-    private void loadContainer() {
+    private void loadContainerAndDoor() {
         container.add("");
         container.add("");
         container.add("");
+
+        door.add("");
+        door.add("");
+        door.add("");
     }
 
 
@@ -88,5 +94,11 @@ public class ClaimChunk implements Listener {
         String name = bloc.toString();
         System.out.println("    DEBUG : "+name);
         return container.contains(name);
+    }
+
+    public boolean isDoor(Block bloc) {
+        String name = bloc.toString();
+        System.out.println("    DEBUG : "+name);
+        return door.contains(name);
     }
 }
