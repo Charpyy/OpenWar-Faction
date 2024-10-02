@@ -64,7 +64,6 @@ public final class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new MenuHandler(this, fm, economy, factionGUI),this);
 
         this.getCommand("f").setExecutor(new FactionCommand(factionChat, fm, getWaitingPlayers(), this, economy, factionGUI));
-        this.getCommand("fadmin").setExecutor(new AdminCommand(fm, this));
         getCommand("f").setTabCompleter(new FactionTabCompletion(fm));
 
         fm.loadFactionsFromCSV(CSV_FILE_PATH);

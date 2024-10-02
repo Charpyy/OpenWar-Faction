@@ -7,6 +7,3 @@ commands:
     description: Faction commands.
     usage: /f <create|new|delete|claim|list|home|sethome|name|invite|promote>
     aliases: [faction, factions]
-  fadmin:
-    description: Faction Admins Commands.
-    usage: /fadmin commands
