@@ -501,7 +501,7 @@ public class FactionCommand implements CommandExecutor {
                     //DONE avec le /f perm pouvoir avoir la perm de promote ou demote suivant le rank
                     return true;
                 }
-                factionManager.promoteMember(promoteTarget.getUniqueId(), factionTarget, playerUUID);
+                factionManager.promoteMember(promoteTarget.getUniqueId(), factionTarget);
                 player.sendMessage(logo + "Player " + promoteTarget.getName() + " promoted!");
                 for (UUID memberUUID : faction8.getMembers().keySet()) {
                     Player member = Bukkit.getPlayer(memberUUID);

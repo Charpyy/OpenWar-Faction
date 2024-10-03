@@ -2,6 +2,7 @@ package com.openwar.openwarfaction.factions;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import com.openwar.openwarfaction.factions.Permission;
 import com.openwar.openwarfaction.factions.PermRank;
@@ -128,18 +129,20 @@ public class Faction {
     }
 
 
-    public void promoteMember(UUID target, UUID playerUUID) {
+    public void promoteMember(UUID target) {
         Rank currentRank = members.get(target);
         if (currentRank == Rank.RECRUE) {
             members.put(target, Rank.MEMBER);
         } else if (currentRank == Rank.MEMBER) {
             members.put(target, Rank.OFFICER);
         } else if (currentRank == Rank.OFFICER) {
+            UUID uuid = getLeaderUUID();
             members.put(target, Rank.LEADER);
-            members.put(playerUUID, Rank.OFFICER);
+            members.put(uuid, Rank.OFFICER);
             this.leaderUUID = target;
         }
     }
+
 
     public void demoteMember(UUID playerUUID) {
         Rank currentRank = members.get(playerUUID);

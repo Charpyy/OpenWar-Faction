@@ -289,8 +289,8 @@ public class FactionManager {
     }
 
 
-    public void promoteMember(UUID targetUUID, Faction faction,UUID playerUUID) {
-        faction.promoteMember(targetUUID, playerUUID);
+    public void promoteMember(UUID targetUUID, Faction faction) {
+        faction.promoteMember(targetUUID);
     }
     public boolean canPromote(UUID target,Faction faction, UUID playerUUID){
         Rank currentRank = faction.getRank(target);
