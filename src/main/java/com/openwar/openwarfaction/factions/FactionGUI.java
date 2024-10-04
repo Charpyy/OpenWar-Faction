@@ -424,7 +424,6 @@ public class FactionGUI {
         slotGris(menu, 15);
         slotGris(menu, 14);
         slotGris(menu, 13);
-        slotGris(menu, 12);
         slotGris(menu, 10);
         // Previous page
         ItemStack limePane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
