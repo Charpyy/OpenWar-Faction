@@ -60,12 +60,20 @@ public class MenuHandler implements Listener {
             UUID playerUUID = player.getUniqueId();
             Faction faction = factionManager.getFactionByPlayer(playerUUID);
             if (clickedSlot == 20) {
-                Inventory factionChest = factionManager.getFactionChest(faction);
-                factionChest = fillChestWithBarriers(factionChest, faction.getLevel());
-                player.openInventory(factionChest);
+                if (factionManager.hasPermissionInFaction(playerUUID, faction, Permission.FACCHEST)) {
+                    Inventory factionChest = factionManager.getFactionChest(faction);
+                    factionChest = fillChestWithBarriers(factionChest, faction.getLevel());
+                    player.openInventory(factionChest);
+                } else {
+                    player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0F, 1.0F);
+                }
             }
             if (clickedSlot == 22){
-                factionGUI.openFactionShopMain(player);
+                if (factionManager.hasPermissionInFaction(playerUUID, faction, Permission.FACSHOP)) {
+                    factionGUI.openFactionShopMain(player);
+                } else {
+                    player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0F, 1.0F);
+                }
             }
 
             Bukkit.getServer().getScheduler().runTaskLater(plugin, player::updateInventory, 1L);
