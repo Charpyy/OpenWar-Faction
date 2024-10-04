@@ -50,13 +50,13 @@ public class Faction {
         return 0;
     }
     public void addExp(int amount) {
-        exp += amount;
-        while (level < levelRequirements.length && exp >= levelRequirements[level]) {
+        this.exp += amount;
+        while (level < levelRequirements.length && this.exp >= levelRequirements[level]) {
             levelUp();
         }
     }
     public void setExp(int exp) {
-        exp = exp;
+        this.exp = exp;
     }
     public void setLevel(int lvl) {
         level = lvl;
@@ -64,7 +64,7 @@ public class Faction {
 
     private void levelUp() {
         level++;
-        exp = 0;
+        this.exp = 0;
         for (UUID memberUUID : members.keySet()) {
             Player player = Bukkit.getPlayer(memberUUID);
             if (player != null && player.isOnline()) {
