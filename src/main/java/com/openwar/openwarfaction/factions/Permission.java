@@ -13,7 +13,8 @@ public enum Permission {
     DIPLOMACY(0x0200),
     FACCHEST(0x0400),
     FACSHOP(0x0800),
-    RANK(0x1000);
+    RANKUP(0x1000),
+    DOORS(0x2000);
 
     private final int flag;
     private Permission(int flag) {

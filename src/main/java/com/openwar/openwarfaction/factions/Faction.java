@@ -19,6 +19,7 @@ public class Faction {
     private Location homeLocation;
     private int level;
     private int exp;
+    private int raidPoint;
     private int[] permissions;
     private String logo = "\u00A78» \u00A7bFaction \u00A78« \u00A77";
 
@@ -34,6 +35,7 @@ public class Faction {
         this.name = name;
         this.level = 0;
         this.exp = 0;
+        this.raidPoint = 5;
         this.leaderUUID = leaderUUID;
         this.members = new HashMap<>();
         this.members.put(leaderUUID, Rank.LEADER);
@@ -50,13 +52,13 @@ public class Faction {
         return 0;
     }
     public void addExp(int amount) {
-        exp += amount;
-        while (level < levelRequirements.length && exp >= levelRequirements[level]) {
+        this.exp += amount;
+        while (level < levelRequirements.length && this.exp >= levelRequirements[level]) {
             levelUp();
         }
     }
     public void setExp(int exp) {
-        exp = exp;
+        this.exp = exp;
     }
     public void setLevel(int lvl) {
         level = lvl;
@@ -64,7 +66,7 @@ public class Faction {
 
     private void levelUp() {
         level++;
-        exp = 0;
+        this.exp = 0;
         for (UUID memberUUID : members.keySet()) {
             Player player = Bukkit.getPlayer(memberUUID);
             if (player != null && player.isOnline()) {
@@ -73,6 +75,10 @@ public class Faction {
         }
     }
 
+    public int getRaidPoint() {return raidPoint;}
+    public void removeFactionPoint(int ra) {
+        this.raidPoint -= ra;
+    }
     public int getLevel() {
         return level;
     }
