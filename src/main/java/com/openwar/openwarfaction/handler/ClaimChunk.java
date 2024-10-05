@@ -481,13 +481,6 @@ public class ClaimChunk implements Listener {
         door.add("HBM_DOOR_METAL");
         door.add("HBM_DOOR_OFFICE");
         door.add("HBM_DOOR_BUNKER");
-        door.add("HBM_BARBED_WIRE");
-        door.add("HBM_BARBED_WIRE_FIRE");
-        door.add("HBM_BARBED_WIRE_POISON");
-        door.add("HBM_BARBED_WIRE_ACID");
-        door.add("HBM_BARBED_WIRE_WITHER");
-        door.add("HBM_BARBED_WIRE_ULTRADEATH");
-        door.add("HBM_SPIKES");
         door.add("WOODEN_DOOR");
         door.add("BIRCH_DOOR");
         door.add("SPRUCE_DOOR");
