@@ -37,7 +37,7 @@ public class Faction {
         this.name = name;
         this.level = 0;
         this.exp = 0;
-        this.raidPoint = 5;
+        this.raidPoint = 0;
         this.leaderUUID = leaderUUID;
         this.members = new HashMap<>();
         this.members.put(leaderUUID, Rank.LEADER);
