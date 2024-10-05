@@ -104,31 +104,6 @@ public class FactionCommand implements CommandExecutor {
                     }
                 }
                 break;
-            case "unclaim":
-                if (args.length >= 2){
-                    if (factionManager.factionExists(args[1])) {
-                        faction=factionManager.getFactionByName(args[1]);
-                    }else{
-                        player.sendMessage(logo + "§cThis faction don't exist.");
-                        return true;
-                    }
-                }else{
-                    if (factionManager.isFactionMember(playerUUID)) {
-                        faction = factionManager.getFactionByPlayer(playerUUID);
-                    }else{
-                        player.sendMessage(logo + "§cYou are not in a faction.");
-                        return true;
-                    }
-                }
-                Location ploc = player.getLocation();
-                Chunk unclaim = ploc.getChunk();
-                if (factionManager.hasPermissionInFaction(playerUUID, faction, Permission.CLAIM) && factionManager.getFactionByChunk(unclaim) == faction) {
-                    factionManager.unclaimLand(unclaim);
-                    player.sendMessage(logo + "§7Chunk §fUnclaimed.");
-                    return true;
-                }
-                player.sendMessage(logo + "§cYou are not in a claimed land.");
-                break;
             case "create":
                 if (args.length < 2) {
                     player.sendMessage(logo + "\u00A7cPlease provide a faction name.");
@@ -200,7 +175,6 @@ public class FactionCommand implements CommandExecutor {
                 }
                 break;
 
-
             case "claim":
                 if (args.length >= 2){
                     if (factionManager.factionExists(args[1])) {
@@ -258,6 +232,31 @@ public class FactionCommand implements CommandExecutor {
                 factionManager.claimLand(chunkToClaim, faction);
                 player.sendMessage(logo + "\u00A77Land claimed for your faction!");
                 break;
+            case "unclaim":
+                if (args.length >= 2){
+                    if (factionManager.factionExists(args[1])) {
+                        faction=factionManager.getFactionByName(args[1]);
+                    }else{
+                        player.sendMessage(logo + "§cThis faction don't exist.");
+                        return true;
+                    }
+                }else{
+                    if (factionManager.isFactionMember(playerUUID)) {
+                        faction = factionManager.getFactionByPlayer(playerUUID);
+                    }else{
+                        player.sendMessage(logo + "§cYou are not in a faction.");
+                        return true;
+                    }
+                }
+                Location ploc = player.getLocation();
+                Chunk unclaim = ploc.getChunk();
+                if (factionManager.hasPermissionInFaction(playerUUID, faction, Permission.CLAIM) && factionManager.getFactionByChunk(unclaim) == faction) {
+                    factionManager.unclaimLand(unclaim);
+                    player.sendMessage(logo + "§7Chunk §fUnclaimed.");
+                    return true;
+                }
+                player.sendMessage(logo + "§cYou are not in a claimed land.");
+                break;
 
             case "list":
                 if (factionManager.getAllFactions() == null){
@@ -278,6 +277,52 @@ public class FactionCommand implements CommandExecutor {
                     showFactionInfo(player, targetInfo, false);
                 }
                 break;
+            case "ally":
+                if (args.length<3){
+                    if(args.length==1){
+                        player.sendMessage(logo + "\u00A7c§cUsage: §f/f ally (add|del) [factionname]");
+                    }else{
+                        player.sendMessage(logo + "\u00A7cPlease provide a faction name.");
+                    }
+                    return true;
+                }
+                if (args.length >=4){
+                    if (factionManager.factionExists(args[3])) {
+                        faction=factionManager.getFactionByName(args[3]);
+                    }else{
+                        player.sendMessage(logo + "§cThis faction don't exist.");
+                        return true;
+                    }
+                }else{
+                    if (factionManager.isFactionMember(playerUUID)) {
+                        faction = factionManager.getFactionByPlayer(playerUUID);
+                    }else{
+                        player.sendMessage(logo + "§cYou must be in a faction to set a home.");
+                        return true;
+                    }
+                }
+                Faction targetAlly = factionManager.getFactionByName(args[2]);
+                if(targetAlly!=null){
+                    player.sendMessage(logo + "§cThis faction don't exist.");
+                }
+                if(!factionManager.hasPermissionInFaction(playerUUID,faction,Permission.DIPLOMACY)){
+                    player.sendMessage(logo + "§cYou don't have permission to perform this action.");
+                    return true;
+                }
+                if(targetAlly==faction){
+                    player.sendMessage(logo + "§cYou are not supposed to be ally with yourself.");
+                    return true;
+                }
+                if(args[1]=="add"){
+                    factionManager.addAllyToFaction(targetAlly.getFactionUUID(),faction);
+                    return true;
+                }
+                if(args[1]=="del"){
+                    factionManager.removeAllyToFaction(targetAlly.getFactionUUID(),faction);
+                    return true;
+                }
+                break;
+
             case "home":
                 if (waitingPlayers.containsKey(playerUUID)) {
                     player.sendMessage(logo + "§cYou are already teleporting. Please wait and don't move.");

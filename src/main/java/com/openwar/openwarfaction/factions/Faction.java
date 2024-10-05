@@ -16,6 +16,7 @@ public class Faction {
     private String name;
     private UUID leaderUUID;
     private Map<UUID, Rank> members;
+    private Set<UUID> allys;
     private Location homeLocation;
     private int level;
     private int exp;
@@ -103,11 +104,17 @@ public class Faction {
     public boolean isMember(UUID playerUUID){
         return members.containsKey(playerUUID);
     }
+    public boolean isAlly(UUID allyTeam){
+        return allys.contains(allyTeam);
+    }
     public void addMember(UUID playerUUID) {
         members.put(playerUUID, Rank.RECRUE);
     }
     public void addMemberRank(UUID memberUUID, Rank rank) {
         members.put(memberUUID, rank);
+    }
+    public void addAlly(UUID allyTeam){
+        allys.add(allyTeam);
     }
 
     public List<Player> getOnlineMembers() {
@@ -123,7 +130,9 @@ public class Faction {
     public void removeMember(UUID playerUUID) {
         members.remove(playerUUID);
     }
-
+    public void removeAlly(UUID allyTeam){
+        allys.remove(allyTeam);
+    }
     public void setRank(UUID playerUUID, Rank rank) {
         if (members.containsKey(playerUUID)) {
             members.put(playerUUID, rank);

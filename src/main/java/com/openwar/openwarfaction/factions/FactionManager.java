@@ -335,6 +335,12 @@ public class FactionManager {
             invitations.remove(playerUUID);
         }
     }
+    public void addAllyToFaction(UUID allyUUID, Faction faction){
+        faction.addAlly(allyUUID);
+    }
+    public void removeAllyToFaction(UUID allyUUID, Faction faction){
+        faction.removeAlly(allyUUID);
+    }
     public Faction getFactionByUUID(UUID factionUUID) {
         return factions.get(factionUUID);
     }
@@ -374,8 +380,10 @@ public class FactionManager {
         if(faction.isMember(playerUUID)){
             return faction.hasPermission(PermRank.getPermRank(faction.getRank(playerUUID)),perm);
         }
-        if(false){//vérifier si le joueur est un allié
-            return faction.hasPermission(PermRank.ALLY,perm);
+        if(isFactionMember(playerUUID)) {
+            if (faction.isAlly(getFactionByPlayer(playerUUID).getFactionUUID())) {//vérifier si le joueur est un allié
+                return faction.hasPermission(PermRank.ALLY, perm);
+            }
         }
         return faction.hasPermission(PermRank.NEUTRAL,perm);
     }
