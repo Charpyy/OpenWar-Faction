@@ -58,6 +58,10 @@ public class Faction {
             levelUp();
         }
     }
+    public void setRaidPoint(int pa) {
+        this.raidPoint = pa;
+    }
+
     public void setExp(int exp) {
         this.exp = exp;
     }

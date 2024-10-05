@@ -32,7 +32,7 @@ public class FactionManager {
 
     public void saveFactionsToCSV(String filePath) {
         try (FileWriter writer = new FileWriter(filePath)) {
-            writer.append("factionUUID,factionName,leaderUUID,members,homeLocation,level,exp\n");
+            writer.append("factionUUID,factionName,leaderUUID,members,homeLocation,level,exp,raidingPoint\n");
             for (UUID factionUUID : factions.keySet()) {
                 Faction faction = factions.get(factionUUID);
                 writer.append(factionUUID.toString()).append(",")
@@ -54,11 +54,14 @@ public class FactionManager {
                 } else {
                     writer.append("null,null,null,null,");
                 }
+
                 writer.append(String.valueOf(faction.getLevel())).append(",")
-                        .append(String.valueOf(faction.getExp())).append(",");
-                int[] perms=faction.getPermissions();
-                for (int i=0;i<perms.length;i++){
-                    if(i>0){
+                        .append(String.valueOf(faction.getExp())).append(",")
+                        .append(String.valueOf(faction.getRaidPoint())).append(",");
+
+                int[] perms = faction.getPermissions();
+                for (int i = 0; i < perms.length; i++) {
+                    if (i > 0) {
                         writer.append(";");
                     }
                     writer.append(String.valueOf(perms[i]));
@@ -78,7 +81,6 @@ public class FactionManager {
             String line;
             reader.readLine();
             System.out.println("Démarrage du chargement des factions depuis le fichier : " + filePath);
-
             while ((line = reader.readLine()) != null) {
                 System.out.println("Chargement de la ligne : " + line);
                 String[] data = line.split(",");
@@ -86,7 +88,6 @@ public class FactionManager {
                 String factionName = data[1];
                 UUID leaderUUID = UUID.fromString(data[2]);
                 Map<UUID, Rank> members = new HashMap<>();
-
                 String[] memberUUIDs = data[3].split(";");
                 for (String memberData : memberUUIDs) {
                     if (!memberData.isEmpty()) {
@@ -97,7 +98,6 @@ public class FactionManager {
                         System.out.println("Membre ajouté : " + memberUUID + " avec le rôle : " + rank);
                     }
                 }
-
                 Location homeLocation = null;
                 if (!data[4].equals("null")) {
                     World world = Bukkit.getWorld(data[4]);
@@ -108,30 +108,29 @@ public class FactionManager {
                 }
                 int level = Integer.parseInt(data[8]);
                 int exp = Integer.parseInt(data[9]);
-                String[] permsString = data[10].split(";");
+                int raidingPoint = Integer.parseInt(data[10]);
+                String[] permsString = data[11].split(";");
                 int[] perms = new int[permsString.length];
-                for(int i=0;i<permsString.length;i++){
-                    perms[i]=Integer.parseInt(permsString[i]);
+                for (int i = 0; i < permsString.length; i++) {
+                    perms[i] = Integer.parseInt(permsString[i]);
                 }
                 Faction faction = new Faction(factionName, leaderUUID, factionUUID);
                 faction.setHomeLocation(homeLocation);
                 faction.setLevel(level);
                 faction.setExp(exp);
+                faction.setRaidPoint(raidingPoint);
                 faction.setPermissions(perms);
-
                 for (Map.Entry<UUID, Rank> entry : members.entrySet()) {
                     faction.addMemberRank(entry.getKey(), entry.getValue());
                 }
-
 
                 factions.put(factionUUID, faction);
                 playerFactions.put(faction.getLeaderUUID(), factionUUID);
                 for (UUID memberUUID : members.keySet()) {
                     playerFactions.put(memberUUID, factionUUID);
                 }
-
                 System.out.println("Faction chargée : " + factionUUID);
-                System.out.println("  Nom : " + factionName+" DEBUG:"+getFactionByName(factionName));
+                System.out.println("  Nom : " + factionName);
                 System.out.println("  Leader : " + leaderUUID);
                 System.out.println("  Membres : " + members.keySet());
                 if (homeLocation != null && !homeLocation.equals("null")) {
@@ -141,12 +140,12 @@ public class FactionManager {
                 }
                 System.out.println("  Niveau : " + level);
                 System.out.println("  Expérience : " + exp);
+                System.out.println("  Points de Raid : " + raidingPoint);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 
     public void saveClaimsToCSV(String filePath) {
         try (FileWriter writer = new FileWriter(filePath)) {
@@ -256,6 +255,7 @@ public class FactionManager {
     public boolean factionExists(String name) {
         return factionUUIDs.containsKey(name);
     }
+
 
     public Faction getFactionByName(String name) {
         for (Faction faction : factions.values()) {
