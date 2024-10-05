@@ -19,6 +19,7 @@ public class Faction {
     private Location homeLocation;
     private int level;
     private int exp;
+    private int raidPoint;
     private int[] permissions;
     private String logo = "\u00A78» \u00A7bFaction \u00A78« \u00A77";
 
@@ -34,6 +35,7 @@ public class Faction {
         this.name = name;
         this.level = 0;
         this.exp = 0;
+        this.raidPoint = 5;
         this.leaderUUID = leaderUUID;
         this.members = new HashMap<>();
         this.members.put(leaderUUID, Rank.LEADER);
@@ -73,6 +75,10 @@ public class Faction {
         }
     }
 
+    public int getRaidPoint() {return raidPoint;}
+    public void removeFactionPoint(int ra) {
+        this.raidPoint -= ra;
+    }
     public int getLevel() {
         return level;
     }

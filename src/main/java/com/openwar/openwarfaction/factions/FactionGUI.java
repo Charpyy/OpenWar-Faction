@@ -97,6 +97,7 @@ public class FactionGUI {
         lore.add("§7Members Online: §f" + faction.getOnlineMembers().size() + "§7/§f" + faction.getMembers().size());
         FactionManager fm = new FactionManager();
         lore.add("§7Claims: §f" + fm.getClaimedChunks(faction).size());
+        lore.add("§7RaidPoint: §f" + faction.getRaidPoint());
         if (faction.getHomeLocation() != null) {
             lore.add("§7Home Location: \u00A78X: \u00A77" + (int) faction.getHomeLocation().getX() + " \u00A78Y: \u00A77" + (int) faction.getHomeLocation().getY() + " \u00A78Z: \u00A77" + (int) faction.getHomeLocation().getZ());
         } else {

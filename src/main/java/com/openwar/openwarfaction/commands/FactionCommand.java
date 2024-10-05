@@ -766,6 +766,7 @@ public class FactionCommand implements CommandExecutor {
         player.sendMessage("§8⁕ §7Online §8» §b" + faction.getOnlineMembers().size() +"§7/§b"+ faction.getMembers().size());
         player.sendMessage("§8⁕ §7Level §8» §b" + faction.getLevel());
         player.sendMessage("§8⁕ §7Exp §8» §b" + faction.getExp());
+        player.sendMessage("§8⁕ §7RaidPoint §8» §b" + faction.getRaidPoint());
         if (info) {
             if (faction.getHomeLocation() != null) {
                 player.sendMessage("§8⁕ §7Home Location §8» §7" + (int) faction.getHomeLocation().getX() + " \u00A78Y: \u00A77" + (int) faction.getHomeLocation().getY() + " \u00A78Z: \u00A77" + (int) faction.getHomeLocation().getZ());
