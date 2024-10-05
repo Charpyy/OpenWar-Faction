@@ -21,6 +21,7 @@ public class Faction {
     private int level;
     private int exp;
     private int raidPoint;
+    private int maxRaidPoint;
     private int[] permissions;
     private String logo = "\u00A78» \u00A7bFaction \u00A78« \u00A77";
 
@@ -41,11 +42,40 @@ public class Faction {
         this.members = new HashMap<>();
         this.members.put(leaderUUID, Rank.LEADER);
         this.permissions=new int[]{0b0111111011110,0b0010111000010,0b0000110000010,0b0000100000010,0b000000000000};
+        this.maxRaidPoint = maxRaidPoint();
     }
     public UUID getFactionUUID() {
         return factionUUID;
     }
-
+    public int getMaxRaidPoint() {
+        return this.maxRaidPoint;
+    }
+    public int maxRaidPoint() {
+        int max = 2;
+        int lvl = this.level;
+        if (lvl >= 3) {
+            max += 1;
+        }
+        if (lvl >= 9) {
+            max += 1;
+        }
+        if (lvl >= 12) {
+            max += 2;
+        }
+        if (lvl >= 15) {
+            max += 3;
+        }
+        if (lvl >= 20) {
+            max += 1;
+        }
+        if (this.getMembers().size() >= 3) {
+            max += 3;
+        }
+        if (this.getMembers().size() >= 5) {
+            max += 3;
+        }
+      return max;
+    }
     public int getExperienceNeededForNextLevel() {
         if (level < levelRequirements.length) {
             return levelRequirements[level];
@@ -72,6 +102,7 @@ public class Faction {
     private void levelUp() {
         level++;
         this.exp = 0;
+        this.maxRaidPoint = maxRaidPoint();
         for (UUID memberUUID : members.keySet()) {
             Player player = Bukkit.getPlayer(memberUUID);
             if (player != null && player.isOnline()) {
@@ -112,9 +143,11 @@ public class Faction {
         return allys.contains(allyTeam);
     }
     public void addMember(UUID playerUUID) {
+        this.maxRaidPoint = maxRaidPoint();
         members.put(playerUUID, Rank.RECRUE);
     }
     public void addMemberRank(UUID memberUUID, Rank rank) {
+        this.maxRaidPoint = maxRaidPoint();
         members.put(memberUUID, rank);
     }
     public void addAlly(UUID allyTeam){
@@ -132,6 +165,7 @@ public class Faction {
         return onlineMembers;
     }
     public void removeMember(UUID playerUUID) {
+        this.maxRaidPoint = maxRaidPoint();
         members.remove(playerUUID);
     }
     public void removeAlly(UUID allyTeam){
