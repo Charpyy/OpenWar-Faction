@@ -91,7 +91,9 @@ public class Faction {
     public void setRaidPoint(int pa) {
         this.raidPoint = pa;
     }
-
+    public void addRaidPoint(int pa) {
+        this.maxRaidPoint += pa;
+    }
     public void setExp(int exp) {
         this.exp = exp;
     }
