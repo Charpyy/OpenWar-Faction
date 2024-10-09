@@ -8,9 +8,16 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -506,6 +513,7 @@ public class ClaimChunk implements Listener {
         interact.add(Material.BOAT.name());
         interact.add(Material.ITEM_FRAME.name());
         interact.add(Material.PAINTING.name());
+        interact.add(Material.ARMOR_STAND.name());
     }
 
 
@@ -538,9 +546,52 @@ public class ClaimChunk implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerBreak(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        if (event.getBlock() != null) {
+            Chunk blockChunk = event.getBlock().getChunk();
+            Faction chunkOwner = factionManager.getFactionByChunk(blockChunk);
+            if (chunkOwner == null) {
+                return;
+            }
+            Faction playerFaction = factionManager.getFactionByPlayer(player.getUniqueId());
+            if (chunkOwner == playerFaction) {
+                if (!factionManager.hasPermissionInFaction(player.getUniqueId(), playerFaction, Permission.BUILD)) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to build here."));
+                    event.setCancelled(true);
+                }
+            } else {
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to build here."));
+                event.setCancelled(true);
+            }
+        }
+    }
 
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerPlace(BlockPlaceEvent event) {
+        Player player = event.getPlayer();
+        if (event.getBlockPlaced() != null) {
+            Chunk blockChunk = event.getBlock().getChunk();
+            Faction chunkOwner = factionManager.getFactionByChunk(blockChunk);
+            if (chunkOwner == null) {
+                return;
+            }
+            Faction playerFaction = factionManager.getFactionByPlayer(player.getUniqueId());
+            if (chunkOwner == playerFaction) {
+                if (!factionManager.hasPermissionInFaction(player.getUniqueId(), playerFaction, Permission.BUILD)) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to build here."));
+                    event.setCancelled(true);
+                }
+            } else {
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to build here."));
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         if (event.getClickedBlock() != null) {
@@ -582,6 +633,30 @@ public class ClaimChunk implements Listener {
             }
         }
     }
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
+        Player player = event.getPlayer();
+        if (event.getRightClicked() instanceof ArmorStand || event.getRightClicked() instanceof ItemFrame) {
+            Entity entity = event.getRightClicked();
+            Chunk entityChunk = entity.getLocation().getChunk();
+            Faction chunkOwner = factionManager.getFactionByChunk(entityChunk);
+            if (chunkOwner == null) {
+                return;
+            }
+
+            Faction playerFaction = factionManager.getFactionByPlayer(player.getUniqueId());
+            if (chunkOwner == playerFaction) {
+                if (!factionManager.hasPermissionInFaction(player.getUniqueId(), playerFaction, Permission.CONTAINERS)) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to interact with this entity."));
+                    event.setCancelled(true);
+                }
+            } else {
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to interact here."));
+                event.setCancelled(true);
+            }
+        }
+    }
+
 
     public boolean isInteract(Block bloc) {
         String name = bloc.getType().name();
