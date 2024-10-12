@@ -543,6 +543,19 @@ public class ClaimChunk implements Listener {
             }
         }
     }
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlaceLaunch(BlockPlaceEvent event) {
+        Player player = event.getPlayer();
+        if (event.getBlock().equals("HBM_LAUNCH_TABLE") || event.getBlock().equals("HBM_LAUNCH_PAD") || event.getBlock().equals("HBM_COMPACT_LAUNCHER")){
+            Chunk chunk = event.getBlock().getChunk();
+            Faction chunkOwner = factionManager.getFactionByChunk(chunk);
+            if (chunkOwner == null || !(chunkOwner == factionManager.getFactionByPlayer(player.getUniqueId()))){
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou can't place that outside your claim."));
+                event.setCancelled(true);
+            }
+        }
+    }
+
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerBreak(BlockBreakEvent event) {
