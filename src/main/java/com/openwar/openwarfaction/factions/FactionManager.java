@@ -169,18 +169,24 @@ public class FactionManager {
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
                 String worldName = data[0];
+                System.out.println("World "+worldName);
                 int chunkX = Integer.parseInt(data[1]);
                 int chunkZ = Integer.parseInt(data[2]);
                 UUID factionUUID = UUID.fromString(data[3]);
 
-                World world = Bukkit.getWorld(worldName);
+                World world = Bukkit.getServer().getWorld(worldName);
+                System.out.println("World "+world);
                 if (world != null) {
+                    System.out.println(" World not null ");
                     Chunk chunk = world.getChunkAt(chunkX, chunkZ);
                     Faction faction = getFactionByUUID(factionUUID);
+                    System.out.println(" Faction "+faction);
                     if (faction != null) {
                         claimedLand.put(chunk, faction);
+                        System.out.println("Claim : "+faction.getName()+" Chunk: "+chunk+" ");
                     }
                 }
+                System.out.println("Liste claims: "+ claimedLand);
             }
         } catch (IOException e) {
             e.printStackTrace();

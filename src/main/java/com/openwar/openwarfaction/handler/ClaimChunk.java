@@ -560,6 +560,7 @@ public class ClaimChunk implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
+        if (!player.getWorld().getName().equals("faction")) {return;}
         if (event.getBlock() != null) {
             Chunk blockChunk = event.getBlock().getChunk();
             Faction chunkOwner = factionManager.getFactionByChunk(blockChunk);
@@ -583,6 +584,7 @@ public class ClaimChunk implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
+        if (!player.getWorld().getName().equals("faction")) {return;}
         if (event.getBlockPlaced() != null) {
             Chunk blockChunk = event.getBlock().getChunk();
             Faction chunkOwner = factionManager.getFactionByChunk(blockChunk);
@@ -605,6 +607,7 @@ public class ClaimChunk implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
+        if (!player.getWorld().getName().equals("faction")) {return;}
         if (event.getClickedBlock() != null) {
             Chunk blockChunk = event.getClickedBlock().getChunk();
             Faction chunkOwner = factionManager.getFactionByChunk(blockChunk);
@@ -647,6 +650,7 @@ public class ClaimChunk implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         Player player = event.getPlayer();
+        if (!player.getWorld().getName().equals("faction")) {return;}
         if (event.getRightClicked() instanceof ArmorStand || event.getRightClicked() instanceof ItemFrame) {
             Entity entity = event.getRightClicked();
             Chunk entityChunk = entity.getLocation().getChunk();
