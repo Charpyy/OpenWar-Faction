@@ -521,9 +521,7 @@ public class ClaimChunk implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
 
-
-        //TODO replace world to faction
-        if (player.getWorld().getName().equals("world")) {
+        if (player.getWorld().getName().equals("faction")) {
             Chunk fromChunk = event.getFrom().getChunk();
             Chunk toChunk = event.getTo().getChunk();
 
@@ -660,19 +658,16 @@ public class ClaimChunk implements Listener {
 
     public boolean isInteract(Block bloc) {
         String name = bloc.getType().name();
-        System.out.println("    DEBUG : "+name);
         return interact.contains(name);
     }
 
     public boolean isContainer(Block bloc) {
         String name = bloc.getType().name();
-        System.out.println("    DEBUG : "+name);
         return container.contains(name);
     }
 
     public boolean isDoor(Block bloc) {
         String name = bloc.getType().name();
-        System.out.println("    DEBUG : "+name);
         return door.contains(name);
     }
 }
