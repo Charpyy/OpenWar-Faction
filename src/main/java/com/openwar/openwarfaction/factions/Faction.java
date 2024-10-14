@@ -17,6 +17,7 @@ public class Faction {
     private UUID leaderUUID;
     private Map<UUID, Rank> members;
     private Set<UUID> allys;
+    private Set<UUID> allysAsker;
     private Location homeLocation;
     private int level;
     private int exp;
@@ -40,6 +41,8 @@ public class Faction {
         this.raidPoint = 0;
         this.leaderUUID = leaderUUID;
         this.members = new HashMap<>();
+        this.allys = new HashSet<>();
+        this.allysAsker = new HashSet<>();
         this.members.put(leaderUUID, Rank.LEADER);
         this.permissions=new int[]{0b11111111011110,0b10010111000010,0b10000110000010,0b10000100000010,0b00000000000000};
         this.maxRaidPoint = maxRaidPoint();
@@ -152,10 +155,20 @@ public class Faction {
         this.maxRaidPoint = maxRaidPoint();
         members.put(memberUUID, rank);
     }
-    public void addAlly(UUID allyTeam){
-        allys.add(allyTeam);
+    public boolean addAlly(UUID allyTeam){
+        if(allysAsker.contains(allyTeam)){
+            allys.add(allyTeam);
+            return true;
+        }
+        return false;
     }
-
+    public boolean askAlly(UUID allyAsker){
+        if(!this.isAlly(allyAsker)){
+            allysAsker.add(allyAsker);
+            return true;
+        }
+        return false;
+    }
     public List<Player> getOnlineMembers() {
         List<Player> onlineMembers = new ArrayList<>();
         for (UUID memberUUID : members.keySet()) {
@@ -172,6 +185,7 @@ public class Faction {
     }
     public void removeAlly(UUID allyTeam){
         allys.remove(allyTeam);
+        allysAsker.remove(allyTeam);
     }
     public void setRank(UUID playerUUID, Rank rank) {
         if (members.containsKey(playerUUID)) {

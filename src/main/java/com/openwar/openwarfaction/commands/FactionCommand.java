@@ -314,7 +314,16 @@ public class FactionCommand implements CommandExecutor {
                     return true;
                 }
                 if(args[1]=="add"){
-                    factionManager.addAllyToFaction(targetAlly.getFactionUUID(),faction);
+                    int ret=factionManager.addAllyToFaction(targetAlly.getFactionUUID(),faction);
+                    if(ret==0){
+                        player.sendMessage(logo + "§cNow ask a member of "+args[2]+" to execute /f ally add "+faction.getName());
+                    }
+                    if(ret==1){
+                        player.sendMessage(logo + "§cYou are now allied with "+args[2]+".");
+                    }
+                    if(ret==2){
+                        player.sendMessage(logo + "§cYou are already allied with "+args[2]+".");
+                    }
                     return true;
                 }
                 if(args[1]=="del"){

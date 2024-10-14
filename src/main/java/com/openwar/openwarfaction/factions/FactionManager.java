@@ -347,8 +347,14 @@ public class FactionManager {
             invitations.remove(playerUUID);
         }
     }
-    public void addAllyToFaction(UUID allyUUID, Faction faction){
-        faction.addAlly(allyUUID);
+    public int addAllyToFaction(UUID allyUUID, Faction faction){
+        if(faction.addAlly(allyUUID)){
+            return 0;
+        }
+        if(getFactionByUUID(allyUUID).askAlly(faction.getFactionUUID())){
+            return 1;
+        }
+        return 2;
     }
     public void removeAllyToFaction(UUID allyUUID, Faction faction){
         faction.removeAlly(allyUUID);
