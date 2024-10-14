@@ -95,8 +95,7 @@ public class FactionGUI {
         List<String> lore = new ArrayList<>();
         lore.add("§7Name: §f" + faction.getName());
         lore.add("§7Members Online: §f" + faction.getOnlineMembers().size() + "§7/§f" + faction.getMembers().size());
-        FactionManager fm = new FactionManager();
-        lore.add("§7Claims: §f" + fm.getClaimedChunks(faction).size());
+        lore.add("§7Claims: §f" + factionManager.getClaimedChunks(faction).size());
         lore.add("§7RaidPoint: §f" + faction.getRaidPoint());
         if (faction.getHomeLocation() != null) {
             lore.add("§7Home Location: \u00A78X: \u00A77" + (int) faction.getHomeLocation().getX() + " \u00A78Y: \u00A77" + (int) faction.getHomeLocation().getY() + " \u00A78Z: \u00A77" + (int) faction.getHomeLocation().getZ());
@@ -636,13 +635,35 @@ public class FactionGUI {
 
     private List<String> getFactionShopAntiAirItems() {
         return Arrays.asList(
-                "2$5600$mcheli bofors40mml60",
                 "2$6700$mcheli 25mmaamg",
                 "2$3400$mcheli fgm148",
                 "3$5900$mcheli fim92",
                 "3$21340$mcheli mk15",
                 "3$25300$mcheli mim23",
-                "5$39000$mcheli s75"
+                "5$39000$mcheli s75",
+                "2$4510$mcheli 25mmaamg",
+                "2$4320$mcheli 127s",
+                "2$4310$mcheli 127",
+                "5$12100$mcheli 46",
+                "2$3930$mcheli 155",
+                "5$13000$mcheli type93 launcher",
+                "4$11200$mcheli mk32",
+                "5$23000$mcheli searam",
+                "5$24000$mcheli sea sparrow",
+                "3$3500$mcheli vads",
+                "4$10000$mcheli oto76mm",
+                "5$12000$mcheli oto127mm",
+                "3$8900$mcheli mk15",
+                "4$7800$mcheli krupp c 34",
+                "1$1400$mcheli uav station",
+                "2$2300$mcheli uav station2",
+                "4$7890$mcheli mq9",
+                "2$3400$mcheli skylark",
+                "5$10000$mcheli x47b",
+                "3$6700$mcheli mq8b",
+                "4$9800$mcheli rcgoblinbomb",
+                "1$590$mcheli rcgoblin"
+
         );
     }
 
@@ -682,7 +703,9 @@ public class FactionGUI {
                 "5$39100$mcheli f22a",
                 "5$39540$mcheli f35b",
                 "5$45900$mcheli ac130",
-                "5$40310$mcheli f35a"
+                "5$40310$mcheli f35a",
+                "4$34310$mcheli harrier en",
+                "4$30310$mcheli tornadoids"
         );
     }
 

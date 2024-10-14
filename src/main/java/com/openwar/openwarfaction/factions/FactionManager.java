@@ -149,11 +149,12 @@ public class FactionManager {
 
     public void saveClaimsToCSV(String filePath) {
         try (FileWriter writer = new FileWriter(filePath)) {
-            writer.append("chunkX,chunkZ,factionUUID\n");
+            writer.append("world,chunkX,chunkZ,factionUUID\n");
             for (Map.Entry<Chunk, Faction> entry : claimedLand.entrySet()) {
                 Chunk chunk = entry.getKey();
                 Faction faction = entry.getValue();
-                writer.append(chunk.getX() + "," + chunk.getZ() + "," + faction.getFactionUUID() + "\n");
+                String worldName = chunk.getWorld().getName();
+                writer.append(worldName + "," + chunk.getX() + "," + chunk.getZ() + "," + faction.getFactionUUID() + "\n");
             }
             writer.flush();
         } catch (IOException e) {
@@ -167,14 +168,25 @@ public class FactionManager {
             reader.readLine();
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                int chunkX = Integer.parseInt(data[0]);
-                int chunkZ = Integer.parseInt(data[1]);
-                UUID factionUUID = UUID.fromString(data[2]);
-                Chunk chunk = Bukkit.getWorld("world").getChunkAt(chunkX, chunkZ);
-                Faction faction = getFactionByUUID(factionUUID);
-                if (faction != null) {
-                    claimedLand.put(chunk, faction);
+                String worldName = data[0];
+                System.out.println("World "+worldName);
+                int chunkX = Integer.parseInt(data[1]);
+                int chunkZ = Integer.parseInt(data[2]);
+                UUID factionUUID = UUID.fromString(data[3]);
+
+                World world = Bukkit.getServer().getWorld(worldName);
+                System.out.println("World "+world);
+                if (world != null) {
+                    System.out.println(" World not null ");
+                    Chunk chunk = world.getChunkAt(chunkX, chunkZ);
+                    Faction faction = getFactionByUUID(factionUUID);
+                    System.out.println(" Faction "+faction);
+                    if (faction != null) {
+                        claimedLand.put(chunk, faction);
+                        System.out.println("Claim : "+faction.getName()+" Chunk: "+chunk+" ");
+                    }
                 }
+                System.out.println("Liste claims: "+ claimedLand);
             }
         } catch (IOException e) {
             e.printStackTrace();
