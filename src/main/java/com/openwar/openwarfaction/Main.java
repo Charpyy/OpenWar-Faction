@@ -68,6 +68,7 @@ public final class Main extends JavaPlugin {
         System.out.println(" OpenWar - Faction loaded !");
         System.out.println(" ");
         System.out.println("====================================");
+
     }
 
     @Override
@@ -78,5 +79,4 @@ public final class Main extends JavaPlugin {
         System.out.println(" ");
         System.out.println("====================================");
     }
-
 }

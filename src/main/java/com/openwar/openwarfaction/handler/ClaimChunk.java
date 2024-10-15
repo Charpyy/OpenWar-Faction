@@ -531,19 +531,15 @@ public class ClaimChunk implements Listener {
         if (player.getWorld().getName().equals("faction")) {
             Chunk fromChunk = event.getFrom().getChunk();
             Chunk toChunk = event.getTo().getChunk();
-            System.out.println("1");
             if (!fromChunk.equals(toChunk)) {
                 Faction fromFaction = factionManager.getFactionByChunk(fromChunk);
                 Faction toFaction = factionManager.getFactionByChunk(toChunk);
-                System.out.println("2");
                 if (toFaction != null && (fromFaction == null || !fromFaction.getFactionUUID().equals(toFaction.getFactionUUID()))) {
-                    System.out.println("3");
                     if (!playerLastChunk.containsKey(player) || !playerLastChunk.get(player).equals(toChunk)) {
                         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §fYou entered faction claim of §c" + toFaction.getName() + " §8«"));
                         playerLastChunk.put(player, toChunk);
                     }
                 } else if (toFaction == null && fromFaction != null) {
-                    System.out.println("4");
                     if (playerLastChunk.containsKey(player)) {
                         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §fYou left faction claim of §c" + fromFaction.getName() + " §8«"));
                         playerLastChunk.remove(player);

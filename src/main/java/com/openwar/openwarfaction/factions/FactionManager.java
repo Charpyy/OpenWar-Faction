@@ -363,12 +363,10 @@ public class FactionManager {
         return factions.get(factionUUID);
     }
     public boolean isLandClaimed(Chunk chunk) {
-        System.out.println("CLAIMED LAND : "+claimedLand);
         return claimedLand.containsKey(chunk);
     }
 
     public Faction getFactionByChunk(Chunk chunk) {
-        System.out.println("CLAIMED LAND : "+claimedLand);
         return claimedLand.get(chunk);
     }
 

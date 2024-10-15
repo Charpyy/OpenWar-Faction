@@ -3,7 +3,6 @@ version: '${project.version}'
 main: com.openwar.openwarfaction.Main
 depend:
   - OpenWar-Core
-  - Multiverse-Core
 commands:
   f:
     description: Faction commands.
