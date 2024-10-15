@@ -24,7 +24,7 @@ public class PlayerMove implements Listener {
         if (plugin.getWaitingPlayers().containsKey(playerUUID)) {
             Location from = event.getFrom();
             Location to = event.getTo();
-            if (from.getX() != to.getX() || from.getZ() != to.getZ()) {
+            if (to.distance(from) > 0.1D) {
                 player.sendMessage(logo+"\u00A7cYou moved! \u00A77Teleportation cancelled.");
                 plugin.getWaitingPlayers().remove(playerUUID);
             }

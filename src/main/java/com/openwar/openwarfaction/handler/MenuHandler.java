@@ -36,7 +36,6 @@ public class MenuHandler implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         InventoryView view = event.getView();
-        Inventory topInventory = view.getTopInventory();
 
         if (view.getTitle().contains("§7§k§l!!§r §c=== §8§l⟦§4§l")) {
             event.setCancelled(true);

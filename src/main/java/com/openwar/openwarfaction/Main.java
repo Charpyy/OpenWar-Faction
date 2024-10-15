@@ -53,6 +53,9 @@ public final class Main extends JavaPlugin {
 
         if (!setupDepend()) {return;}
 
+        fm.loadFactionsFromCSV(CSV_FILE_PATH);
+        fm.loadClaimsFromCSV(claimsFilePath);
+        fm.loadFactionChests();
 
         this.factionChat = new FactionChat(fm);
         this.factionGUI = new FactionGUI(fm, pl,this);
@@ -64,10 +67,6 @@ public final class Main extends JavaPlugin {
 
         this.getCommand("f").setExecutor(new FactionCommand(factionChat, fm, getWaitingPlayers(), this, economy, factionGUI));
         getCommand("f").setTabCompleter(new FactionTabCompletion(fm));
-
-        fm.loadFactionsFromCSV(CSV_FILE_PATH);
-        fm.loadClaimsFromCSV(claimsFilePath);
-        fm.loadFactionChests();
 
         System.out.println(" ");
         System.out.println(" OpenWar - Faction loaded !");

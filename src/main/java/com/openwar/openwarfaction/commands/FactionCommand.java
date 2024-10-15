@@ -378,7 +378,6 @@ public class FactionCommand implements CommandExecutor {
                                     countdown--;
                                 } else {
                                     player.teleport(home);
-                                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("\u00A78» \u00A7bTeleported to your faction's home."));
                                     waitingPlayers.remove(player.getUniqueId());
                                     this.cancel();
                                 }

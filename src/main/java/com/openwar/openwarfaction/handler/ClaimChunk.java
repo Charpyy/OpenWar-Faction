@@ -17,9 +17,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -516,6 +514,18 @@ public class ClaimChunk implements Listener {
         interact.add(Material.ARMOR_STAND.name());
     }
 
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        Chunk chunk = event.getPlayer().getLocation().getChunk();
+        Faction faction = factionManager.getFactionByChunk(chunk);
+        Faction facplayer = factionManager.getFactionByPlayer(player.getUniqueId());
+        if (faction != null && facplayer != null) {
+            if (faction.getName().equals(facplayer.getName())) {
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §fYou entered faction claim of §c" + faction.getName() + " §8«"));
+            }
+        }
+    }
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
@@ -524,7 +534,6 @@ public class ClaimChunk implements Listener {
         if (player.getWorld().getName().equals("faction")) {
             Chunk fromChunk = event.getFrom().getChunk();
             Chunk toChunk = event.getTo().getChunk();
-
             if (!fromChunk.equals(toChunk)) {
                 Faction fromFaction = factionManager.getFactionByChunk(fromChunk);
                 Faction toFaction = factionManager.getFactionByChunk(toChunk);
@@ -541,8 +550,29 @@ public class ClaimChunk implements Listener {
                     }
                 }
             }
+            else {
+                Faction fromFaction = factionManager.getFactionByChunk(fromChunk);
+                Faction toFaction = factionManager.getFactionByChunk(toChunk);
+                if (toFaction != null && (fromFaction == null || !fromFaction.getFactionUUID().equals(toFaction.getFactionUUID()))) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §fYou left faction claim of §c" + fromFaction.getName() + " §8«"));
+                    playerLastChunk.put(player, toChunk);
+                }
+            }
         }
     }
+    @EventHandler
+    public void onTeleportInChunk(PlayerTeleportEvent event) {
+        Player player = event.getPlayer();
+        Chunk chunk = event.getPlayer().getLocation().getChunk();
+        Faction faction = factionManager.getFactionByChunk(chunk);
+        Faction facplayer = factionManager.getFactionByPlayer(player.getUniqueId());
+        if (faction != null && facplayer != null) {
+            if (faction.getName().equals(facplayer.getName())) {
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §fYou entered faction claim of §c" + faction.getName() + " §8«"));
+            }
+        }
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlaceLaunch(BlockPlaceEvent event) {
         Player player = event.getPlayer();

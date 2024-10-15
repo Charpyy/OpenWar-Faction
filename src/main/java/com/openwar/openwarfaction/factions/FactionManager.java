@@ -180,7 +180,7 @@ public class FactionManager {
                     System.out.println(" World not null ");
                     Chunk chunk = world.getChunkAt(chunkX, chunkZ);
                     Faction faction = getFactionByUUID(factionUUID);
-                    System.out.println(" Faction "+faction);
+                    System.out.println(" Faction Name =  "+faction.getName());
                     if (faction != null) {
                         claimedLand.put(chunk, faction);
                         System.out.println("Claim : "+faction.getName()+" Chunk: "+chunk+" ");
@@ -363,6 +363,7 @@ public class FactionManager {
         return factions.get(factionUUID);
     }
     public boolean isLandClaimed(Chunk chunk) {
+        System.out.println("CLAIMED LAND : "+claimedLand);
         return claimedLand.containsKey(chunk);
     }
 
