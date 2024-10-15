@@ -368,6 +368,7 @@ public class FactionManager {
     }
 
     public Faction getFactionByChunk(Chunk chunk) {
+        System.out.println("CLAIMED LAND : "+claimedLand);
         return claimedLand.get(chunk);
     }
 

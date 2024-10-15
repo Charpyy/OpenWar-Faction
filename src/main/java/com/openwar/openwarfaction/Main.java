@@ -53,10 +53,6 @@ public final class Main extends JavaPlugin {
 
         if (!setupDepend()) {return;}
 
-        fm.loadFactionsFromCSV(CSV_FILE_PATH);
-        fm.loadClaimsFromCSV(claimsFilePath);
-        fm.loadFactionChests();
-
         this.factionChat = new FactionChat(fm);
         this.factionGUI = new FactionGUI(fm, pl,this);
 
@@ -72,15 +68,10 @@ public final class Main extends JavaPlugin {
         System.out.println(" OpenWar - Faction loaded !");
         System.out.println(" ");
         System.out.println("====================================");
-        startAutoSaveTask();
     }
 
     @Override
     public void onDisable() {
-        fm.saveFactionsToCSV(CSV_FILE_PATH);
-        fm.saveClaimsToCSV(claimsFilePath);
-        fm.saveFactionChests();
-
         System.out.println("====================================");
         System.out.println(" ");
         System.out.println(" OpenWar - Faction Saved !");
@@ -88,14 +79,4 @@ public final class Main extends JavaPlugin {
         System.out.println("====================================");
     }
 
-    public void startAutoSaveTask() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-            @Override
-            public void run() {
-                fm.saveFactionsToCSV(CSV_FILE_PATH);
-                fm.saveClaimsToCSV(claimsFilePath);
-                fm.saveFactionChests();
-            }
-        }, 0L, 6000L);
-    }
 }

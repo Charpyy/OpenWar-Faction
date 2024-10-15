@@ -193,6 +193,7 @@ public class FactionCommand implements CommandExecutor {
                 }
                 Chunk chunkToClaim = player.getLocation().getChunk();
                 Faction factionChunk = factionManager.getFactionByChunk(chunkToClaim);
+                System.out.println("CLAIM : "+factionChunk+" faction de "+faction.getName());
                 if (faction == factionChunk) {
                     player.sendMessage(logo + "\u00A7cYou already own this claim");
                     return true;
