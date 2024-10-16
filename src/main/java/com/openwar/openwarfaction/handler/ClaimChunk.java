@@ -515,19 +515,32 @@ public class ClaimChunk implements Listener {
     }
 
     @EventHandler
+    public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+        Chunk chunk = event.getPlayer().getLocation().getChunk();
+        String command = event.getMessage().toLowerCase();
+        Faction faction = factionManager.getFactionByPlayer(player.getUniqueId());
+        if (command.equals("/f claim")) {
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §fYou entered faction claim of §c" + faction.getName() + " §8«"));
+            playerLastChunk.put(player, chunk);
+        }
+        //TODO mettre une vérification si le chunk est claim sinon
+    }
+
+    @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         Chunk chunk = event.getPlayer().getLocation().getChunk();
         Faction faction = factionManager.getFactionByChunk(chunk);
         if (faction != null) {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §fYou entered faction claim of §c" + faction.getName() + " §8«"));
+            playerLastChunk.put(player, chunk);
         }
     }
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-
         if (player.getWorld().getName().equals("faction")) {
             Chunk fromChunk = event.getFrom().getChunk();
             Chunk toChunk = event.getTo().getChunk();
@@ -548,6 +561,7 @@ public class ClaimChunk implements Listener {
             }
         }
     }
+
     @EventHandler
     public void onTeleportInChunk(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
@@ -557,6 +571,7 @@ public class ClaimChunk implements Listener {
         if (faction != null && facplayer != null) {
             if (faction.getName().equals(facplayer.getName())) {
                 player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §fYou entered faction claim of §c" + faction.getName() + " §8«"));
+                playerLastChunk.put(player, chunk);
             }
         }
     }
