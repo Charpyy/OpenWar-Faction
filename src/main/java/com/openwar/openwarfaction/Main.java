@@ -22,8 +22,6 @@ public final class Main extends JavaPlugin {
     private FactionChat factionChat;
     private HashMap<UUID, Boolean> waitingPlayers = new HashMap<>();
     private Economy economy = null;
-    private final String CSV_FILE_PATH = getDataFolder() + "/factions.csv";
-    private final String claimsFilePath = getDataFolder() + "/claims.csv";
     FactionGUI factionGUI;
     FactionManager fm;
 
@@ -57,7 +55,7 @@ public final class Main extends JavaPlugin {
         this.factionGUI = new FactionGUI(fm, pl,this);
 
         getServer().getPluginManager().registerEvents(new PlayerMove(this), this);
-        getServer().getPluginManager().registerEvents(new ClaimChunk(fm), this);
+        getServer().getPluginManager().registerEvents(new ClaimChunk(fm, this), this);
         getServer().getPluginManager().registerEvents(factionChat, this);
         getServer().getPluginManager().registerEvents(new MenuHandler(this, fm, economy, factionGUI),this);
 

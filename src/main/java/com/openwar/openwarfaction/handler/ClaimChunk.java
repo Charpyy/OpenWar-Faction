@@ -1,10 +1,12 @@
 package com.openwar.openwarfaction.handler;
 
+import com.openwar.openwarfaction.Main;
 import com.openwar.openwarfaction.factions.Faction;
 import com.openwar.openwarfaction.factions.FactionManager;
 import com.openwar.openwarfaction.factions.Permission;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -18,6 +20,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,13 +30,15 @@ import java.util.Map;
 public class ClaimChunk implements Listener {
 
     private final FactionManager factionManager;
+    private JavaPlugin main;
     private final Map<Player, Chunk> playerLastChunk;
     private List<String> container;
     private List<String> door;
     private List<String> interact;
 
-    public ClaimChunk(FactionManager factionManager) {
+    public ClaimChunk(FactionManager factionManager, Main main) {
         this.factionManager = factionManager;
+        this.main = main;
         this.playerLastChunk = new HashMap<>();
         container = new ArrayList<>();
         door = new ArrayList<>();
@@ -521,10 +526,13 @@ public class ClaimChunk implements Listener {
         String command = event.getMessage().toLowerCase();
         Faction faction = factionManager.getFactionByPlayer(player.getUniqueId());
         if (command.equals("/f claim")) {
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §fYou entered faction claim of §c" + faction.getName() + " §8«"));
-            playerLastChunk.put(player, chunk);
+            Bukkit.getScheduler().runTaskLaterAsynchronously(main, () -> {
+                if (factionManager.getFactionByChunk(chunk) == faction) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §fYou entered faction claim of §c" + faction.getName() + " §8«"));
+                    playerLastChunk.put(player, chunk);
+                }
+            }, 10L);
         }
-        //TODO mettre une vérification si le chunk est claim sinon
     }
 
     @EventHandler
