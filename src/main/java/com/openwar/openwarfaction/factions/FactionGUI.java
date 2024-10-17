@@ -245,7 +245,7 @@ public class FactionGUI {
         ItemStack factionShop = createCustomItem(Material.GRAY_SHULKER_BOX, "§8§lShop Faction", getLoreForItem(factionLevel, "shop"));
         ItemStack xpBoost = createCustomItem(Material.DRAGONS_BREATH, "§5§lXP Boost", getLoreForItem(factionLevel, "xp"));
         ItemStack factionClaims = createCustomItem(Material.GRASS, "§2§lClaims", getLoreForItem(factionLevel, "claims"));
-        ItemStack farmpaper = createCustomItem(Material.WHEAT, "§e§lFaction Farm", getLoreForItem(factionLevel, "farm"));
+        ItemStack farmpaper = createCustomItem(Material.KNOWLEDGE_BOOK, "§e§lRaid Notification", getLoreForItem(factionLevel, "message"));
 
         factionLevelMenu.setItem(20, factionChest);
         factionLevelMenu.setItem(22, factionShop);
@@ -815,7 +815,7 @@ public class FactionGUI {
                     lore.add("§c20 CHUNKS");
                 }
                 break;
-            case "farm":
+            case "message":
                 if (factionLevel >= 10) {
                     lore.add("§8» §aUnlocked");
                 } else {

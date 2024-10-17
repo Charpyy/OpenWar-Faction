@@ -573,13 +573,16 @@ public class ClaimChunk implements Listener {
     @EventHandler
     public void onTeleportInChunk(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
-        Chunk chunk = event.getPlayer().getLocation().getChunk();
-        Faction faction = factionManager.getFactionByChunk(chunk);
+        Chunk toChunk = event.getTo().getChunk();
+        Faction faction = factionManager.getFactionByChunk(toChunk);
         Faction facplayer = factionManager.getFactionByPlayer(player.getUniqueId());
+        System.out.println("1");
         if (faction != null && facplayer != null) {
+            System.out.println("2");
             if (faction.getName().equals(facplayer.getName())) {
+                System.out.println("3");
                 player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §fYou entered faction claim of §c" + faction.getName() + " §8«"));
-                playerLastChunk.put(player, chunk);
+                playerLastChunk.put(player, toChunk);
             }
         }
     }
