@@ -58,6 +58,29 @@ public class FactionCommand implements CommandExecutor {
         }
 
         switch (args[0].toLowerCase()) {
+            case "tk":
+                faction = factionManager.getFactionByPlayer(player.getUniqueId());
+                if (faction == null) {
+                    player.sendMessage(logo + "§cYou are not in a faction.");
+                    return true;
+                }
+                if (!factionManager.isFactionLeader(playerUUID)) {
+                    player.sendMessage(logo + "§cYou are not the leader.");
+                    return true;
+                }
+                if (args.length < 2) {
+                    player.sendMessage(logo + "§fUsage §c/f tk on|off.");
+                    return true;
+                }
+                if (args[1].equals("on")) {
+
+                    factionManager.setTk(faction, true);
+                }
+                if (args[1].equals("off")) {
+                    factionManager.setTk(faction, false);
+                }
+                player.sendMessage(logo+ "§7Team Kill set to §c"+ factionManager.getTk(faction));
+
             case "kick":
                 if (args.length < 2) {
                     player.sendMessage(logo + "§cYou need to provide a player name.");
@@ -334,63 +357,68 @@ public class FactionCommand implements CommandExecutor {
                 break;
 
             case "home":
-                if (waitingPlayers.containsKey(playerUUID)) {
-                    player.sendMessage(logo + "§cYou are already teleporting. Please wait and don't move.");
-                    return true;
-                }
-                if (args.length >= 2){
-                    if (factionManager.factionExists(args[1])) {
-                        faction=factionManager.getFactionByName(args[1]);
-                    }else{
-                        player.sendMessage(logo + "§cThis faction don't exist.");
-                        return true;
-                    }
-                }else{
-                    if (factionManager.isFactionMember(playerUUID)) {
-                        faction = factionManager.getFactionByPlayer(playerUUID);
-                    }else{
-                        player.sendMessage(logo + "§cYou are not in a faction.");
-                        return true;
-                    }
-                }
-                if(!factionManager.hasPermissionInFaction(playerUUID,faction,Permission.HOME)){
-                    player.sendMessage(logo + "§cYou don't have permission to perform this action.");
-                    return true;
-                }
-                Location home = faction.getHomeLocation();
-                if (home != null) {
-                    Chunk chunk = home.getChunk();
-                    if (!factionManager.isLandClaimed(chunk) && factionManager.getFactionByChunk(chunk) != faction) {
-                        player.sendMessage(logo + "§cYour faction home as been removed since it isnt on your claimed land.");
-                        faction.removeHomeLocation();
-                        return true;
-                    }
-                }
-                if (home != null) {
-                    waitingPlayers.put(player.getUniqueId(), true);
-                    new BukkitRunnable() {
-                        int countdown = 5;
-
-                        @Override
-                        public void run() {
-                            if (waitingPlayers.containsKey(player.getUniqueId()) && waitingPlayers.get(player.getUniqueId())) {
-                                if (countdown > 0) {
-                                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("\u00A78» \u00A77Teleportation in \u00A7f" + countdown + " \u00A77seconds... \u00A78«"));
-                                    countdown--;
-                                } else {
-                                    player.teleport(home);
-                                    waitingPlayers.remove(player.getUniqueId());
-                                    this.cancel();
-                                }
-                            } else {
-                                this.cancel();
-                            }
-                        }
-                    }.runTaskTimer(plugin, 0, 20);
-                } else {
-                    player.sendMessage(logo + "\u00A7cThe faction does not have a home set.");
-                }
-                break;
+                player.sendMessage(logo+"§f/f home §ccommand is disabled, you need to travel by yourself or use the last saved position");
+                player.sendMessage("§f- §7This doesn't mean /f sethome is useless, because you can use it to save the coords of ur faction and see them on /f menu");
+                player.sendMessage("§f- §7This also mean that ur /f sethome is ur §cSpawnPoint §7You will always respawn at ur faction home");
+                player.sendMessage("§f- §7But if u die from someone that was on your claim more than 3 times in less than 5 minutes u will get a cooldown before respawn");
+                player.sendMessage("§f- §7Bed are banned. Use /f sethome as a bed");
+//                if (waitingPlayers.containsKey(playerUUID)) {
+//                    player.sendMessage(logo + "§cYou are already teleporting. Please wait and don't move.");
+//                    return true;
+//                }
+//                if (args.length >= 2){
+//                    if (factionManager.factionExists(args[1])) {
+//                        faction=factionManager.getFactionByName(args[1]);
+//                    }else{
+//                        player.sendMessage(logo + "§cThis faction don't exist.");
+//                        return true;
+//                    }
+//                }else{
+//                    if (factionManager.isFactionMember(playerUUID)) {
+//                        faction = factionManager.getFactionByPlayer(playerUUID);
+//                    }else{
+//                        player.sendMessage(logo + "§cYou are not in a faction.");
+//                        return true;
+//                    }
+//                }
+//                if(!factionManager.hasPermissionInFaction(playerUUID,faction,Permission.HOME)){
+//                    player.sendMessage(logo + "§cYou don't have permission to perform this action.");
+//                    return true;
+//                }
+//                Location home = faction.getHomeLocation();
+//                if (home != null) {
+//                    Chunk chunk = home.getChunk();
+//                    if (!factionManager.isLandClaimed(chunk) && factionManager.getFactionByChunk(chunk) != faction) {
+//                        player.sendMessage(logo + "§cYour faction home as been removed since it isnt on your claimed land.");
+//                        faction.removeHomeLocation();
+//                        return true;
+//                    }
+//                }
+//                if (home != null) {
+//                    waitingPlayers.put(player.getUniqueId(), true);
+//                    new BukkitRunnable() {
+//                        int countdown = 5;
+//
+//                        @Override
+//                        public void run() {
+//                            if (waitingPlayers.containsKey(player.getUniqueId()) && waitingPlayers.get(player.getUniqueId())) {
+//                                if (countdown > 0) {
+//                                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("\u00A78» \u00A77Teleportation in \u00A7f" + countdown + " \u00A77seconds... \u00A78«"));
+//                                    countdown--;
+//                                } else {
+//                                    player.teleport(home);
+//                                    waitingPlayers.remove(player.getUniqueId());
+//                                    this.cancel();
+//                                }
+//                            } else {
+//                                this.cancel();
+//                            }
+//                        }
+//                    }.runTaskTimer(plugin, 0, 20);
+//                } else {
+//                    player.sendMessage(logo + "\u00A7cThe faction does not have a home set.");
+//                }
+//                break;
 
             case "sethome":
                 if (args.length >= 2){

@@ -28,6 +28,12 @@ public class FactionManager {
         this.factionChests = factionChests;
     }
 
+    public void setTk(Faction fac, boolean tk) {
+        fac.tk = tk;
+    }
+
+    public boolean getTk(Faction fac) {return fac.tk;}
+
     public void addFaction(Faction faction) {
         UUID factionId = faction.getFactionUUID();
         factions.put(factionId, faction);

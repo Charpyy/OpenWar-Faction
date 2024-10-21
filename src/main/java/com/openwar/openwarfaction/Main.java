@@ -4,10 +4,7 @@ import com.openwar.openwarfaction.commands.FactionCommand;
 import com.openwar.openwarfaction.commands.FactionTabCompletion;
 import com.openwar.openwarfaction.factions.FactionGUI;
 import com.openwar.openwarfaction.factions.FactionManager;
-import com.openwar.openwarfaction.handler.ClaimChunk;
-import com.openwar.openwarfaction.handler.FactionChat;
-import com.openwar.openwarfaction.handler.MenuHandler;
-import com.openwar.openwarfaction.handler.PlayerMove;
+import com.openwar.openwarfaction.handler.*;
 import com.openwar.openwarlevels.level.PlayerDataManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -54,6 +51,7 @@ public final class Main extends JavaPlugin {
         this.factionChat = new FactionChat(fm);
         this.factionGUI = new FactionGUI(fm, pl,this);
 
+        getServer().getPluginManager().registerEvents(new DeathHandler(fm, this), this);
         getServer().getPluginManager().registerEvents(new PlayerMove(this), this);
         getServer().getPluginManager().registerEvents(new ClaimChunk(fm, this), this);
         getServer().getPluginManager().registerEvents(factionChat, this);

@@ -22,6 +22,7 @@ public class Faction {
     private int level;
     private int exp;
     private int raidPoint;
+    boolean tk;
     private int maxRaidPoint;
     private int[] permissions;
     private String logo = "\u00A78» \u00A7bFaction \u00A78« \u00A77";
@@ -47,6 +48,12 @@ public class Faction {
         this.permissions=new int[]{0b11111111011110,0b10010111000010,0b10000110000010,0b10000100000010,0b00000000000000};
         this.maxRaidPoint = maxRaidPoint();
     }
+
+    public void setTk(boolean tk) {
+        this.tk = tk;
+    }
+
+    public boolean canTk() {return this.tk;}
     public UUID getFactionUUID() {
         return factionUUID;
     }

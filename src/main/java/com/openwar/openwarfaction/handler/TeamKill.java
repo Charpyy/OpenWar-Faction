@@ -28,7 +28,7 @@ public class TeamKill implements Listener {
             Player attacker = (Player) event.getDamager();
             Faction fac1 = fm.getFactionByPlayer(victim.getUniqueId());
             Faction fac2 = fm.getFactionByPlayer(attacker.getUniqueId());
-            if (fac1 == fac2) {
+            if (fac1 == fac2 && !fm.getTk(fac1)) {
                 event.setCancelled(true);
                 attacker.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §fcYou can't attack your mate §4" + victim.getName() + " §8«"));
             }
