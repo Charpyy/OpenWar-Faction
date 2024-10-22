@@ -56,7 +56,7 @@ public class DeathHandler implements Listener {
             Faction fac = fm.getFactionByPlayer(event.getPlayer().getUniqueId());
             if (fac.getHomeLocation() != null) {
                 if (death.get(event.getPlayer().getUniqueId()) > 3) {
-                    event.getPlayer().sendMessage("§c» §7You've died too many times in a row, you are now on spawn cooldown");
+                    event.getPlayer().sendMessage("§c» §7You've died too many times in a row, you can't spawn at your faction home for now.!");
                     return;
                 }
                 event.getPlayer().teleport(fac.getHomeLocation());
