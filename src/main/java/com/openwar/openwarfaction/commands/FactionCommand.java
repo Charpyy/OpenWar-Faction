@@ -362,6 +362,7 @@ public class FactionCommand implements CommandExecutor {
                 player.sendMessage("§f- §7This also mean that ur /f sethome is ur §cSpawnPoint §7You will always respawn at ur faction home");
                 player.sendMessage("§f- §7But if u die from someone that was on your claim more than 3 times in less than 5 minutes u will get a cooldown before respawn");
                 player.sendMessage("§f- §7Bed are banned. Use /f sethome as a bed");
+                return true;
 //                if (waitingPlayers.containsKey(playerUUID)) {
 //                    player.sendMessage(logo + "§cYou are already teleporting. Please wait and don't move.");
 //                    return true;
