@@ -34,17 +34,19 @@ public class DeathHandler implements Listener {
         Player player = event.getEntity();
         Player attacker = player.getKiller();
         Faction fac = fm.getFactionByPlayer(player.getUniqueId());
-        Faction facattack = fm.getFactionByPlayer(attacker.getUniqueId());
-        Location loc = player.getLocation();
-        if (fm.getClaimedChunks(fac).contains(loc.getChunk())) {
-            if (facattack != fac) {
-                death.put(player.getUniqueId(), death.getOrDefault(player.getUniqueId(), 0) + 1);
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        death.remove(player.getUniqueId());
-                    }
-                }.runTaskLater(main, 20 * 300);
+        if (attacker != null) {
+            Faction facattack = fm.getFactionByPlayer(attacker.getUniqueId());
+            Location loc = player.getLocation();
+            if (fm.getClaimedChunks(fac).contains(loc.getChunk())) {
+                if (facattack != fac) {
+                    death.put(player.getUniqueId(), death.getOrDefault(player.getUniqueId(), 0) + 1);
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            death.remove(player.getUniqueId());
+                        }
+                    }.runTaskLater(main, 20 * 300);
+                }
             }
         }
     }
