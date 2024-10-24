@@ -28,7 +28,6 @@ public class DeathHandler implements Listener {
     }
 
 
-
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
@@ -51,17 +50,24 @@ public class DeathHandler implements Listener {
         }
     }
 
-
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
-        if (fm.getFactionByPlayer(event.getPlayer().getUniqueId()) != null) {
-            Faction fac = fm.getFactionByPlayer(event.getPlayer().getUniqueId());
+        Player player = event.getPlayer();
+        UUID playerUUID = player.getUniqueId();
+
+        Faction fac = fm.getFactionByPlayer(playerUUID);
+        if (fac != null) {
             if (fac.getHomeLocation() != null) {
-                if (death.get(event.getPlayer().getUniqueId()) > 3) {
-                    event.getPlayer().sendMessage("§c» §7You've died too many times in a row, you can't spawn at your faction home for now.!");
+                if (death != null && death.containsKey(playerUUID) && death.get(playerUUID) > 3) {
+                    player.sendMessage("§c» §7You've died too many times in a row, you can't spawn at your faction home for now.!");
                     return;
                 }
-                event.getPlayer().teleport(fac.getHomeLocation());
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        player.teleport(fac.getHomeLocation());
+                    }
+                }.runTaskLater(main, 3);
             }
         }
     }
