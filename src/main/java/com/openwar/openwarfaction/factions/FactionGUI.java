@@ -245,7 +245,7 @@ public class FactionGUI {
         ItemStack factionShop = createCustomItem(Material.GRAY_SHULKER_BOX, "§8§lShop Faction", getLoreForItem(factionLevel, "shop"));
         ItemStack xpBoost = createCustomItem(Material.DRAGONS_BREATH, "§5§lXP Boost", getLoreForItem(factionLevel, "xp"));
         ItemStack factionClaims = createCustomItem(Material.GRASS, "§2§lClaims", getLoreForItem(factionLevel, "claims"));
-        ItemStack farmpaper = createCustomItem(Material.KNOWLEDGE_BOOK, "§e§lRaid Notification", getLoreForItem(factionLevel, "message"));
+        ItemStack farmpaper = createCustomItem(Material.matchMaterial("hbm:machine_rtg_grey"), "§6☢️ §e§lNuclear Weapon §6☢️", getLoreForItem(factionLevel, "message"));
 
         factionLevelMenu.setItem(20, factionChest);
         factionLevelMenu.setItem(22, factionShop);
@@ -442,15 +442,11 @@ public class FactionGUI {
         List<String> lore1 = new ArrayList<>();
         lore1.add("§bAll vehicles from MCHELI");
 
-        List<String> lore2 = new ArrayList<>();
-        lore2.add("§aUsefull machine from HBM");
 
         ItemStack mcheli = createCustomItem(Material.matchMaterial("mcheli:ah64"), "§3MCHeli", lore1);
         //TODO FAIRE HBM DU COUP MAINTENANT LOL
-        ItemStack hbm = createCustomItem(Material.matchMaterial("hbm:machine_rtg_grey"), "§2HBM", lore2);
 
-        menu.setItem(12, mcheli);
-        menu.setItem(14, hbm);
+        menu.setItem(13, mcheli);
 
         player.openInventory(menu);
     }
@@ -816,11 +812,11 @@ public class FactionGUI {
                 }
                 break;
             case "message":
-                if (factionLevel >= 10) {
+                if (factionLevel >= 20) {
                     lore.add("§8» §aUnlocked");
                 } else {
                     lore.add("§8» §4Locked");
-                    lore.add("§cUnlock at level: §f10");
+                    lore.add("§cUnlock at level: §f20");
                 }
                 break;
         }
