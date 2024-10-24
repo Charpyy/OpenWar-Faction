@@ -206,6 +206,10 @@ public class FactionCommand implements CommandExecutor {
                         return true;
                     }
                 }
+                if(!factionManager.hasPermissionInFaction(playerUUID,faction,Permission.CLAIM)){
+                    player.sendMessage(logo + "§cYou don't have permission to perform this action.");
+                    return true;
+                }
                 Chunk chunkToClaim = player.getLocation().getChunk();
                 Faction factionChunk = factionManager.getFactionByChunk(chunkToClaim);
                 System.out.println("CLAIM : "+factionChunk+" faction de "+faction.getName());
@@ -331,7 +335,7 @@ public class FactionCommand implements CommandExecutor {
                     return true;
                 }
                 if(args[1]=="add"){
-                    int ret=factionManager.addAllyToFaction(targetAlly.getFactionUUID(),faction);
+                    int ret=factionManager.addAllyToFaction(targetAlly,faction);
                     if(ret==0){
                         player.sendMessage(logo + "§cNow ask a member of "+args[2]+" to execute /f ally add "+faction.getName());
                     }
@@ -344,7 +348,7 @@ public class FactionCommand implements CommandExecutor {
                     return true;
                 }
                 if(args[1]=="del"){
-                    factionManager.removeAllyToFaction(targetAlly.getFactionUUID(),faction);
+                    factionManager.removeAllyToFaction(targetAlly,faction);
                     player.sendMessage(logo + "§fFaction §c"+targetAlly.getName()+" §fis no longer your ally");
                     return true;
                 }

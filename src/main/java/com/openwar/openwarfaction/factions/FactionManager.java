@@ -155,18 +155,19 @@ public class FactionManager {
         }
     }
 
-    public int addAllyToFaction(UUID allyUUID, Faction faction) {
-        if (faction.addAlly(allyUUID)) {
+    public int addAllyToFaction(Faction ally, Faction faction) {
+        if (faction.addAlly(ally.getFactionUUID())) {
             return 0;
         }
-        if (getFactionByUUID(allyUUID).askAlly(faction.getFactionUUID())) {
+        if (ally.askAlly(faction.getFactionUUID())) {
             return 1;
         }
         return 2;
     }
 
-    public void removeAllyToFaction(UUID allyUUID, Faction faction) {
-        faction.removeAlly(allyUUID);
+    public void removeAllyToFaction(Faction ally, Faction faction) {
+        faction.removeAlly(ally.getFactionUUID());
+        ally.removeAlly(faction.getFactionUUID());
     }
 
     public Faction getFactionByUUID(UUID factionUUID) {

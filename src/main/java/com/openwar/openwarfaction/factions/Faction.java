@@ -136,6 +136,9 @@ public class Faction {
     public String getName() {
         return name;
     }
+    public Set getAllys() {
+        return allys;
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -175,6 +178,9 @@ public class Faction {
             return true;
         }
         return false;
+    }
+    public void forceAlly(UUID ally){
+        allys.add(ally);
     }
     public List<Player> getOnlineMembers() {
         List<Player> onlineMembers = new ArrayList<>();
