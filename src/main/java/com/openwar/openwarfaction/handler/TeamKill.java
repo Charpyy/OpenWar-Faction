@@ -7,6 +7,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -31,10 +32,20 @@ public class TeamKill implements Listener {
                 Faction fac2 = fm.getFactionByPlayer(attacker.getUniqueId());
                 if (fac1 == fac2 && !fm.getTk(fac1)) {
                     event.setCancelled(true);
-                    attacker.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou can't attack your mate §4" + victim.getName() + " §8«"));
+                    attacker.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§7» §cYou can't attack your mate §4" + victim.getName() + " §7«"));
                 }
-            } else {
-                System.out.println("DAMAAAGERR = " + event.getDamager());
+            } else if (event.getDamager() instanceof Projectile) {
+                Projectile projectile = (Projectile) event.getDamager();
+                if (projectile.getShooter() instanceof Player) {
+                    Player shooter = (Player) projectile.getShooter();
+                    Player victim = (Player) event.getEntity();
+                    Faction fac1 = fm.getFactionByPlayer(victim.getUniqueId());
+                    Faction fac2 = fm.getFactionByPlayer(shooter.getUniqueId());
+                    if (fac1 == fac2 && !fm.getTk(fac1)) {
+                        event.setCancelled(true);
+                        shooter.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§7» §cYou can't attack your mate §4" + victim.getName() + " §7«"));
+                    }
+                }
             }
         }
     }
