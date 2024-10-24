@@ -608,13 +608,7 @@ public class ClaimChunk implements Listener {
             if (chunkOwner == null) {
                 return;
             }
-            Faction playerFaction = factionManager.getFactionByPlayer(player.getUniqueId());
-            if (chunkOwner == playerFaction) {
-                if (!factionManager.hasPermissionInFaction(player.getUniqueId(), playerFaction, Permission.BUILD)) {
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to build here."));
-                    event.setCancelled(true);
-                }
-            } else {
+            if (!factionManager.hasPermissionInFaction(player.getUniqueId(), chunkOwner, Permission.BUILD)) {
                 player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to build here."));
                 event.setCancelled(true);
             }
@@ -632,13 +626,7 @@ public class ClaimChunk implements Listener {
             if (chunkOwner == null) {
                 return;
             }
-            Faction playerFaction = factionManager.getFactionByPlayer(player.getUniqueId());
-            if (chunkOwner == playerFaction) {
-                if (!factionManager.hasPermissionInFaction(player.getUniqueId(), playerFaction, Permission.BUILD)) {
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to build here."));
-                    event.setCancelled(true);
-                }
-            } else {
+            if (!factionManager.hasPermissionInFaction(player.getUniqueId(), chunkOwner, Permission.BUILD)) {
                 player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to build here."));
                 event.setCancelled(true);
             }
@@ -655,36 +643,28 @@ public class ClaimChunk implements Listener {
             if (chunkOwner == null) {
                 return;
             }
-            Faction playerFaction = factionManager.getFactionByPlayer(player.getUniqueId());
-            //PLAYER IN FACTION
-            if (chunkOwner == playerFaction) {
-                //CONTAINER
-                if (isContainer(event.getClickedBlock())) {
-                    if (!factionManager.hasPermissionInFaction(player.getUniqueId(), playerFaction, Permission.CONTAINERS)) {
-                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to use container."));
-                        event.setCancelled(true);
-                    }
+            //CONTAINER
+            if (isContainer(event.getClickedBlock())) {
+                if (!factionManager.hasPermissionInFaction(player.getUniqueId(), chunkOwner, Permission.CONTAINERS)) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to use container."));
+                    event.setCancelled(true);
                 }
+            }
 
-                //PORTE
-                if (isDoor(event.getClickedBlock())) {
-                    if (!factionManager.hasPermissionInFaction(player.getUniqueId(), playerFaction, Permission.DOORS)) {
-                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to open door."));
-                        event.setCancelled(true);
-                    }
+            //PORTE
+            if (isDoor(event.getClickedBlock())) {
+                if (!factionManager.hasPermissionInFaction(player.getUniqueId(), chunkOwner, Permission.DOORS)) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to open door."));
+                    event.setCancelled(true);
                 }
+            }
 
-                //INTERACT
-                if (isContainer(event.getClickedBlock()) || isDoor(event.getClickedBlock()) || isInteract(event.getClickedBlock())) {
-                    if (!factionManager.hasPermissionInFaction(player.getUniqueId(), playerFaction, Permission.INTERACT)) {
-                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to interact with this."));
-                        event.setCancelled(true);
-                    }
+            //INTERACT
+            if (isContainer(event.getClickedBlock()) || isDoor(event.getClickedBlock()) || isInteract(event.getClickedBlock())) {
+                if (!factionManager.hasPermissionInFaction(player.getUniqueId(), chunkOwner, Permission.INTERACT)) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to interact with this."));
+                    event.setCancelled(true);
                 }
-                //PLAYER NOT IN FACTION
-            } else if (isContainer(event.getClickedBlock()) || isDoor(event.getClickedBlock()) || isInteract(event.getClickedBlock())) {
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to interact here."));
-                event.setCancelled(true);
             }
         }
     }
@@ -700,14 +680,8 @@ public class ClaimChunk implements Listener {
                 return;
             }
 
-            Faction playerFaction = factionManager.getFactionByPlayer(player.getUniqueId());
-            if (chunkOwner == playerFaction) {
-                if (!factionManager.hasPermissionInFaction(player.getUniqueId(), playerFaction, Permission.CONTAINERS)) {
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to interact with this entity."));
-                    event.setCancelled(true);
-                }
-            } else {
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to interact here."));
+            if (!factionManager.hasPermissionInFaction(player.getUniqueId(), chunkOwner, Permission.CONTAINERS)) {
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§8» §cYou don't have the permission to interact with this entity."));
                 event.setCancelled(true);
             }
         }
