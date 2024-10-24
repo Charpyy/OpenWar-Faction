@@ -68,19 +68,9 @@ public class FactionCommand implements CommandExecutor {
                     player.sendMessage(logo + "§cYou are not the leader.");
                     return true;
                 }
-                if (args.length < 2) {
-                    player.sendMessage(logo + "§fUsage §c/f tk on|off.");
-                    return true;
-                }
-                if (args[1].equals("on")) {
-
-                    factionManager.setTk(faction, true);
-                }
-                if (args[1].equals("off")) {
-                    factionManager.setTk(faction, false);
-                }
-                player.sendMessage(logo+ "§7Team Kill set to §c"+ factionManager.getTk(faction));
-
+                factionManager.setTk(faction, !factionManager.getTk(faction));
+                player.sendMessage(logo + "§7Team Kill set to " + (factionManager.getTk(faction) ? "§aOn" : "§cOff"));
+                return true;
             case "kick":
                 if (args.length < 2) {
                     player.sendMessage(logo + "§cYou need to provide a player name.");
@@ -114,9 +104,11 @@ public class FactionCommand implements CommandExecutor {
                 Player target = Bukkit.getPlayer(args[1]);
                 if(playerUUID==target.getUniqueId()){
                     player.sendMessage(logo + "§cUse /f leave to leave your faction, you can't kick yourself.");
+                    return true;
                 }
                 if(factionManager.isFactionLeader(target.getUniqueId())){ //cas où d'autre que le leader peuvent kick
                     player.sendMessage(logo + "§cYou can't kick the leader.");
+                    return true;
                 }
                 factionManager.removePlayerFromFaction(target.getUniqueId());
                 target.sendMessage(logo+"§cYou have been kicked from your faction by §4"+player.getName());
@@ -314,20 +306,21 @@ public class FactionCommand implements CommandExecutor {
                     if (factionManager.factionExists(args[3])) {
                         faction=factionManager.getFactionByName(args[3]);
                     }else{
-                        player.sendMessage(logo + "§cThis faction don't exist.");
+                        player.sendMessage(logo + "§cThis faction doesn't exist.");
                         return true;
                     }
                 }else{
                     if (factionManager.isFactionMember(playerUUID)) {
                         faction = factionManager.getFactionByPlayer(playerUUID);
                     }else{
-                        player.sendMessage(logo + "§cYou must be in a faction to set a home.");
+                        player.sendMessage(logo + "§cYou must be in a faction to set home.");
                         return true;
                     }
                 }
                 Faction targetAlly = factionManager.getFactionByName(args[2]);
-                if(targetAlly!=null){
-                    player.sendMessage(logo + "§cThis faction don't exist.");
+                if(targetAlly==null){
+                    player.sendMessage(logo + "§cThis faction doesn't exist.");
+                    return true;
                 }
                 if(!factionManager.hasPermissionInFaction(playerUUID,faction,Permission.DIPLOMACY)){
                     player.sendMessage(logo + "§cYou don't have permission to perform this action.");
@@ -352,6 +345,7 @@ public class FactionCommand implements CommandExecutor {
                 }
                 if(args[1]=="del"){
                     factionManager.removeAllyToFaction(targetAlly.getFactionUUID(),faction);
+                    player.sendMessage(logo + "§fFaction §c"+targetAlly.getName()+" §fis no longer your ally");
                     return true;
                 }
                 break;
@@ -663,6 +657,8 @@ public class FactionCommand implements CommandExecutor {
                 }
             case "help":
                 player.sendMessage(logo +"§fHelp Page:");
+                player.sendMessage("§7Why didn't you make this with pages ?!");
+                player.sendMessage("- Because this shows what i was doing on my fcking life during the last 2 months.");
                 player.sendMessage("\u00A78– \u00A77/f create|new <name> : §fCreate a new faction");
                 player.sendMessage("\u00A78– \u00A77/f disband : §fDisband your faction");
                 player.sendMessage("\u00A78– \u00A77/f invite <name> : §fInvite player to your faction");
@@ -673,9 +669,15 @@ public class FactionCommand implements CommandExecutor {
                 player.sendMessage("\u00A78– \u00A77/f list : §fList of all factions");
                 player.sendMessage("\u00A78– \u00A77/f name <name> : §fChange the name of your faction");
                 player.sendMessage("\u00A78– \u00A77/f sethome : §fSet the faction home");
-                player.sendMessage("\u00A78– \u00A77/f home : §fTeleport to the faction home");
+                player.sendMessage("\u00A78– \u00A77/f home : §fTeleport to the faction home.. or may be not ?");
                 player.sendMessage("\u00A78– \u00A77/f claim : §fClaim a chunk");
                 player.sendMessage("\u00A78– \u00A77/f menu : §fFaction Menu");
+                player.sendMessage("§8- §7/f tk : §fEnable/Disable Team Kill");
+                player.sendMessage("§8- §7/f chat : §fTalk in Faction Chat");
+                player.sendMessage("§8- §7/f demote : §f!Promote");
+                player.sendMessage("§8- §7/f ally <add|del> <name> : §fYou know.");
+                player.sendMessage("§8- §7/f perm : §fManage permission §7(you can also use /f menu)");
+                player.sendMessage("§8- §7/f inf <factionName> : §fGet info about a faction");
                 break;
             case "leave":
                 if (!factionManager.isFactionMember(playerUUID)) {
