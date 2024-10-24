@@ -26,7 +26,7 @@ public class FactionTabCompletion implements TabCompleter {
 
         if (command.getName().equalsIgnoreCase("f")) {
             if (args.length == 1) {
-                suggestions = Arrays.asList("perm","menu","leave", "help", "chat", "create", "delete", "invite", "promote", "claim", "home", "sethome", "unclaim", "kick", "disband", "list", "f", "join", "demote", "info");
+                suggestions = Arrays.asList("ally","perm","menu","leave", "help", "chat", "create", "delete", "invite", "promote", "claim", "home", "sethome", "unclaim", "kick", "disband", "list", "f", "join", "demote", "info");
             } else if (args.length == 2) {
                 if (args[0].equalsIgnoreCase("invite") || args[0].equalsIgnoreCase("kick") ||
                         args[0].equalsIgnoreCase("demote") || args[0].equalsIgnoreCase("promote")) {
