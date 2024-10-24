@@ -52,6 +52,7 @@ public final class Main extends JavaPlugin {
         this.factionGUI = new FactionGUI(fm, pl,this);
 
         getServer().getPluginManager().registerEvents(new DeathHandler(fm, this), this);
+        getServer().getPluginManager().registerEvents(new TeamKill(fm), this);
         getServer().getPluginManager().registerEvents(new PlayerMove(this), this);
         getServer().getPluginManager().registerEvents(new ClaimChunk(fm, this), this);
         getServer().getPluginManager().registerEvents(factionChat, this);
