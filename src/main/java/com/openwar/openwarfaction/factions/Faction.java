@@ -136,7 +136,7 @@ public class Faction {
     public String getName() {
         return name;
     }
-    public Set getAllys() {
+    public Set<UUID> getAllys() {
         return allys;
     }
 
