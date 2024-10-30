@@ -112,8 +112,8 @@ public class Faction {
     }
 
     private void levelUp() {
+        this.exp -= levelRequirements[level];
         level++;
-        this.exp = 0;
         this.maxRaidPoint = maxRaidPoint();
         for (UUID memberUUID : members.keySet()) {
             Player player = Bukkit.getPlayer(memberUUID);
