@@ -69,7 +69,12 @@ public class FactionCommand implements CommandExecutor {
                     return true;
                 }
                 factionManager.setTk(faction, !factionManager.getTk(faction));
-                player.sendMessage(logo + "§7Team Kill set to " + (factionManager.getTk(faction) ? "§aOn" : "§cOff"));
+                for (UUID memberUUID : faction.getMembers().keySet()) {
+                    Player member = Bukkit.getPlayer(memberUUID);
+                    if (member != null) {
+                        member.sendMessage(logo + "§7Team Kill set to " + (factionManager.getTk(faction) ? "§aOn" : "§cOff"));
+                    }
+                }
                 return true;
             case "kick":
                 if (args.length < 2) {
