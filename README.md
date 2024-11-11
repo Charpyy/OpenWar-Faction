@@ -1,1 +1,1 @@
-OpenWar Faction plugin, fuck massivecore.
+OpenWar Faction plugin.
